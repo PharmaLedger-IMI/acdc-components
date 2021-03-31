@@ -48,9 +48,9 @@ scp -p /tmp/$IMG_NAME $USERATHOST:images/
 ssh $USERATHOST <<EOF
 set -xe
 echo "When you see a message like 'Storing seeds:\ ...' you may CTL-C to exit."
-docker stop \$(docker ps -aq)
-docker rm \$(docker ps -aq)
-docker rmi \$(docker images -q)
+docker stop $UCNAME
+docker rm $UCNAME
+docker rmi pharmaledger/$UCNAME
 ( xz -d < images/$IMG_NAME | docker load )
 docker run --detach --hostname $UCNAME --publish 8080:8080 --name $UCNAME --restart always pharmaledger/$UCNAME
 docker logs -f $UCNAME
