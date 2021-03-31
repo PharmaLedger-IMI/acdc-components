@@ -24,7 +24,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "node ./bin/clean.js ./",
     "clean-build": "npm run clean && npm run build privatesky && npm run build-all",
-    "freeze": "node ./node_modules/octopus/scripts/freeze dependencies install-mobile"
+    "freeze": "node ./node_modules/octopus/scripts/freeze dependencies install-mobile",
+    "incversion": "npm --no-git-tag-version version patch"
   },
   "repository": {
     "type": "git",
@@ -38,5 +39,9 @@
   "homepage": "https://github.com/PharmaLedger-IMI/acdc-workspace#readme",
   "dependencies": {
     "octopus": "git+http://github.com/privatesky/octopus.git"
+  },
+  "devDependencies": {
+    "fs-extra": "^9.0.9",
+    "git-describe": "^4.0.4"
   }
 }

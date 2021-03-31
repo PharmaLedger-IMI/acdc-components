@@ -2,48 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ePI solutions</title>
+    <title>Anti-Counterfeiting Data Collaboration</title>
     <link rel="stylesheet" href="assets/css/main.css">
-
 </head>
 <body>
-<div class="center-aligned-controls vertical-align">
+    <div class="center-aligned-controls vertical-align">
 
-    <a class="dsu-fabric_button scale-up" href="dsu-fabric-wallet/loader/" target="_blank"/>
-    <div class="left-side">
-        <img src="assets/images/factory.png" alt="DSU-Fabric">
-    </div>
-    <div class="right-side">
-        <p>Enterprise  Wallet</p>
-    </div>
-    </a>
-
-    <!--<a class="dsu-fabric_button scale-up" href="dsu-fabric/" target="_blank"/>
+        <a class="dsu-fabric_button scale-up" href="dsu-fabric-wallet/loader/" target="_blank"/>
         <div class="left-side">
             <img src="assets/images/factory.png" alt="DSU-Fabric">
         </div>
         <div class="right-side">
-            <p>DSU Fabric</p>
+            <p>Enterprise  Wallet</p>
         </div>
-    </a>-->
+        </a>
 
-    <a class="leaflet-wallet_button scale-up" href="leaflet-wallet/loader/" target="_blank"/>
-        <div class="left-side">
-            <img src="assets/images/patient.png" alt="Patient-App">
-        </div>
-        <div class="right-side">
-            <p>Patient Wallet</p>
-        </div>
-    </a>
+        <a class="leaflet-wallet_button scale-up" href="ctr-patient-wallet/loader/" target="_blank">
+            <div class="left-side">
+                <img src="assets/images/patient.png" alt="Patient-app">
+            </div>
+            <div class="right-side">
+                <p>Patient wallet</p>
+            </div>
+        </a>
 
-    <a class="web-wallet_button scale-up" href="dsu-explorer/loader/" target="_blank"/>
-        <div class="left-side">
-            <img src="assets/images/cube.png" alt="DSU-Explorer">
-        </div>
-        <div class="right-side">
-            <p>DSU Explorer </p>
-        </div>
-    </a>
-</div>
+        <a class="web-wallet_button scale-up" href="/backoffice" target="_blank">
+            <div class="left-side">
+                <img src="assets/images/pharmacy.png" alt="Backoffice-App">
+            </div>
+            <div class="right-side">
+                <p>Backoffice Centralized Application</p>
+            </div>
+        </a>
+
+
+        <a class="web-wallet_button scale-up" href="dsu-explorer/loader/" target="_blank">
+            <div class="left-side">
+                <img src="assets/images/cube.png" alt="DSU-Explorer">
+            </div>
+            <div class="right-side">
+                <p>DSU Explorer</p>
+            </div>
+        </a>
+    </div>
+    <div>
+        <h1><img src="assets/images/pharmaledgerLogo.png" alt="Pharmaledger" style="height: 2em; vertical-align: middle; margin-right: 1em;">Anti-Counterfeiting Data Collaboration Demo</h1>
+
+        <p>Demonstration of Anti-Counterfeiting Data Collaboration, using blockchain - through
+            <a href="http://opendsu.com" target="_blank">OpenDSU</a> technology.</p>
+
+        <p>The <span style="font-style: italic;">Enterprise &amp; Patient Wallet</span> above (which are
+         easily compiled to native mobile Android/iOS application) are Progressive Web Applications
+         compatible with modern (>2016) mobile browsers.
+         The <span style="font-style: italic;">Backoffice Centralized Application</span> is a regular web application,
+         compatible with modern browsers (both desktop and mobile , >2016).
+        </p>
+
+        <h2>Release notes 2021-04-??</h2>
+
+        <p><span style="font-weight: bold;">WARNING:</span> Unstable software and environments. Use at your own risk! Data persistence at risk of un-expected reset!</p>
+
+        <p>Application description / testing instructions</p>
+        <ul>
+            <li><img src="assets/images/factory.png" style="height: 1em;"> Enterprise Wallet App (for MAH users):
+                <ol>
+                    <li>On the first usage, you need to register a username password to open the wallet. (Re-used from ePi)</li>
+                    <li>After this initial register steps, the Patient may ....</li>
+                </ol>
+            </li>
+            <li><img src="assets/images/patient.png" style="height: 1em;"> Patient Wallet App:
+                <ol>
+                    <li>On the first usage, you need to register a username password to open the wallet. (Re-used from ePi)</li>
+                    <li>After this initial register steps, the Patient may ....</li>
+                </ol>
+            </li>
+            <li><img src="assets/images/pharmacy.png" style="height: 1em;"> Backoffice Centralized Application (one for each MAH):
+                <ol>
+                    <li>Follow instructions on the login page</li>
+                </ol>
+            </li>
+            <li><img src="assets/images/cube.png" style="height: 1em;"> DSU Explorer - debug tool to explore DSUs anchored on the blockchain (Re-used from ePi).</li>
+        </ul>
+        Wallets do not communicate yet, so nothing done on one wallet is visible on other wallets.
+
+        <p>Milestones achieved on this release, compared to the plan ....docx:</p>
+        <ul>
+            <li>M1 OpenDSU Solution Concept Complete - partial 10% - work in progress in DSU constitution and attributes.</li>
+            <li>M2 Development Environment Setup Complete - complete 50% - development environment available at <a href="https://acdc-dev.pharmaledger.pdmfc.com/">https://ctr-dev.pharmaledger.pdmfc.com/</a>. (Data persistence and other configuration tasks still in progress).</li>
+            <li>M3 Business Test Environment Setup Complete - complete 50% - environment available at <a href="https://acdc.pharmaledger.pdmfc.com/">https://ctr.pharmaledger.pdmfc.com/</a>. (Data persistence and other configuration tasks still in progress).</li>
+        </ul>
+
+        <p>PDM welcomes technical contributions at <a href="https://github.com/PharmaLedger-IMI/ctr-workspace">https://github.com/PharmaLedger-IMI/acdc-workspace</a></p>
+    </div>
+    <footer>
+        v<!-- VERSION_START -->0.0.10-9378ee9<!-- VERSION_END --> &copy;&nbsp;2021 <a href="http://pharmaledger.eu">Pharmaledger.eu</a> - All Rights Reserved. 
+    </footer>
 </body>
+
 </html>
