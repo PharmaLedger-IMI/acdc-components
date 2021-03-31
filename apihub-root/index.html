@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
     <title>Anti-Counterfeiting Data Collaboration</title>
     <link rel="stylesheet" href="assets/css/main.css">
-</head>
+    <script>var plEnvironment = (window.location.href && window.location.href.indexOf("localhost")>=0)
+        ? ' localhost'
+        : (window.location.href && window.location.href.indexOf("-dev.pharmaledger.")>=0)
+        ? ' DEV'
+        : '';
+        document.title = document.title + plEnvironment;
+    </script>
+    </head>
 <body>
+    <noscript>
+        <span style="font-weight: bold;">WARNING:</span> JavaScript is disabled! This site required JavaScript!
+    </noscript>
     <div class="center-aligned-controls vertical-align">
 
         <a class="dsu-fabric_button scale-up" href="dsu-fabric-wallet/loader/" target="_blank"/>
@@ -46,7 +56,8 @@
         </a>
     </div>
     <div>
-        <h1><img src="assets/images/pharmaledgerLogo.png" alt="Pharmaledger" style="height: 2em; vertical-align: middle; margin-right: 1em;">Anti-Counterfeiting Data Collaboration Demo</h1>
+        <h1><img src="assets/images/pharmaledgerLogo.png" alt="Pharmaledger" style="height: 2em; vertical-align: middle; margin-right: 1em;">Anti-Counterfeiting Data Collaboration
+         Demo<script>document.write(plEnvironment);</script></h1>
 
         <p>Demonstration of Anti-Counterfeiting Data Collaboration, using blockchain - through
             <a href="http://opendsu.com" target="_blank">OpenDSU</a> technology.</p>
