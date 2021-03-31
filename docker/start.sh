@@ -1,9 +1,4 @@
 #!/bin/bash
-name="$(./util/name.sh -1)"
+UCNAME="acdc-workspace"
 
-docker run --detach \
-    --hostname epi \
-    --publish 8080:8080 \
-    --name $name \
-    --restart always \
-    pharmaledger/epi
+docker start $UCNAME
