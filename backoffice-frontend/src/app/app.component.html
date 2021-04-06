@@ -1,0 +1,78 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button mat-icon-button>
+      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+    </button>
+    <h1>{{title}}</h1>
+  </mat-toolbar-row>
+</mat-toolbar>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" [(opened)]="sideNavOpened" style="padding: 5px; width: 14em;">
+    <mat-accordion [multi]="false">
+      <mat-expansion-panel *ngIf="authService.hasPhysicianProfile()" [expanded]="sideNavMenu1Item=='data'">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Scan-Data
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-selection-list [multiple]="false">
+          <mat-list-option [selected]="sideNavMenu1Item=='data' && sideNavMenu2Item=='dashboard'">
+            <a mat-list-item routerLink="/physician">Dashboard</a>
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="authService.hasSiteProfile()" [expanded]="sideNavMenu1Item=='site'">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Rules
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-selection-list [multiple]="false">
+          <mat-list-option [selected]="sideNavMenu1Item=='rules' && sideNavMenu2Item=='dashboard'">
+            <a mat-list-item routerLink="/site">Dashboard</a>
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="authService.hasSponsorProfile()" [expanded]="sideNavMenu1Item=='sponsor'">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Alerts
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-selection-list [multiple]="false">
+          <mat-list-option [selected]="sideNavMenu1Item=='alerts' && sideNavMenu2Item=='dashboard'">
+            <a mat-list-item routerLink="/sponsor">Dashboard</a>
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="authService.hasAdminProfile()" [expanded]="sideNavMenu1Item=='admin'">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Administration
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-selection-list [multiple]="false">
+          <mat-list-option [selected]="sideNavMenu1Item=='admin' && sideNavMenu2Item=='locale'">
+            <a mat-list-item routerLink="/locales">Locales</a>
+          </mat-list-option>
+          <mat-list-option [selected]="sideNavMenu1Item=='admin' && sideNavMenu2Item=='appresource'">
+            <a mat-list-item routerLink="/appresource">AppResource</a>
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      <mat-selection-list [multiple]="false">
+        <mat-list-option [selected]="sideNavMenu1Item=='' && sideNavMenu2Item=='login'">
+          <a mat-list-item *ngIf="authService.isLoggedOut()" routerLink="/login">Login</a>
+          <a mat-list-item *ngIf="authService.isLoggedIn()" (click)="logout()" routerLink="/login">Logout</a>
+        </mat-list-option>
+      </mat-selection-list>
+      <div *ngIf="authService.isLoggedIn()" style="font-size: smaller;">{{authService.getUsername()}}</div>
+      <div style="font-size: smaller;">{{sideTime.toISOString()}}</div>
+      <div style="font-size: x-small;">v{{v.version}}-{{v.hash}}</div>
+    </mat-accordion>
+  </mat-sidenav>
+  <mat-sidenav-content style="padding: 5px;">
+    <router-outlet></router-outlet>
+    <app-messages></app-messages>
+  </mat-sidenav-content>
+</mat-sidenav-container>

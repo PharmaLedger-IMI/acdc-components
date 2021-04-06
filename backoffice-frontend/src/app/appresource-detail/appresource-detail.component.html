@@ -1,0 +1,14 @@
+<div *ngIf="arc">
+<div><span>ID: </span>{{arc.id}}</div>
+<div><span>key: </span>{{arc.key}}</div>
+<div><span>locale: </span>{{arc.locale?.code}}</div>
+<div><span>original value: </span>{{arc.value}}</div>
+<div>
+  <label>value:
+    <input [(ngModel)]="arc.value" placeholder="value"/>
+  </label>
+</div>
+<div><span>help: </span>{{arc.help}}</div>
+</div>
+<button (click)="save()">save</button>
+<button (click)="goBack()">go back</button>
