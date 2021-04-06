@@ -1,5 +1,15 @@
 .idea
 cardinal
+webcardinal
+
+
+apihub-root/dsu-explorer
+apihub-root/dsu-fabric-wallet/wallet-patch/seed
+apihub-root/leaflet-wallet/wallet-patch/seed
+apihub-root/seedsBackup
+
+
+
 mobile/scan-app
 privatesky
 menu-wallet-prototype
