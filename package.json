@@ -25,7 +25,10 @@
     "clean": "node ./bin/clean.js ./",
     "clean-build": "npm run clean && npm run build privatesky && npm run build-all",
     "freeze": "node ./node_modules/octopus/scripts/freeze dependencies install-mobile",
-    "incversion": "npm --no-git-tag-version version patch"
+    "incversion": "npm --no-git-tag-version version patch",
+    "start-backoffice-backend": "cd backoffice-backend && npm run start",
+    "start-backoffice-frontend": "cd backoffice-frontend && npm run start",
+    "build-use-case": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case\""
   },
   "repository": {
     "type": "git",
