@@ -1,0 +1,24 @@
+<div>
+  <label>key:
+    <input #arcKey />
+  </label>
+  <label>value:
+    <input #arcValue />
+  </label>
+  <label>help:
+    <input #arcHelp />
+  </label>
+  <!-- (click) passes input value to add() and then clears the input -->
+  <button (click)="add(arcKey.value, arcValue.value, arcHelp.value); arcKey.value=''; arcValue.value=''; arcHelp.value=''">
+    add
+  </button>
+</div>
+<ul class="appresource">
+  <li *ngFor="let arc of arcCollection">
+    <a routerLink="/appresource/{{arc.id}}">
+      <span class="badge">{{arc.id}}</span> {{arc.key}} {{arc.locale?.code || 'null'}}  {{arc.value}}
+    </a>
+    <button class="delete" title="delete AppResource"
+    (click)="delete(arc)">x</button>
+</li>
+</ul>
