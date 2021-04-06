@@ -341,6 +341,48 @@
                     "cmd": "cd dsu-fabric-ssapp && npm install"
                 }
             ]
+        },
+        {
+            "name": "install backoffice-backend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-backend && npm install"
+                }
+            ]
+        },
+        {
+            "name": "install backoffice-frontend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-frontend && npm install"
+                }
+            ]
+        }
+    ],
+    "build-use-case": [
+        {
+            "name": "build backoffice-backend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-backend && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "build backoffice-frontend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-frontend && npm run build"
+                }
+            ]
         }
     ],
     "build": [
@@ -569,6 +611,15 @@
                 {
                     "type": "execute",
                     "cmd": "cd apihub-root/leaflet-wallet/loader && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "build Use case",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "npm run build-use-case"
                 }
             ]
         }
