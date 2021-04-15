@@ -20,4 +20,4 @@ COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 RUN mkdir /usr/local/apache2/htdocs/backoffice
 
-COPY --from=build-step /acdc-backoffice-frontend/dist/acdc-backoffice-frontend /usr/local/apache2/htdocs/backoffice/
+COPY --from=build-step /acdc-backoffice-frontend/backoffice-frontend/dist/acdc-backoffice-frontend /usr/local/apache2/htdocs/backoffice/
