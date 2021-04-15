@@ -2,7 +2,7 @@
 FROM node:14.16-buster as build-step
 
 
-ENV TARGET_FOLDER_NAME="acdc-backoffice-frontend"
+ENV TARGET_FOLDER_NAME="acdc-workspace"
 RUN git clone https://github.com/PharmaLedger-IMI/acdc-workspace.git $TARGET_FOLDER_NAME
 
 RUN cd $TARGET_FOLDER_NAME && cd backoffice-frontend && \
@@ -20,4 +20,4 @@ COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 RUN mkdir /usr/local/apache2/htdocs/backoffice
 
-COPY --from=build-step /acdc-backoffice-frontend/backoffice-frontend/dist/acdc-backoffice-frontend /usr/local/apache2/htdocs/backoffice/
+COPY --from=build-step /acdc-workspace/backoffice-frontend/dist/acdc-backoffice-frontend /usr/local/apache2/htdocs/backoffice/

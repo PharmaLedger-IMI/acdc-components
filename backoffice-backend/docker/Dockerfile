@@ -6,7 +6,7 @@ RUN apt install -y build-essential
 
 RUN apt install -y libpq-dev
 
-ENV TARGET_FOLDER_NAME="acdc-backoffice-backend"
+ENV TARGET_FOLDER_NAME="acdc-workspace"
 RUN git clone https://github.com/PharmaLedger-IMI/acdc-workspace.git $TARGET_FOLDER_NAME
 
 RUN cd $TARGET_FOLDER_NAME && cd backoffice-backend && \
