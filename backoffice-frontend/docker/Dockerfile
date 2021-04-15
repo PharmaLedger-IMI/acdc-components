@@ -3,12 +3,12 @@ FROM node:14.16-buster as build-step
 
 
 ENV TARGET_FOLDER_NAME="acdc-backoffice-frontend"
-RUN git clone https://github.com/PharmaLedger-IMI/acdc-backoffice-frontend $TARGET_FOLDER_NAME
+RUN git clone https://github.com/PharmaLedger-IMI/acdc-workspace.git $TARGET_FOLDER_NAME
 
-RUN cd $TARGET_FOLDER_NAME && \
+RUN cd $TARGET_FOLDER_NAME && cd backoffice-frontend && \
     npm install --unsafe-perm
 
-RUN cd $TARGET_FOLDER_NAME && \
+RUN cd $TARGET_FOLDER_NAME && cd backoffice-frontend && \
     npm run build -- --prod
 
 # Stage 2 - put files inside an apache 2.4 web server
