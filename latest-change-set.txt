@@ -1,1 +1,3 @@
     Update procedure
+    fixed some typo, added serial numbers history
+    fixed some typo, added serial numbers history
