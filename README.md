@@ -163,3 +163,13 @@ This concludes the steps to build the APK file.
 ```
 mobile/scan-app/android/app/build/outputs/apk/release
 ```
+
+
+# Misc
+
+## How to pull latest ePi changes
+
+'''sh
+git remote add epi https://github.com/PharmaLedger-IMI/epi-workspace
+git pull epi
+'''
