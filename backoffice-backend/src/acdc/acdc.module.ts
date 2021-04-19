@@ -6,11 +6,12 @@ import { AppUserService } from './appuser.service';
 import { AcdcUserController } from "./acdcuser.controller";
 import { MahController } from "./mah.controller";
 import { MahUserController } from "./mahuser.controller";
+import { EventController } from "./event.controller";
 
 
 @Module({
   imports: [TypeOrmModule.forRoot()],
-  controllers: [AppResourceController, LocaleController, AcdcUserController, MahController, MahUserController],
+  controllers: [AppResourceController, LocaleController, AcdcUserController, MahController, MahUserController, EventController],
   providers: [AppUserService],
   exports: [AppUserService],
 })
