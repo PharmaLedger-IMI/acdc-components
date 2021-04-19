@@ -7,11 +7,12 @@ import { AcdcUserController } from "./acdcuser.controller";
 import { MahController } from "./mah.controller";
 import { MahUserController } from "./mahuser.controller";
 import { EventController } from "./event.controller";
+import { EventInputController } from "./eventinput.controller";
 
 
 @Module({
   imports: [TypeOrmModule.forRoot()],
-  controllers: [AppResourceController, LocaleController, AcdcUserController, MahController, MahUserController, EventController],
+  controllers: [AppResourceController, LocaleController, AcdcUserController, MahController, MahUserController, EventController, EventInputController],
   providers: [AppUserService],
   exports: [AppUserService],
 })
