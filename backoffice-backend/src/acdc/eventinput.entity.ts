@@ -1,17 +1,23 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {ApiProperty} from "@nestjs/swagger";
+import {Event} from "./event.entity"
+import {EventInputDataDto} from "./eventinput.dto";
 
 @Entity("eventinput")
 export class EventInput extends BaseEntity {
 
     @PrimaryGeneratedColumn("uuid")
-    eventinputid: string;
+    eventinputid: string
 
     @Column()
     @ApiProperty()
-    eventid: string;
+    eventid: string
 
     @Column({type: 'json'})
     @ApiProperty()
-    eventinputdata: object;
+    eventinputdata: EventInputDataDto
+
+    @ManyToOne(() => Event, event => event.eventid)
+    @JoinColumn({name: 'eventid'})
+    eventdata: Event
 }
