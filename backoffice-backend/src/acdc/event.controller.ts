@@ -1,9 +1,12 @@
 import {Connection} from "typeorm";
-import {Body, Controller, Delete, Get, Param, Post, Put} from "@nestjs/common";
-import {ApiOperation, ApiTags} from "@nestjs/swagger";
+import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from "@nestjs/common";
+import {ApiBearerAuth, ApiOperation, ApiTags} from "@nestjs/swagger";
 import {Event} from "./event.entity"
+import {AuthGuard} from "@nestjs/passport";
 
 @ApiTags("Event")
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
 @Controller("/acdc/event")
 export class EventController {
     constructor(private connection: Connection) {

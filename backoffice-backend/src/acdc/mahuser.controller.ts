@@ -1,9 +1,12 @@
 import {Connection} from "typeorm";
-import {Body, Controller, Delete, Get, Param, Post, Put, Query} from "@nestjs/common";
-import {ApiOperation, ApiTags} from "@nestjs/swagger";
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards} from "@nestjs/common";
+import {ApiBearerAuth, ApiOperation, ApiTags} from "@nestjs/swagger";
 import {MahUser} from "./mahuser.entity";
+import {AuthGuard} from "@nestjs/passport";
 
 @ApiTags("MahUser")
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
 @Controller("/acdc/mahuser")
 export class MahUserController {
     constructor(private connection: Connection) {
