@@ -27,8 +27,8 @@ export class EventController {
                 mahid: {type: 'string'},
                 createdon: {type: "string", format: "date-time"},
                 eventdata: {type: "object"},
-                eventinput: {type: "object"},
-                eventoutput: {type: "object"}
+                eventinputs: {type: "object"},
+                eventoutputs: {type: "object"}
             }
         },
     })
@@ -49,8 +49,8 @@ export class EventController {
                 mahid: {type: 'string'},
                 createdon: {type: "string", format: "date-time"},
                 eventdata: {type: "object"},
-                eventinput: {type: "object"},
-                eventoutput: {type: "object"}
+                eventinputs: {type: "object"},
+                eventoutputs: {type: "object"}
             }
         },
     })
