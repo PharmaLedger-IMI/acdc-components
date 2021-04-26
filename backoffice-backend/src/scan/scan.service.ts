@@ -32,8 +32,8 @@ export class ScanService {
             mahid: eventOutputData.MAH_ID,
             createdon: new Date(),
             eventdata: {},
-            eventinput: [eventInput],
-            eventoutput: [eventOutput]
+            eventinputs: [eventInput],
+            eventoutputs: [eventOutput]
         })
 
         return eventOutputData

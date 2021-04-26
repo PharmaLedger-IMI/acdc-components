@@ -5,6 +5,6 @@ export class EventDto {
     readonly mahid: string
     readonly createdon: Date
     readonly eventdata: object
-    readonly eventinput: EventInput[]
-    readonly eventoutput: EventOutput[]
+    readonly eventinputs: EventInput[]
+    readonly eventoutputs: EventOutput[]
 }
