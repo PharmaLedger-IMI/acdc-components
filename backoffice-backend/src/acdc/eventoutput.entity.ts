@@ -16,7 +16,7 @@ export class EventOutput extends BaseEntity {
     @ApiProperty()
     eventoutputdata: object
 
-    @ManyToOne(() => Event, event => event.eventid)
+    @ManyToOne(() => Event, event => event.eventoutput)
     @JoinColumn({name: 'eventid'})
-    eventdata: Event
+    event: Event
 }
