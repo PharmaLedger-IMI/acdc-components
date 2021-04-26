@@ -21,10 +21,10 @@ export class Event extends BaseEntity {
     @ApiProperty()
     eventdata: object;
 
-    @OneToMany(() => EventInput, eventinput => eventinput.eventdata)
+    @OneToMany(() => EventInput, eventinput => eventinput.event)
     eventinput: EventInput[];
 
-    @OneToMany(() => EventOutput, eventoutput => eventoutput.eventdata)
+    @OneToMany(() => EventOutput, eventoutput => eventoutput.event)
     eventoutput: EventOutput[];
 
 }
