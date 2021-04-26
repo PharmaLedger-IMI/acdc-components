@@ -13,7 +13,7 @@ import { AcdcModule } from '../acdc/acdc.module';
     PassportModule,
     JwtModule.register({
        secret: 'a-secret-that-should-be-moved-to-a-config-in-db',
-       signOptions: { expiresIn: '120s' },
+       signOptions: { expiresIn: '2h' },
     })
   ],
   controllers: [AuthController],
