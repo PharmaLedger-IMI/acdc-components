@@ -29,7 +29,7 @@ export class AuthService {
     .subscribe(
       (res: any) => {
         this.log(`posted ${username},${password}, ${res}`);
-        if (!res.token || !res.username) {
+        if (!res.token || !res.email) {
           callback("Missing username/token field in "+JSON.stringify(res), null);
           return;
         }
@@ -44,8 +44,8 @@ export class AuthService {
 
   private setSession(authResult: any): void {
     let user = new User();
-    user.id = authResult.id;
-    user.username = authResult.username;
+    user.userid = authResult.userid;
+    user.email = authResult.email;
     user.token = authResult.token;
     sessionStorage.setItem(AuthService.ACDC_USER, JSON.stringify(user));
   }
@@ -91,7 +91,7 @@ export class AuthService {
   }
 
   public getUsername() : string | undefined {
-    return this.getUser()?.username;
+    return this.getUser()?.email;
   }
 
   /**
@@ -108,7 +108,7 @@ export class AuthService {
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
- 
+
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

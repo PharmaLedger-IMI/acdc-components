@@ -45,6 +45,14 @@
             </div>
         </a>
 
+        <a class="web-wallet_button scale-up" href="/borest/api" target="_blank">
+            <div class="left-side">
+                <img src="assets/images/data-center--v2.png" alt="Backoffice REST API">
+            </div>
+            <div class="right-side">
+                <p>Backoffice Centralized REST</p>
+            </div>
+        </a>
 
         <a class="web-wallet_button scale-up" href="dsu-explorer/loader/" target="_blank">
             <div class="left-side">
@@ -69,7 +77,7 @@
          compatible with modern browsers (both desktop and mobile , >2016).
         </p>
 
-        <h2>Release notes 2021-04-??</h2>
+        <h2>v0.1.0 - Release notes 2021-04-26</h2>
 
         <p><span style="font-weight: bold;">WARNING:</span> Unstable software and environments. Use at your own risk! Data persistence at risk of un-expected reset!</p>
 
@@ -78,18 +86,29 @@
             <li><img src="assets/images/factory.png" style="height: 1em;"> Enterprise Wallet App (for MAH users):
                 <ol>
                     <li>On the first usage, you need to register a username password to open the wallet. (Re-used from ePi)</li>
-                    <li>After this initial register steps, the Patient may ....</li>
+                    <li>(See ePi instructions...)</li>
                 </ol>
             </li>
             <li><img src="assets/images/patient.png" style="height: 1em;"> Patient Wallet App:
                 <ol>
                     <li>On the first usage, you need to register a username password to open the wallet. (Re-used from ePi)</li>
-                    <li>After this initial register steps, the Patient may ....</li>
+                    <li>(See ePi instructions...)</li>
                 </ol>
             </li>
             <li><img src="assets/images/pharmacy.png" style="height: 1em;"> Backoffice Centralized Application (one for each MAH):
                 <ol>
                     <li>Follow instructions on the login page</li>
+                </ol>
+            </li>
+            <li><img src="assets/images/data-center--v2.png" style="height: 1em;"> Backoffice Centralized REST Services (one for each MAH):
+                <ol>
+                    <li><a href="/borest/api">OpenAPI</a>  description/test page.
+                        <br />Relevant services:
+                        <ul>
+                            <li><a href="/borest/api/#/Scan/ScanController_create">/borest/scan</a> upload one scan event data (public access)</li>
+                            <li><a href="/borest/api/#/Event/EventController_findAll">/borest/acdc/event</a> download all event data (authenticated access - please ask pharmelder dot team at pdmfc dot com for an account).</li>
+                        </ul>
+                    </li>
                 </ol>
             </li>
             <li><img src="assets/images/cube.png" style="height: 1em;"> DSU Explorer - debug tool to explore DSUs anchored on the blockchain (Re-used from ePi).</li>

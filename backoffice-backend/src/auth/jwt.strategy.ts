@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AppUser } from 'src/acdc/appuser.entity';
+import {AcdcUser} from "../acdc/acdcuser.entity";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -22,15 +22,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      * The value returned will be stored as Request.user.
      * 
      * @param payload 
-     * @returns an AppUser.
+     * @returns an AcdcUser.
      * @throws UnauthorizedException if not valid login, but don't do that as the token has already been validated.
      */
     async validate(payload: any) {
         console.log("JwtStrategy.validate", payload);
-        let au = new AppUser();
-        au.id = payload.id;
-        au.username = payload.username;
-        return au;
+        let acdcUser = new AcdcUser();
+        acdcUser.userid = payload.userid;
+        acdcUser.email = payload.email;
+        return acdcUser;
         //throw new UnauthorizedException();
         // TODO fetch complete user related info from the DB, including roles.
     }

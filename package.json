@@ -1,6 +1,6 @@
 {
   "name": "acdc-workspace",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "",
   "scripts": {
     "dev-install": "node ./bin/mkDevEnv.js && npm install",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "fs-extra": "^9.0.9",
-    "git-describe": "^4.0.4"
+    "git-describe": "^4.0.4",
+    "node-fetch": "^2.6.1"
   }
 }
