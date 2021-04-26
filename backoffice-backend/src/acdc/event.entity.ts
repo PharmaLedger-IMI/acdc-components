@@ -22,9 +22,9 @@ export class Event extends BaseEntity {
     eventdata: object;
 
     @OneToMany(() => EventInput, eventinput => eventinput.event)
-    eventinput: EventInput[];
+    eventinputs: EventInput[];
 
     @OneToMany(() => EventOutput, eventoutput => eventoutput.event)
-    eventoutput: EventOutput[];
+    eventoutputs: EventOutput[];
 
 }
