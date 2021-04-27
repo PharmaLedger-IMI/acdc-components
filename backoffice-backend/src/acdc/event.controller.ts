@@ -23,12 +23,12 @@ export class EventController {
         schema: {
             type: "object",
             properties: {
-                eventid: {type: 'string'},
-                mahid: {type: 'string'},
-                createdon: {type: "string", format: "date-time"},
-                eventdata: {type: "object"},
-                eventinputs: {type: "object"},
-                eventoutputs: {type: "object"}
+                eventId: {type: 'string'},
+                mahId: {type: 'string'},
+                createdOn: {type: "string", format: "date-time"},
+                eventData: {type: "object"},
+                eventInputs: {type: "object"},
+                eventOutputs: {type: "object"}
             }
         },
     })
@@ -45,12 +45,12 @@ export class EventController {
         schema: {
             type: "object",
             properties: {
-                eventid: {type: 'string'},
-                mahid: {type: 'string'},
-                createdon: {type: "string", format: "date-time"},
-                eventdata: {type: "object"},
-                eventinputs: {type: "object"},
-                eventoutputs: {type: "object"}
+                eventId: {type: 'string'},
+                mahId: {type: 'string'},
+                createdOn: {type: "string", format: "date-time"},
+                eventData: {type: "object"},
+                eventInputs: {type: "object"},
+                eventOutputs: {type: "object"}
             }
         },
     })

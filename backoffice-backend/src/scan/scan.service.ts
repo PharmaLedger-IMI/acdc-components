@@ -18,22 +18,22 @@ export class ScanService {
     }
 
     async create(eventInputData: EventInputDataDto): Promise<EventOuputDataDto> {
-        const eventOutputData = ScanService.dummyCheckAuthentication(eventInputData.GTIN)
+        const eventOutputData = ScanService.dummyCheckAuthentication(eventInputData.gtin)
 
         const eventInput = await this.eventInputRepository.add({
-            eventinputdata: eventInputData
+            eventInputData: eventInputData
         })
 
         const eventOutput = await this.eventOutputRepository.add({
-            eventoutputdata: eventOutputData
+            eventOutputData: eventOutputData
         })
 
         await this.eventRepository.add({
-            mahid: eventOutputData.MAH_ID,
-            createdon: new Date(),
-            eventdata: {},
-            eventinputs: [eventInput],
-            eventoutputs: [eventOutput]
+            mahId: eventOutputData.mahId,
+            createdOn: new Date(),
+            eventData: {},
+            eventInputs: [eventInput],
+            eventOutputs: [eventOutput]
         })
 
         return eventOutputData
@@ -46,6 +46,6 @@ export class ScanService {
     }
 
     private static dummyCheckAuthentication(gtin: string): EventOuputDataDto {
-        return {SN_check_result: ScanService.dummyVerification(), MAH_ID: "0c1aec99-a17f-495d-adfc-008888baef6c"}
+        return {snCheckResult: ScanService.dummyVerification(), mahId: "0c1aec99-a17f-495d-adfc-008888baef6c"}
     }
 }

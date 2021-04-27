@@ -15,7 +15,7 @@ export class AcdcUserController {
     @Get()
     @ApiOperation({summary: "Get all AcdcUsers"})
     async findAll(@Query() query: AcdcUser): Promise<AcdcUser[]> {
-        let acdcUserCollection = await AcdcUser.find({order: {userid: "ASC"}});
+        let acdcUserCollection = await AcdcUser.find({order: {userId: "ASC"}});
         console.log("acdcUser.findAll, acdcUserColletion =", acdcUserCollection);
         return acdcUserCollection;
     }

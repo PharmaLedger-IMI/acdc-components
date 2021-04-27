@@ -4,14 +4,14 @@ import {ApiProperty} from "@nestjs/swagger";
 @Entity("acdcuser")
 export class AcdcUser extends BaseEntity {
 
-    @PrimaryGeneratedColumn("uuid")
-    userid: string;
+    @PrimaryGeneratedColumn("uuid", {name: "userid"})
+    userId: string;
 
     @Column()
     @ApiProperty({description: "Email user, access right will depend to which entities is the user associated"})
     email: string;
 
-    @Column()
+    @Column({name: "passhash"})
     @ApiProperty({description: "Hashed user password"})
-    passhash: string;
+    passHash: string;
 }

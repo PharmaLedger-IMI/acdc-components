@@ -4,11 +4,11 @@ import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 export class MahUser extends BaseEntity {
 
     @PrimaryGeneratedColumn("uuid")
-    mahuserid: string;
+    mahUserId: string;
 
     @Column()
-    mahid: string;
+    mahId: string;
 
     @Column()
-    userid: string;
+    userId: string;
 }

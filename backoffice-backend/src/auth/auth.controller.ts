@@ -17,7 +17,7 @@ export class AuthController {
         schema: {
             type: "object",
             properties: {
-                userid: { type: 'string' },
+                userId: { type: 'string' },
                 email: { type: 'string' },
                 token: { type: 'string' },
             }
@@ -41,7 +41,7 @@ export class AuthController {
         schema: {
             type: "object",
             properties: {
-                userid: { type: 'string' },
+                userId: { type: 'string' },
                 email: { type: 'string' }
             }
         },

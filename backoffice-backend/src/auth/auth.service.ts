@@ -28,7 +28,7 @@ export class AuthService {
             console.log("AuthService.validateUser returned null because username not found!");
             return null;
         }
-        if (acdcUserCollection[0].passhash === acdcPassHash // TODO clear text comparison to bcrypt
+        if (acdcUserCollection[0].passHash === acdcPassHash // TODO clear text comparison to bcrypt
         ) {
             console.log("AuthService.validateUser returned ", acdcUserCollection[0]);
             return acdcUserCollection[0];
@@ -43,9 +43,9 @@ export class AuthService {
      * @returns an object with the JWT authentication token. Please document the return type in the auth.controller.ts login method
      */
     async login(acdcUser: AcdcUser) {
-        const payload = {userid: acdcUser.userid, email: acdcUser.email};
+        const payload = {userId: acdcUser.userId, email: acdcUser.email};
         return {
-            userid: acdcUser.userid,
+            userId: acdcUser.userId,
             email: acdcUser.email,
             token: this.jwtService.sign(payload),
         };

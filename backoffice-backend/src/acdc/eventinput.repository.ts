@@ -17,6 +17,6 @@ export class EventInputRepository extends Repository<EventInput> {
     }
 
     findAll = async () => {
-        return await super.find({order: {eventid: "ASC"}})
+        return await super.find({order: {eventId: "ASC"}})
     }
 }

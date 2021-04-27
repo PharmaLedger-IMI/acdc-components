@@ -63,13 +63,13 @@ class AcdcEventDataGenerator {
         const location = this.buildDummyGeolocation()
 
         return {
-            GTIN: this.GTIN[randomMetadataIdx],
+            gtin: this.GTIN[randomMetadataIdx],
             batch: this.batchNumber[randomMetadataIdx],
-            Serial_number: this.sn[randomMetadataIdx],
-            Product_name: `${location.country}-${this.productNames[randomMetadataIdx]}`,
-            Expire_date: this.expirationDateTime[randomExpDateIdx],
-            SN_check_date_time: this.checkDateTime[randomCheckDateIdx],
-            SN_check_location: location.geolocation
+            serialNumber: this.sn[randomMetadataIdx],
+            productName: `${location.country}-${this.productNames[randomMetadataIdx]}`,
+            expireDate: this.expirationDateTime[randomExpDateIdx],
+            snCheckDateTime: this.checkDateTime[randomCheckDateIdx],
+            snCheckLocation: location.geolocation
         }
     }
 

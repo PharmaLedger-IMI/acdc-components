@@ -6,25 +6,24 @@ import {EventOutput} from "./eventoutput.entity";
 @Entity("event")
 export class Event extends BaseEntity {
 
-    @PrimaryGeneratedColumn("uuid")
-    eventid: string;
+    @PrimaryGeneratedColumn("uuid", {name: "eventid"})
+    eventId: string;
 
-    @Column()
+    @Column({name: "mahid"})
     @ApiProperty()
-    mahid: string;
+    mahId: string;
 
-    @Column({type: "timestamp"})
+    @Column({name: "createdon", type: "timestamp"})
     @ApiProperty()
-    createdon: Date;
+    createdOn: Date;
 
-    @Column({type: 'json'})
+    @Column({name: "eventdata", type: 'json'})
     @ApiProperty()
-    eventdata: object;
+    eventData: object;
 
-    @OneToMany(() => EventInput, eventinput => eventinput.event)
-    eventinputs: EventInput[];
+    @OneToMany(() => EventInput, eventInput => eventInput.event)
+    eventInputs: EventInput[];
 
-    @OneToMany(() => EventOutput, eventoutput => eventoutput.event)
-    eventoutputs: EventOutput[];
-
+    @OneToMany(() => EventOutput, eventOutput => eventOutput.event)
+    eventOutputs: EventOutput[];
 }
