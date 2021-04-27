@@ -2,9 +2,9 @@ import {EventInput} from "./eventinput.entity";
 import {EventOutput} from "./eventoutput.entity";
 
 export class EventDto {
-    readonly mahid: string
-    readonly createdon: Date
-    readonly eventdata: object
-    readonly eventinputs: EventInput[]
-    readonly eventoutputs: EventOutput[]
+    readonly mahId: string
+    readonly createdOn: Date
+    readonly eventData: object
+    readonly eventInputs: EventInput[]
+    readonly eventOutputs: EventOutput[]
 }

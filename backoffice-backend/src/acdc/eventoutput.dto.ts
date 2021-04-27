@@ -2,12 +2,12 @@ import {ApiProperty} from "@nestjs/swagger";
 
 export class EventOuputDataDto {
     @ApiProperty({description: "Authentication status"})
-    readonly SN_check_result: string
+    readonly snCheckResult: string
 
     @ApiProperty({description: "Marketing Authorization Holder identifier"})
-    readonly MAH_ID: string
+    readonly mahId: string
 }
 
 export class EventOutputDto {
-    eventoutputdata: EventOuputDataDto
+    eventOutputData: EventOuputDataDto
 }

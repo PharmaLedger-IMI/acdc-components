@@ -13,10 +13,10 @@ export class EventRepository extends Repository<Event> {
     }
 
     findById = async (id: string) => {
-        return await super.findOneOrFail(id, {relations: ["eventinputs", "eventoutputs"]})
+        return await super.findOneOrFail(id, {relations: ["eventInputs", "eventOutputs"]})
     }
 
     findAll = async () => {
-        return await super.find({order: {eventid: "ASC"}, relations: ["eventinputs", "eventoutputs"]})
+        return await super.find({order: {eventId: "ASC"}, relations: ["eventInputs", "eventOutputs"]})
     }
 }

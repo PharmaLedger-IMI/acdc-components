@@ -17,8 +17,8 @@ export class ScanController {
         schema: {
             type: "object",
             properties: {
-                SN_check_result: {type: 'string'},
-                MAH_ID: {type: 'string'},
+                snCheckResult: {type: 'string'},
+                mahId: {type: 'string'},
             }
         },
     })

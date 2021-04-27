@@ -15,7 +15,7 @@ export class MahController {
     @Get()
     @ApiOperation({summary: "Get all Mah's"})
     async findAll(@Query() query: Mah): Promise<Mah[]> {
-        let mahCollection = await Mah.find({order: {mahid: "ASC"}});
+        let mahCollection = await Mah.find({order: {mahId: "ASC"}});
         console.log("mah.findAll, mahColletion =", mahCollection);
         return mahCollection;
     }

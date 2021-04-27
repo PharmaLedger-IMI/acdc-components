@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     async validate(payload: any) {
         console.log("JwtStrategy.validate", payload);
         let acdcUser = new AcdcUser();
-        acdcUser.userid = payload.userid;
+        acdcUser.userId = payload.userId;
         acdcUser.email = payload.email;
         return acdcUser;
         //throw new UnauthorizedException();
