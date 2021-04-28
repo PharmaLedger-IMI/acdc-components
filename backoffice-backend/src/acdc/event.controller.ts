@@ -1,5 +1,5 @@
-import {Controller, Get, Param, UseGuards} from "@nestjs/common";
-import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {Controller, Get, Param, ParseIntPipe, Query, UseGuards} from "@nestjs/common";
+import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from "@nestjs/swagger";
 import {Event} from "./event.entity"
 import {Connection} from "typeorm";
 import {EventRepository} from "./event.repository";
@@ -32,10 +32,23 @@ export class EventController {
             }
         },
     })
-    async findAll(): Promise<Event[]> {
-        const eventCollection = await this.eventRepository.findAll();
+    @ApiQuery({name: 'limit', required: false, type: Number, isArray: false, description: "The number of items per page "})
+    @ApiQuery({name: 'page' , required: false, type: Number, isArray: false, description: "Page number to be get"})
+    async findAll(@Query('limit', ParseIntPipe) limit: number = 10, @Query('page', ParseIntPipe) page: number = 0) {
+        page = page <= 0 ? 0 : page
+        limit = limit <= 0 ? 1 : limit
+        const skip = page * limit
+        const {eventCollection, count} = await this.eventRepository.findAll(limit, skip);
         console.log("event.findAll, eventCollection =", eventCollection);
-        return eventCollection;
+        return {
+            meta: {
+                itemsCount: count,
+                itemsPerPage: limit,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit),
+            },
+            items: eventCollection
+        }
     }
 
     @Get(":id")
