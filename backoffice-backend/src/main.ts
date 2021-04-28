@@ -9,8 +9,8 @@ async function bootstrap() {
   app.enableCors();
 
   const options = new DocumentBuilder()
-    .setTitle('PharmaLedger Clinical-Trials')
-    .setDescription('The Clinical-Trials Backoffice API description')
+    .setTitle('PharmaLedger Anti-Counterfeiting Data Collaboration')
+    .setDescription('The Anti-Counterfeiting Data Collaboration Backoffice API description')
     .setVersion(process.env.npm_package_version!)
     .addTag('Main')
     .addBearerAuth()
