@@ -1,0 +1,47 @@
+a {
+  color: #007bff;
+}
+
+a:hover {
+  color: #6f42c1;
+}
+
+.container {
+  margin: 20px;
+}
+
+.row-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.mat-paginator {
+  background-color: #EEE;
+  color: #4054b4;
+}
+
+table {
+  width: 95%;
+}
+
+.mat-header-row {
+  background: #4054b4;
+}
+
+.mat-header-cell {
+  color: white;
+}
+
+.event-data-cell {
+  width: 35%;
+}
+
+.event-data-cell.input {
+  color: #ee9900;
+}
+
+.event-data-cell.output {
+  color: #2f9c0a;
+}
