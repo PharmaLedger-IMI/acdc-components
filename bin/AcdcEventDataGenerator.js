@@ -4,10 +4,7 @@ class AcdcEventDataGenerator {
     url = ""
     checkDateTime = []
     expirationDateTime = []
-    GTIN = []
-    batchNumber = []
-    sn = []
-    productNames = []
+    products = []
     countries = {}
 
     constructor(url) {
@@ -16,14 +13,22 @@ class AcdcEventDataGenerator {
         this.checkDateTime = this.buildRandomDate(200, 60)
         this.expirationDateTime = this.buildRandomDate(10, 3)
 
-        // Metadata -> need to have the same length
-        this.GTIN = ["09088884204593", "09088884204598", "09088884204595"]
-        this.batchNumber = ["SPM66", "SPM70", "SPM63"]
-        this.sn = ["91006482939355", "91006482939351", "91006482939394"]
-        this.productNames = ["Cstyx 150mg/ml", "Yuzyx 75mg/ml", "Abdxo 200mg/ml"]
-        if([this.batchNumber.length, this.sn.length, this.productNames.length].some( (value) => value !== this.GTIN.length)) {
-            throw new Error("All metadata arrays need to have the same length")
+        const randomInterval = (min = 1000000, max = 9999999) => {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+
+        this.products = [
+            { gtin: `0908881${randomInterval()}`, batchNumber: `SPM${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Cstyx 150mg/ml"},
+            { gtin: `0908882${randomInterval()}`, batchNumber: `SPN${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Cstyx 200mg/ml"},
+            { gtin: `0908883${randomInterval()}`, batchNumber: `SPO${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Cstyx 75mg/ml"},
+            { gtin: `0908884${randomInterval()}`, batchNumber: `SPP${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Abdxo 75mg/ml"},
+            { gtin: `0908885${randomInterval()}`, batchNumber: `SSQ${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Abdxo 45mg/ml"},
+            { gtin: `0908886${randomInterval()}`, batchNumber: `SSR${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Abdxo 150mg/ml"},
+            { gtin: `0908887${randomInterval()}`, batchNumber: `SSS${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Yuzyx 250mg/ml"},
+            { gtin: `0908888${randomInterval()}`, batchNumber: `SST${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Yuzyx 125mg/ml"},
+            { gtin: `0908889${randomInterval()}`, batchNumber: `SSU${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Yuzyx 400mg/ml"},
+            { gtin: `0908880${randomInterval()}`, batchNumber: `SSX${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Amnid 40mg/ml"},
+        ]
 
         // Countries that will be generated geolocation
         this.countries = [
@@ -57,16 +62,17 @@ class AcdcEventDataGenerator {
 
     // Generate a random metadata to input in scan route
     buildDummyData() {
-        const randomMetadataIdx = (Math.random() * this.GTIN.length) | 0
+        const randomProductIdx = (Math.random() * this.products.length) | 0
         const randomExpDateIdx = (Math.random() * this.expirationDateTime.length) | 0
         const randomCheckDateIdx = (Math.random() * this.checkDateTime.length) | 0
         const location = this.buildDummyGeolocation()
+        const product = this.products[randomProductIdx]
 
         return {
-            gtin: this.GTIN[randomMetadataIdx],
-            batch: this.batchNumber[randomMetadataIdx],
-            serialNumber: this.sn[randomMetadataIdx],
-            productName: `${location.country}-${this.productNames[randomMetadataIdx]}`,
+            gtin: product.gtin,
+            batch: product.batchNumber,
+            serialNumber: product.serialNumber,
+            productName: `${location.country}-${product.productName}`,
             expireDate: this.expirationDateTime[randomExpDateIdx],
             snCheckDateTime: this.checkDateTime[randomCheckDateIdx],
             snCheckLocation: location.geolocation
@@ -84,7 +90,7 @@ class AcdcEventDataGenerator {
                 body: JSON.stringify(data)
             }).then(res => res.json()).then(json => {
                 if(verbose) {
-                    console.log("count:", i, " product:", data.Product_name, "geolocation:",  data.SN_check_location," response:", json)
+                    console.log("count:", i, " product:", data.productName, "geolocation:",  data.snCheckLocation," response:", json)
                 }
             }).catch(err => {
                 throw new Error(err)
