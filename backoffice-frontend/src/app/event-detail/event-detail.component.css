@@ -1,0 +1,55 @@
+.event-detail {
+  margin: 20px 20px;
+}
+
+.event-detail p {
+  font-weight: bold;
+}
+
+.event-detail h4 {
+  margin-bottom: -20px;
+  color: #3e68ad;
+}
+
+.event-detail h6 {
+  margin-bottom: -2px;
+  color: #6c757d;
+}
+
+.box{
+  background: #EEE;
+  padding: 1px 10px;
+  color: #000000;
+  border-left-width: 5px;
+  border-left-style: solid;
+  margin: 10px;
+  border-radius: 4px 0 0 4px;
+}
+
+.box.box-event {
+  border-color: #4054b4;
+}
+
+.box.box-input {
+  border-color: #ee9900;
+}
+
+.box.box-output {
+  border-color: #52E052;
+}
+
+button {
+  cursor: pointer;
+  height: 1.8em;
+  width: 100px;
+  background: #4054b4;
+  font-size: medium;
+  border-radius: 4px;
+  box-shadow: 0 0 0 0;
+  border: 0 none;
+  color: white;
+}
+
+button:hover {
+  background: #0029b4;
+}

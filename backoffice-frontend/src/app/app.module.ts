@@ -22,6 +22,7 @@ import { AppresourceSearchComponent } from './appresource-search/appresource-sea
 import { LoginComponent } from './login/login.component';
 import { AuthService } from './auth/auth.service';
 import { EventComponent } from './event/event.component';
+import { EventDetailComponent } from './event-detail/event-detail.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { EventComponent } from './event/event.component';
     MessagesComponent,
     AppresourceSearchComponent,
     LoginComponent,
-    EventComponent
+    EventComponent,
+    EventDetailComponent
   ],
   imports: [
     BrowserModule,

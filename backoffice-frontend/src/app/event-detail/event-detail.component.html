@@ -1,0 +1,22 @@
+<div class="event-detail" *ngIf="event">
+  <div class="box box-event">
+    <p>Event:</p>
+    <h4>{{event.eventId}}</h4>
+    <h6>{{event.createdOn}}</h6>
+    <pre>{{eventMetadata | json}}</pre>
+  </div>
+
+  <div class="box box-input">
+    <p>Event Input:</p>
+    <pre>{{eventInputs | json}}</pre>
+  </div>
+
+  <div class="box box-output">
+    <p>Event Output:</p>
+    <pre>{{eventOutputs | json}}</pre>
+  </div>
+
+  <div>
+    <button (click)="goBack()">Go back</button>
+  </div>
+</div>
