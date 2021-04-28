@@ -16,7 +16,13 @@ export class EventRepository extends Repository<Event> {
         return await super.findOneOrFail(id, {relations: ["eventInputs", "eventOutputs"]})
     }
 
-    findAll = async () => {
-        return await super.find({order: {eventId: "ASC"}, relations: ["eventInputs", "eventOutputs"]})
+    findAll = async (take: number, skip: number): Promise<{count: number, eventCollection: Event[]}> => {
+        const [eventCollection, count] = await super.findAndCount({
+            order: {eventId: "ASC"},
+            relations: ["eventInputs", "eventOutputs"],
+            take: take,
+            skip: skip
+        })
+        return {count, eventCollection}
     }
 }
