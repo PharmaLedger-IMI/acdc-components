@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AppComponent } from '../app.component';
-import { AppResource } from '../appresource';
+import { AppResource } from '../appresource.model';
 import { AppResourceService } from '../appresource.service';
 
 @Component({
