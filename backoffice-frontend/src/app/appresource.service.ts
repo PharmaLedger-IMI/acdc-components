@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { environment } from '../environments/environment';
 import { MessageService } from './message.service';
-import { AppResource } from './appresource';
+import { AppResource } from './appresource.model';
 
 @Injectable({
   providedIn: 'root'
