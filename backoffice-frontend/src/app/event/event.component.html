@@ -1,0 +1,64 @@
+<div class="container">
+  <mat-paginator
+    (page)="handlePageEvent($event)"
+    [length]="pageCount"
+    [pageSize]="pageSize"
+    [showFirstLastButtons]="showFirstLastButtons"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="pageIndex">
+  </mat-paginator>
+</div>
+
+
+<div class="row-center">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!-- Event Id Column -->
+    <ng-container matColumnDef="eventId">
+      <th mat-header-cell *matHeaderCellDef> Event Id</th>
+      <td mat-cell *matCellDef="let element">
+        <a routerLink="/event/{{element.eventId}}">
+          {{element.eventId.slice(0, 8)}}
+        </a>
+      </td>
+    </ng-container>
+
+    <!-- Created On Column -->
+    <ng-container matColumnDef="createdOn">
+      <th mat-header-cell *matHeaderCellDef> Created On</th>
+      <td mat-cell *matCellDef="let element"> {{element.createdOn}} </td>
+    </ng-container>
+
+    <!-- EventInput Column -->
+    <ng-container matColumnDef="eventInputData">
+      <th mat-header-cell *matHeaderCellDef> Event Inputs [0]</th>
+      <td class="event-data-cell input" mat-cell *matCellDef="let element">
+        <pre>{{element.eventInputData | json}}</pre>
+      </td>
+    </ng-container>
+
+    <!-- EventOutput Column -->
+    <ng-container matColumnDef="eventOutputData">
+      <th mat-header-cell *matHeaderCellDef> Event Outputs [0]</th>
+      <td class="event-data-cell output" mat-cell *matCellDef="let element">
+        <pre>{{element.eventOutputData | json}}</pre>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+</div>
+
+
+<div class="container">
+  <mat-paginator
+    (page)="handlePageEvent($event)"
+    [length]="pageCount"
+    [pageSize]="pageSize"
+    [showFirstLastButtons]="showFirstLastButtons"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="pageIndex">
+  </mat-paginator>
+</div>

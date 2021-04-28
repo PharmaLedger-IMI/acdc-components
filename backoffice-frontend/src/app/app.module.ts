@@ -21,6 +21,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { AppresourceSearchComponent } from './appresource-search/appresource-search.component';
 import { LoginComponent } from './login/login.component';
 import { AuthService } from './auth/auth.service';
+import { EventComponent } from './event/event.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { AuthService } from './auth/auth.service';
     AppResourceDetailComponent,
     MessagesComponent,
     AppresourceSearchComponent,
-    LoginComponent
+    LoginComponent,
+    EventComponent
   ],
   imports: [
     BrowserModule,
