@@ -45,8 +45,8 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 * __Models / DTOS:__
   * __path__: /acdc-backoffice-frontend/src/app
-  * __filename__: tablename -> tablename.model.*
-  * __class name__: tablename
+  * __filename__: tablename -> tablename.model.ts
+  * __class name__: TableName (CamelCase)
   * __filename case style__: lower case
   
 ## Further help
