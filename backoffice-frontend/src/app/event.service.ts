@@ -17,6 +17,7 @@ export class EventService {
   };
 
   private eventUrl = environment.restBaseUrl + '/acdc/event';
+  private eventSearchUrl = environment.restBaseUrl + '/acdc/event/search';
 
   constructor(
     private http: HttpClient,
@@ -30,7 +31,7 @@ export class EventService {
    */
   getEvents(page: number, limit: number): Observable<Events> {
     const queryParams = `?page=${page}&limit=${limit}`;
-    const url = `${this.eventUrl + queryParams}`;
+    const url = `${this.eventSearchUrl + queryParams}`;
     this.messageService.add(`EventService: fetching eventCollection from ${url}`);
 
     return this.http.get<Events>(url)
