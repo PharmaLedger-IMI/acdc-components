@@ -19,33 +19,80 @@ export class EventController {
     @Get()
     @ApiOperation({summary: "Get all Events"})
     @ApiOkResponse({
-        description: "Return a list of all events/scans processed.",
+        description: "Query a list of events.",
+        schema: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    eventId: {type: 'string'},
+                    mahId: {type: 'string'},
+                    createdOn: {type: "string", format: "date-time"},
+                    eventData: {type: "object"},
+                    eventInputs: {type: "object"},
+                    eventOutputs: {type: "object"}
+                }
+            }
+
+        },
+    })
+    async findAll() {
+        const eventCollection = await this.eventRepository.findAll();
+        console.log("event.findAll, eventCollection =", eventCollection);
+        return eventCollection
+    }
+
+    @Get("search")
+    @ApiOperation({summary: "Search Events"})
+    @ApiOkResponse({
+        description: "Query a list of events.",
         schema: {
             type: "object",
             properties: {
-                eventId: {type: 'string'},
-                mahId: {type: 'string'},
-                createdOn: {type: "string", format: "date-time"},
-                eventData: {type: "object"},
-                eventInputs: {type: "object"},
-                eventOutputs: {type: "object"}
+                metadata: {
+                    type: "object",
+                    properties: {
+                        itemsCount: {type: "number"},
+                        itemsPerPage: {type: "number"},
+                        currentPage: {type: "number"},
+                        totalPages: {type: "number"}
+                    }
+                },
+                items: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            eventId: {type: 'string'},
+                            mahId: {type: 'string'},
+                            createdOn: {type: "string", format: "date-time"},
+                            eventData: {type: "object"},
+                            eventInputs: {type: "object"},
+                            eventOutputs: {type: "object"}
+                        }
+                    }
+                }
             }
         },
     })
-    @ApiQuery({name: 'limit', required: false, type: Number, isArray: false, description: "The number of items per page "})
-    @ApiQuery({name: 'page' , required: false, type: Number, isArray: false, description: "Page number to be get"})
-    async findAll(@Query('limit', ParseIntPipe) limit: number = 10, @Query('page', ParseIntPipe) page: number = 0) {
-        page = page <= 0 ? 0 : page
-        limit = limit <= 0 ? 1 : limit
-        const skip = page * limit
-        const {eventCollection, count} = await this.eventRepository.findAll(limit, skip);
-        console.log("event.findAll, eventCollection =", eventCollection);
+    @ApiQuery({name: 'endDate', required: false, type: Date, description: "Start date from createdOn field"})
+    @ApiQuery({name: 'startDate', required: false, type: Date, description: "End date from createdOn field"})
+    @ApiQuery({name: 'page', required: true, type: Number, description: "Page number to be get"})
+    @ApiQuery({name: 'limit', required: true, type: Number, description: "The number of items per page"})
+    // TODO -> apply ValidationPipe to filter and set default values.
+    async search(@Query() query, @Query('page', ParseIntPipe) page, @Query('limit', ParseIntPipe) limit): Promise<object> {
+        query.page = page  <= 0 ? 0 : page
+        query.limit = limit <= 0 ? 10 : limit
+        query.skip = query.limit * query.page
+        console.log("event.Search... query=", query);
+        const {eventCollection, count} = await this.eventRepository.search(query);
+        console.log("event.Search events =", eventCollection);
         return {
             meta: {
                 itemsCount: count,
-                itemsPerPage: limit,
-                currentPage: page,
-                totalPages: Math.ceil(count / limit),
+                itemsPerPage: query.limit,
+                currentPage: query.page,
+                totalPages: Math.ceil(count / query.limit),
             },
             items: eventCollection
         }
