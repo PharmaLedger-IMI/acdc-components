@@ -16,7 +16,7 @@
   color: #6c757d;
 }
 
-.box{
+.box {
   background: #EEE;
   padding: 1px 10px;
   color: #000000;
@@ -38,18 +38,12 @@
   border-color: #52E052;
 }
 
-button {
-  cursor: pointer;
-  height: 1.8em;
-  width: 100px;
-  background: #4054b4;
-  font-size: medium;
-  border-radius: 4px;
-  box-shadow: 0 0 0 0;
-  border: 0 none;
-  color: white;
+.row {
+  display: flex;
+  flex-direction: row;
 }
 
-button:hover {
-  background: #0029b4;
+.column {
+  width: 50%;
 }
+
