@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 import {environment} from '../environments/environment';
 import {MessageService} from './message.service';
@@ -28,18 +28,27 @@ export class EventService {
    * Perform API Request and get a list of events
    * @param page Number of page
    * @param limit Number of records in each page
+   * @param startDate from createdOn field
+   * @param endDate from createdOn field
    */
-  getEvents(page: number, limit: number): Observable<Events> {
-    const queryParams = `?page=${page}&limit=${limit}`;
-    const url = `${this.eventSearchUrl + queryParams}`;
+  getEvents(page: number, limit: number, startDate: string = '', endDate: string = ''): Observable<Events> {
+    const url = this.eventSearchUrl;
+    const query = `?page=${page}&limit=${limit}&startDate=${startDate}&endDate=${endDate}`;
+    const tempUrl = `${this.eventSearchUrl + query}`;
     this.messageService.add(`EventService: fetching eventCollection from ${url}`);
 
-    return this.http.get<Events>(url)
-      .pipe(
-        tap(_ => this.log(`fetched Events`)),
-        catchError(this.handleError<Events>('getEvents', null))
-      );
+    let params = new HttpParams();
+    params = params.append('page', page.toString());
+    params = params.append('limit', limit.toString());
+    params = params.append('startDate', startDate);
+    params = params.append('endDate', endDate);
+
+    return this.http.get<Events>(url, {params}).pipe(
+      tap(_ => this.log(`fetched Events`)),
+      catchError(this.handleError<Events>('getEvents'))
+    );
   }
+
 
   /**
    * Perform API Request and get an event by id
