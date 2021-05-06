@@ -45,3 +45,16 @@ table {
 .event-data-cell.output {
   color: #2f9c0a;
 }
+
+.btn-row {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.btn-row button {
+  margin-right: 15px;
+}
+
+mat-form-field {
+  margin-right: 25px;
+}
