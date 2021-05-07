@@ -1,4 +1,4 @@
-import { Event } from './acdc/event.model';
+import { Event } from './event.model';
 
 export interface Events {
   meta: {
