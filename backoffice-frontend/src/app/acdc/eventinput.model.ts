@@ -1,4 +1,4 @@
-import {EventInputData} from '../eventinputdata.model';
+import {EventInputData} from './eventinputdata.model';
 
 export interface EventInput {
   eventInputId: string;

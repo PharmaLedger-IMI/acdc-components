@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 
 import {AppComponent} from '../app.component';
-import {EventInputData} from '../eventinputdata.model';
+import {EventInputData} from '../acdc/eventinputdata.model';
 import {EventOutputData} from '../eventoutputdata.model';
 import {EventService} from '../event.service';
 import {FormBuilder} from '@angular/forms';
