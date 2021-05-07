@@ -5,7 +5,7 @@ import {Event} from '../acdc/event.model';
 import {EventService} from '../event.service';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
-import {EventInput} from '../eventinput.model';
+import {EventInput} from '../acdc/eventinput.model';
 import {EventOutput} from '../eventoutput.model';
 
 @Component({

@@ -1,4 +1,4 @@
-import {EventInput} from '../eventinput.model';
+import {EventInput} from './eventinput.model';
 import {EventOutput} from '../eventoutput.model';
 
 export interface Event {
