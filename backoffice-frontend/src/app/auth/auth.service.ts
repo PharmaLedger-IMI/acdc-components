@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MessageService } from '../message.service';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User } from '../user.model';
+import { User } from '../acdc/user.model';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
 
   /**
    * Performs the login. Inspired on https://blog.angular-university.io/angular-jwt-authentication/
-   * @param username 
+   * @param username
    * @param password in clear text
    * @returns Observable<{ token: string }>
    */

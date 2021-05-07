@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Validators } from '@angular/forms';
 
-import { User } from '../user.model';
+import { User } from '../acdc/user.model';
 import { MessageService } from '../message.service';
 import { AuthService } from '../auth/auth.service';
 import { AppComponent } from '../app.component';
