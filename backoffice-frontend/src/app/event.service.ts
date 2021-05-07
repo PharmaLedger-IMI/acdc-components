@@ -6,7 +6,7 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {environment} from '../environments/environment';
 import {MessageService} from './message.service';
 import {Events} from './events.model';
-import {Event} from './event.model';
+import {Event} from './acdc/event.model';
 
 @Injectable({
   providedIn: 'root'

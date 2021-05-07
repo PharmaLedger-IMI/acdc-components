@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {AppComponent} from '../app.component';
-import {Event} from '../event.model';
+import {Event} from '../acdc/event.model';
 import {EventService} from '../event.service';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';

@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Event} from '../event.model';
+import {Event} from '../acdc/event.model';
 import * as L from 'leaflet';
 import {Icon, Map, Marker} from 'leaflet';
 

@@ -6,7 +6,7 @@ import {EventInputData} from '../eventinputdata.model';
 import {EventOutputData} from '../eventoutputdata.model';
 import {EventService} from '../event.service';
 import {FormBuilder} from '@angular/forms';
-import {Event} from '../event.model';
+import {Event} from '../acdc/event.model';
 
 @Component({
   selector: 'app-event',
