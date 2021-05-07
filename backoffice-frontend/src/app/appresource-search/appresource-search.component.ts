@@ -6,7 +6,7 @@ import {
    debounceTime, distinctUntilChanged, switchMap
  } from 'rxjs/operators';
 
-import { AppResource } from '../appresource.model';
+import { AppResource } from '../acdc/appresource.model';
 import { AppResourceService } from '../appresource.service';
 
 @Component({

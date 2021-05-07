@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { AppComponent } from '../app.component';
-import { AppResource } from '../appresource.model';
+import { AppResource } from '../acdc/appresource.model';
 import { AppResourceService } from '../appresource.service';
 
 @Component({
