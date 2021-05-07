@@ -20,42 +20,53 @@ export class EventComponent implements OnInit {
   filterPanelOpenState = false;
   mapEvents?: Event[];
 
+  /** Object for dynamically attributes/data */
+  private pageAttributesToHandle: DataHandlerForm = {
+    pageIndex: 0,
+    pageSize: 5,
+    itemsCount: 10,
+    startDate: '',
+    endDate: ''
+  };
+
   /** MaterialTable Config */
-  pageIndex = 0;
-  pageSize = 5;
-  pageCount = 1;
   pageSizeOptions = [5, 10, 25, 50, 100];
   showFirstLastButtons = true;
   displayedColumns: string[] = ['eventId', 'createdOn', 'eventInputData', 'eventOutputData'];
   dataSource: EventTableData[] = [];
 
-  /** Data for query events from filter form */
-  filterForm = this.formBuilder.group({
-    startDate: '',
-    endDate: '',
-    pageSize: this.pageSize
-  });
+  /** Data handler capture any changes in dynamically attributes */
+  dataHandlerForm = this.formBuilder.group(this.pageAttributesToHandle);
 
-  private get filterFormValues(): any {
-    return this.filterForm.value;
+  get dataHandler(): DataHandlerForm {
+    return this.dataHandlerForm.value;
+  }
+
+  set dataHandler(value: DataHandlerForm) {
+    this.dataHandlerForm.patchValue(value);
   }
 
   ngOnInit(): void {
     this.appComponent.setNavMenuHighlight('admin', 'event', 'List of Event (scans performed by users)');
-    this.getEvents();
+    this.getEvents(this.dataHandler.pageSize, this.dataHandler.pageIndex);
   }
 
   /** Perform API Request and made EventTableData interface
-   * @param page Number of page
-   * @param limit Number of records in each page
+   * @param pageIndex Number of page
+   * @param pageSize Number of records in each page
    */
-  getEvents(): void {
-    console.log(`event.component.getEvents page: ${this.pageIndex} limit: ${this.pageSize} startDate: ${this.filterFormValues.startDate}`);
+  getEvents(pageSize: number, pageIndex: number): void {
+    console.log(`event.component.getEvents page: ${pageIndex} pageSize: ${pageSize} startDate: ${this.dataHandler.startDate} endDate: ${this.dataHandler.endDate}`);
 
-    this.eventService.getEvents(this.pageIndex, this.pageSize, this.filterFormValues.startDate, this.filterFormValues.endDate)
+    this.eventService.getEvents(pageIndex, pageSize, this.dataHandler.startDate, this.dataHandler.endDate)
       .subscribe((resp) => {
-        this.pageCount = resp.meta.itemsCount;
-
+        this.dataHandler = {
+          pageIndex: resp.meta.currentPage,
+          pageSize: pageSize > resp.meta.itemsCount ? resp.meta.itemsCount : resp.meta.itemsPerPage,
+          itemsCount: resp.meta.itemsCount,
+          startDate: this.dataHandler.startDate,
+          endDate: this.dataHandler.endDate,
+        };
         this.mapEvents = resp.items;
 
         this.dataSource = resp.items.map(event => {
@@ -73,25 +84,21 @@ export class EventComponent implements OnInit {
    */
   handlePageEvent(pageEvent: PageEvent): void {
     console.warn('event.component.handlePageEvent pageEvent=', pageEvent);
-    this.pageIndex = pageEvent.pageIndex;
-    this.pageSize = pageEvent.pageSize;
-    this.getEvents();
+    this.getEvents(pageEvent.pageSize, pageEvent.pageIndex);
   }
 
   /** Listen filterForm, when form data is submitted, data is retrieved from the form by property "value" */
   handleFilter(): void {
-    console.warn('event.component.handleFilter formSubmitted=', this.filterForm.value);
-    this.pageIndex = 0;
-    this.pageSize = this.filterForm.value.pageSize;
+    console.warn('event.component.handleFilter formSubmitted=', this.dataHandler);
     this.filterPanelOpenState = false;
-    this.getEvents();
+    this.getEvents(this.dataHandler.pageSize, 0);
   }
 
   /**
    * Prettify a javascript date to human format
    * @param date in format: YYYY-MM-dd HH-mm-ss
    */
-  datePrettify = (date: Date) => {
+  datePrettify(date: Date): string {
     const d = new Date(date);
     const day = d.getDate().toString().padStart(2, '0');
     const month = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -108,4 +115,12 @@ interface EventTableData {
   createdOn: string;
   eventInputData: EventInputData;
   eventOutputData: EventOutputData;
+}
+
+interface DataHandlerForm {
+  pageIndex: number;
+  pageSize: number;
+  itemsCount: number;
+  startDate: string;
+  endDate: string;
 }

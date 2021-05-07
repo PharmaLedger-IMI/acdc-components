@@ -10,7 +10,7 @@
             <mat-panel-title>Filter</mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Filter form -->
-          <form [formGroup]="filterForm" (ngSubmit)="handleFilter()">
+          <form [formGroup]="dataHandlerForm" (ngSubmit)="handleFilter()">
             <mat-form-field>
               <mat-label>createdOn - start date</mat-label>
               <input type="date" formControlName="startDate" matInput>
@@ -25,9 +25,9 @@
                 <input type="number" formControlName="pageSize" matInput>
               </mat-form-field>
             </p>
-            <p>
-              <button mat-raised-button color="primary">Search</button>
-            </p>
+            <div class="btn-row">
+              <button mat-raised-button color="primary" type="submit">Search</button>
+            </div>
           </form>
           <!-- End Filter form -->
         </mat-expansion-panel>
@@ -38,11 +38,11 @@
       <div class="container">
         <mat-paginator
           (page)="handlePageEvent($event)"
-          [length]="pageCount"
-          [pageSize]="pageSize"
+          [length]="dataHandler.itemsCount"
+          [pageSize]="dataHandler.pageSize"
           [showFirstLastButtons]="showFirstLastButtons"
           [pageSizeOptions]="pageSizeOptions"
-          [pageIndex]="pageIndex">
+          [pageIndex]="dataHandler.pageIndex">
         </mat-paginator>
       </div>
       <!-- End Pagination div -->
@@ -93,11 +93,11 @@
       <div class="container">
         <mat-paginator
           (page)="handlePageEvent($event)"
-          [length]="pageCount"
-          [pageSize]="pageSize"
+          [length]="dataHandler.itemsCount"
+          [pageSize]="dataHandler.pageSize"
           [showFirstLastButtons]="showFirstLastButtons"
           [pageSizeOptions]="pageSizeOptions"
-          [pageIndex]="pageIndex">
+          [pageIndex]="dataHandler.pageIndex">
         </mat-paginator>
       </div>
       <!-- End Pagination div (footer) -->
@@ -116,7 +116,7 @@
             <mat-panel-title>Filter</mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Filter form -->
-          <form [formGroup]="filterForm" (ngSubmit)="handleFilter()">
+          <form [formGroup]="dataHandlerForm" (ngSubmit)="handleFilter()">
             <mat-form-field>
               <mat-label>createdOn - start date</mat-label>
               <input type="date" formControlName="startDate" matInput>

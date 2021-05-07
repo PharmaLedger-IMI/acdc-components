@@ -12,17 +12,15 @@ import {Event} from './event.model';
   providedIn: 'root'
 })
 export class EventService {
-  httpOptions = {
-    headers: new HttpHeaders({'Content-Type': 'application/json'})
-  };
+
+  constructor(private http: HttpClient, private messageService: MessageService) {
+  }
 
   private eventUrl = environment.restBaseUrl + '/acdc/event';
   private eventSearchUrl = environment.restBaseUrl + '/acdc/event/search';
-
-  constructor(
-    private http: HttpClient,
-    private messageService: MessageService) {
-  }
+  httpOptions = {
+    headers: new HttpHeaders({'Content-Type': 'application/json'})
+  };
 
   /**
    * Perform API Request and get a list of events
@@ -33,8 +31,6 @@ export class EventService {
    */
   getEvents(page: number, limit: number, startDate: string = '', endDate: string = ''): Observable<Events> {
     const url = this.eventSearchUrl;
-    const query = `?page=${page}&limit=${limit}&startDate=${startDate}&endDate=${endDate}`;
-    const tempUrl = `${this.eventSearchUrl + query}`;
     this.messageService.add(`EventService: fetching eventCollection from ${url}`);
 
     let params = new HttpParams();
