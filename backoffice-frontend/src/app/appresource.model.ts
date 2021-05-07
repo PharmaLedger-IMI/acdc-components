@@ -1,4 +1,4 @@
-import { Locale } from './locale.model';
+import { Locale } from './acdc/locale.model';
 
 export interface AppResource {
 

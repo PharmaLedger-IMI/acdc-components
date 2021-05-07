@@ -5,7 +5,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, tap} from 'rxjs/operators';
 
 import { environment } from '../environments/environment';
-import {Locale} from './locale.model';
+import {Locale} from './acdc/locale.model';
 
 
 @Injectable({
