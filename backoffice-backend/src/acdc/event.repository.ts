@@ -1,6 +1,7 @@
-import {Between, EntityRepository, LessThanOrEqual, MoreThanOrEqual, Repository} from 'typeorm';
+import {createQueryBuilder, EntityRepository, Repository} from 'typeorm';
 import {Event} from './event.entity';
 import {EventDto} from "./event.dto";
+import {EventSearchQuery} from "./eventsearch.validator";
 
 @EntityRepository(Event)
 export class EventRepository extends Repository<Event> {
@@ -23,30 +24,86 @@ export class EventRepository extends Repository<Event> {
         })
     }
 
-    // TODO -> Apply "QueryBuilder". Issues: relations, skip and limit (was not working well in tests/validation)
-    async search(query: any): Promise<{count: number, eventCollection: Event[]}> {
-        console.log("event.repository event.query=", query)
+    /**
+     * Performs a SQL query applying the filters according to the @param
+     * @param eventSearchQuery
+     */
+    async search(eventSearchQuery: EventSearchQuery): Promise<{ count: number; query: EventSearchQuery; eventCollection: any; }> {
+        console.log('event.repository.search query=', eventSearchQuery)
 
-        const where = {}
-        if (!!query.endDate && !!query.startDate) {
-            where['createdOn'] = Between(query.startDate, query.endDate)
-        } else if (!!query.endDate) {
-            where['createdOn'] = LessThanOrEqual(query.endDate)
-        } else if (!!query.startDate) {
-            where['createdOn'] = MoreThanOrEqual(query.startDate)
+        const transformValueToCommaList = (arr: string[] | string): string => {
+            arr = Array.isArray(arr) ? arr : [arr]
+            return arr.map(value => `'${value}'`).join(',');
         }
 
-        const options = {
-            where: where,
-            take: query.limit,
-            skip: query.skip,
-            relations: ["eventInputs", "eventOutputs"],
+        const getJsonWhereStatement = (fieldName: string, jsonProperty: string, values: string[] | string): string => {
+            values = Array.isArray(values) ? values : [values]
+            let str = ''
+            values.forEach((value: string, index: number) => {
+                if (index == 0) {
+                    str += `${fieldName} ::jsonb @> \'{"${jsonProperty}":"${value}"}\'`
+                } else {
+                    str += `OR ${fieldName} ::jsonb @> \'{"${jsonProperty}":"${value}"}\'`
+                }
+            })
+            return str
         }
 
-        const [eventCollection, count] = await super.findAndCount({
-            ...options,
-            order: {eventId: "ASC"},
-        })
-        return {count, eventCollection}
+        // TODO -> add filter by expiryDate & ? option: OR or AND in where ?
+        /** NOTE: The name of "whereFunctions" need to be the same name of filter/properties of EventSearchQuery */
+        const whereFunctions = {
+            eventId(eventIds: string[] | string): string {
+                return `event.eventid IN (${transformValueToCommaList(eventIds)})`
+            },
+            createdOnStart(date: string): string {
+                return `event.createdOn >= '${date}'`
+            },
+            createdOnEnd(date: string): string {
+                return `event.createdOn <= '${date}'`
+            },
+            gtin(gtins: string[] | string): string {
+                return getJsonWhereStatement('eventinput.eventinputdata', 'gtin', gtins)
+            },
+            batch(batches: string[]  | string): string {
+                return getJsonWhereStatement('eventinput.eventinputdata', 'batch', batches)
+            },
+            serialNumber(serialNumbers: string[] | string): string {
+                return getJsonWhereStatement('eventinput.eventinputdata', 'serialNumber', serialNumbers)
+            },
+            productName(productNames: string[]  | string): string {
+                return getJsonWhereStatement('eventinput.eventinputdata', 'productName', productNames)
+            },
+            // expiryDateStart(date: string): string {
+            //     return `eventinput.eventinputdata ->> 'expiryDate' >= '${date}'`
+            // },
+            // expiryDateEnd(date: string): string {
+            //     return `eventinput.eventinputdata ->> 'expiryDate' <= '${date}'`
+            // },
+            snCheckLocation(snCheckLocations: string[] | string): string {
+                return getJsonWhereStatement('eventinput.eventinputdata', 'snCheckLocation', snCheckLocations)
+            },
+            snCheckResult(snCheckResults: string[] | string): string {
+                return getJsonWhereStatement('eventoutput.eventoutputdata', 'snCheckResult', snCheckResults)
+            },
+        }
+
+        const queryBuilder = await createQueryBuilder(Event, 'event')
+            .innerJoinAndSelect('event.eventInputs', 'eventinput')
+            .innerJoinAndSelect('event.eventOutputs', 'eventoutput')
+
+        for (let [filterName, filterValue] of Object.entries(eventSearchQuery)) {
+            const whereFilter = whereFunctions[filterName]
+            if (!!whereFilter) {
+                queryBuilder.andWhere(whereFilter(filterValue))
+            }
+        }
+
+        const count = await queryBuilder.getCount()
+        queryBuilder.take(eventSearchQuery.limit)
+        queryBuilder.skip(eventSearchQuery.page * eventSearchQuery.limit)
+
+        const eventCollection = await queryBuilder.getMany()
+
+        return {count, eventCollection, query: eventSearchQuery}
     }
 }

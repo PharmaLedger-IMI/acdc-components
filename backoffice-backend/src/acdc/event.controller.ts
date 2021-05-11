@@ -1,9 +1,10 @@
-import {Controller, Get, Param, ParseIntPipe, Query, UseGuards} from "@nestjs/common";
+import {Controller, Get, Param, Query, UseGuards} from "@nestjs/common";
 import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from "@nestjs/swagger";
 import {Event} from "./event.entity"
 import {Connection} from "typeorm";
 import {EventRepository} from "./event.repository";
 import {AuthGuard} from "@nestjs/passport";
+import {EventSearchQuery, EventSearchValidator} from "./eventsearch.validator";
 
 @ApiTags("Event")
 @UseGuards(AuthGuard('jwt'))
@@ -29,8 +30,26 @@ export class EventController {
                     mahId: {type: 'string'},
                     createdOn: {type: "string", format: "date-time"},
                     eventData: {type: "object"},
-                    eventInputs: {type: "object"},
-                    eventOutputs: {type: "object"}
+                    eventInputs: {
+                        type: "array", items: {
+                            type: "object",
+                            properties: {
+                                eventInputId: {type: "string"},
+                                eventId: {type: "string"},
+                                eventInputData: {type: "object"}
+                            }
+                        }
+                    },
+                    eventOutputs: {
+                        type: "array", items: {
+                            type: "object",
+                            properties: {
+                                eventOutputId: {type: "string"},
+                                eventId: {type: "string"},
+                                eventOutputData: {type: "object"}
+                            }
+                        }
+                    },
                 }
             }
 
@@ -43,7 +62,7 @@ export class EventController {
     }
 
     @Get("search")
-    @ApiOperation({summary: "Search Events"})
+    @ApiOperation({summary: "Search for events based on filters apply"})
     @ApiOkResponse({
         description: "Query a list of events.",
         schema: {
@@ -58,6 +77,13 @@ export class EventController {
                         totalPages: {type: "number"}
                     }
                 },
+                query: {
+                    type: "object",
+                    properties: {
+                        page: {type: "number"},
+                        limit: {type: "number"},
+                    }
+                },
                 items: {
                     type: "array",
                     items: {
@@ -67,33 +93,57 @@ export class EventController {
                             mahId: {type: 'string'},
                             createdOn: {type: "string", format: "date-time"},
                             eventData: {type: "object"},
-                            eventInputs: {type: "object"},
-                            eventOutputs: {type: "object"}
+                            eventInputs: {
+                                type: "array", items: {
+                                    type: "object",
+                                    properties: {
+                                        eventInputId: {type: "string"},
+                                        eventId: {type: "string"},
+                                        eventInputData: {type: "object"}
+                                    }
+                                }
+                            },
+                            eventOutputs: {
+                                type: "array", items: {
+                                    type: "object",
+                                    properties: {
+                                        eventOutputId: {type: "string"},
+                                        eventId: {type: "string"},
+                                        eventOutputData: {type: "object"}
+                                    }
+                                }
+                            },
                         }
                     }
                 }
             }
         },
     })
-    @ApiQuery({name: 'endDate', required: false, type: Date, description: "Start date from createdOn field"})
-    @ApiQuery({name: 'startDate', required: false, type: Date, description: "End date from createdOn field"})
-    @ApiQuery({name: 'page', required: true, type: Number, description: "Page number to be get"})
-    @ApiQuery({name: 'limit', required: true, type: Number, description: "The number of items per page"})
-    // TODO -> apply ValidationPipe to filter and set default values.
-    async search(@Query() query, @Query('page', ParseIntPipe) page, @Query('limit', ParseIntPipe) limit): Promise<object> {
-        query.page = page  <= 0 ? 0 : page
-        query.limit = limit <= 0 ? 10 : limit
-        query.skip = query.limit * query.page
-        console.log("event.Search... query=", query);
-        const {eventCollection, count} = await this.eventRepository.search(query);
-        console.log("event.Search events =", eventCollection);
+    @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckResult'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckLocation'})
+    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-12-31', name: 'expiryDateEnd'})
+    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-01-01', name: 'expiryDateStart'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'productName'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'serialNumber'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'batch'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'gtin'})
+    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-12-31', name: 'createdOnEnd'})
+    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-01-01', name: 'createdOnStart'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'eventId'})
+    @ApiQuery({required: false, type: Number, isArray: false, name: 'limit'})
+    @ApiQuery({required: false, type: Number, isArray: false, name: 'page'})
+    async search(@Query(EventSearchValidator) eventSearchQuery: EventSearchQuery): Promise<object> {
+        console.log("event.controller.search... query=", eventSearchQuery);
+        const {eventCollection, count, query} = await this.eventRepository.search(eventSearchQuery);
+        console.log("event.Search events[0] =", eventCollection[0]);
         return {
             meta: {
                 itemsCount: count,
-                itemsPerPage: query.limit,
-                currentPage: query.page,
-                totalPages: Math.ceil(count / query.limit),
+                itemsPerPage: eventSearchQuery.limit,
+                currentPage: eventSearchQuery.page,
+                totalPages: Math.ceil(count / eventSearchQuery.limit),
             },
+            query,
             items: eventCollection
         }
     }
@@ -109,8 +159,26 @@ export class EventController {
                 mahId: {type: 'string'},
                 createdOn: {type: "string", format: "date-time"},
                 eventData: {type: "object"},
-                eventInputs: {type: "object"},
-                eventOutputs: {type: "object"}
+                eventInputs: {
+                    type: "array", items: {
+                        type: "object",
+                        properties: {
+                            eventInputId: {type: "string"},
+                            eventId: {type: "string"},
+                            eventInputData: {type: "object"}
+                        }
+                    }
+                },
+                eventOutputs: {
+                    type: "array", items: {
+                        type: "object",
+                        properties: {
+                            eventOutputId: {type: "string"},
+                            eventId: {type: "string"},
+                            eventOutputData: {type: "object"}
+                        }
+                    }
+                },
             }
         },
     })
