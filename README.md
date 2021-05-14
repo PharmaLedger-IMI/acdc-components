@@ -169,10 +169,10 @@ mobile/scan-app/android/app/build/outputs/apk/release
 
 ## How to pull latest ePi changes
 
-'''sh
+```sh
 git remote add epi https://github.com/PharmaLedger-IMI/epi-workspace
-git pull epi
-'''
+git pull epi master
+```
 
 # Contributions
 
