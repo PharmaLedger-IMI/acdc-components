@@ -1,38 +1,112 @@
-<mat-tab-group mat-align-tabs="center" dynamicHeight> <!-- Tabs -->
-  <!-- Table tab -->
-  <mat-tab label="Table">
-    <ng-template matTabContent> <!-- Lazy Loading Tab -->
-      <!-- Filter Expansion Panel -->
-      <mat-accordion>
-        <mat-expansion-panel hideToggle (opened)="filterPanelOpenState = true" (closed)="filterPanelOpenState = false"
-                             [expanded]="filterPanelOpenState">
-          <mat-expansion-panel-header>
-            <mat-panel-title>Filter</mat-panel-title>
-          </mat-expansion-panel-header>
-          <!-- Filter form -->
-          <form [formGroup]="dataHandlerForm" (ngSubmit)="handleFilter()">
+<!-- Filter Expansion Panel -->
+<mat-accordion>
+  <mat-expansion-panel hideToggle
+                       (opened)="filterPanelOpenState = true"
+                       (closed)="filterPanelOpenState = false"
+                       [expanded]="filterPanelOpenState"
+  >
+    <!-- Filter Expansion Panel (HEADER) -->
+    <mat-expansion-panel-header>
+      <mat-panel-title>Filter</mat-panel-title>
+      <mat-panel-description>
+        <mat-icon>filter_list_alt</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <!-- END Filter Expansion Panel (HEADER) -->
+
+
+    <!-- Filter form -->
+    <form [formGroup]="dataHandlerForm" (ngSubmit)="handleFilter()">
+      <div class="content" fxLayout="row" fxLayout.xs="column" fxFlexFill>
+
+        <!-- 1st Column Filter -->
+        <div fxFlex="40" fxFlex.xs="55">
+          <!-- Chips Input (arrays) -->
+          <span *ngFor="let filterInput of chipsInputs">
+            <mat-form-field>
+              <mat-chip-list #chipList>
+                <mat-chip *ngFor="let element of filterInput.elements"
+                          [selectable]="selectable"
+                          [removable]="true"
+                          (removed)="handleRemoveChip(filterInput, element)"
+                >
+                  {{element}}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input [placeholder]="filterInput.label"
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       [matChipInputAddOnBlur]="addOnBlur"
+                       (matChipInputTokenEnd)="handleAddChip(filterInput, $event)"
+                >
+              </mat-chip-list>
+            </mat-form-field>
+          </span>
+          <!-- END Chips Input (arrays) -->
+        </div>
+        <!-- END 1st Column Filter -->
+
+
+        <!-- 2nd Column Filter -->
+        <div fxFlex="30">
+
+          <!-- createdOn -->
+          <div fxLayout="row">
             <mat-form-field>
               <mat-label>createdOn - start date</mat-label>
-              <input type="date" formControlName="startDate" matInput>
+              <input type="date" formControlName="createdOnStart" matInput>
             </mat-form-field>
             <mat-form-field>
               <mat-label>createdOn - end date</mat-label>
-              <input type="date" formControlName="endDate" matInput>
+              <input type="date" formControlName="createdOnEnd" matInput>
             </mat-form-field>
-            <p>
+          </div>
+
+          <!-- expiryDate -->
+          <fieldset disabled>
+            <div fxLayout="row">
               <mat-form-field>
-                <mat-label>Limit</mat-label>
-                <input type="number" formControlName="pageSize" min="1" matInput>
+                <mat-label>expiryDate - start</mat-label>
+                <input type="date" formControlName="expiryDateStart" matInput>
               </mat-form-field>
-            </p>
-            <div class="btn-row">
-              <button mat-raised-button color="primary" type="submit">Search</button>
+              <mat-form-field>
+                <mat-label>expiryDate - end</mat-label>
+                <input type="date" formControlName="expiryDateEnd" matInput>
+              </mat-form-field>
             </div>
-          </form>
-          <!-- End Filter form -->
-        </mat-expansion-panel>
-      </mat-accordion>
-      <!-- End Filter Expansion Panel -->
+          </fieldset>
+
+          <!-- Items per page -->
+          <div fxLayout="row">
+            <mat-form-field>
+              <mat-label>Items per page</mat-label>
+              <input type="number" formControlName="pageSize" min="1" matInput>
+            </mat-form-field>
+          </div>
+
+        </div>
+        <!-- END 2nd Column Filter -->
+      </div>
+
+      <div fxLayout="row" fxLayoutAlign="end">
+        <button mat-raised-button color="primary" type="submit">Search</button>
+      </div>
+
+
+    </form>
+    <!-- END Filter form -->
+  </mat-expansion-panel>
+</mat-accordion>
+<!-- END Filter Expansion Panel -->
+
+
+<!-- Tabs -->
+<mat-tab-group mat-align-tabs="center" dynamicHeight>
+
+
+  <!-- Table tab -->
+  <mat-tab label="Event Log">
+    <ng-template matTabContent> <!-- Lazy Loading Tab -->
 
       <!-- Pagination div -->
       <div class="container">
@@ -45,7 +119,7 @@
           [pageIndex]="dataHandler.pageIndex">
         </mat-paginator>
       </div>
-      <!-- End Pagination div -->
+      <!-- END Pagination div -->
 
       <!-- Event Table div -->
       <div class="row-center">
@@ -70,7 +144,7 @@
           <!-- EventInput Column -->
           <ng-container matColumnDef="eventInputData">
             <th mat-header-cell *matHeaderCellDef> Event Inputs [0]</th>
-            <td class="event-data-cell input" mat-cell *matCellDef="let element">
+            <td class="table-event-data-cell input" mat-cell *matCellDef="let element">
               <pre>{{element.eventInputData | json}}</pre>
             </td>
           </ng-container>
@@ -78,7 +152,7 @@
           <!-- EventOutput Column -->
           <ng-container matColumnDef="eventOutputData">
             <th mat-header-cell *matHeaderCellDef> Event Outputs [0]</th>
-            <td class="event-data-cell output" mat-cell *matCellDef="let element">
+            <td class="table-event-data-cell output" mat-cell *matCellDef="let element">
               <pre>{{element.eventOutputData | json}}</pre>
             </td>
           </ng-container>
@@ -87,7 +161,7 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </div>
-      <!-- End Event Table div -->
+      <!-- END Event Table div -->
 
       <!-- Pagination div (footer) -->
       <div class="container">
@@ -105,44 +179,17 @@
   </mat-tab>
   <!-- End Table tab -->
 
+
   <!-- Map tab -->
   <mat-tab label="Map">
     <ng-template matTabContent> <!-- Lazy Loading Tab -->
-      <mat-accordion>
-        <!-- Filter Expansion Panel -->
-        <mat-expansion-panel hideToggle (opened)="filterPanelOpenState = true" (closed)="filterPanelOpenState = false"
-                             [expanded]="filterPanelOpenState">
-          <mat-expansion-panel-header>
-            <mat-panel-title>Filter</mat-panel-title>
-          </mat-expansion-panel-header>
-          <!-- Filter form -->
-          <form [formGroup]="dataHandlerForm" (ngSubmit)="handleFilter()">
-            <mat-form-field>
-              <mat-label>createdOn - start date</mat-label>
-              <input type="date" formControlName="startDate" matInput>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>createdOn - end date</mat-label>
-              <input type="date" formControlName="endDate" matInput>
-            </mat-form-field>
-            <p>
-              <mat-form-field>
-                <mat-label>Limit</mat-label>
-                <input type="number" formControlName="pageSize" min="1" matInput>
-              </mat-form-field>
-            </p>
-            <div class="btn-row">
-              <button mat-raised-button color="primary" type="submit">Search</button>
-            </div>
-          </form>
-          <!-- End Filter form -->
-        </mat-expansion-panel>
-        <!-- End Filter Expansion Panel -->
-      </mat-accordion>
-      <!-- Map components -->
+      <!-- Map component -->
       <app-event-map [dataReceiver]="mapEvents"></app-event-map>
-    </ng-template> <!-- End Lazy Loading -->
+    </ng-template> <!-- End Lazy Loading Tab -->
   </mat-tab>
   <!-- End Map tab -->
-</mat-tab-group> <!-- End Tabs -->
+
+
+</mat-tab-group>
+<!-- End Tabs -->
 

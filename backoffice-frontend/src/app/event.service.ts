@@ -24,20 +24,23 @@ export class EventService {
 
   /**
    * Perform API Request and get a list of events
-   * @param page Number of page
-   * @param limit Number of records in each page
-   * @param startDate from createdOn field
-   * @param endDate from createdOn field
+   * @param filters -> filters to apply in the Http request according to the API documentation for the "Event Search" route
    */
-  getEvents(page: number, limit: number, startDate: string = '', endDate: string = ''): Observable<Events> {
+  getEvents(filters: SearchFilter[]): Observable<Events> {
     const url = this.eventSearchUrl;
     this.messageService.add(`EventService: fetching eventCollection from ${url}`);
 
     let params = new HttpParams();
-    params = params.append('page', page.toString());
-    params = params.append('limit', limit.toString());
-    params = params.append('startDate', startDate);
-    params = params.append('endDate', endDate);
+    filters.forEach(filter => {
+      if (Array.isArray(filter.value)) {
+        filter.value.forEach(value => {
+          params = params.append(filter.name, value);
+        });
+      } else {
+        params = params.append(filter.name, filter.value);
+      }
+    });
+    console.log('event.service.getEvents params=', params);
 
     return this.http.get<Events>(url, {params}).pipe(
       tap(_ => this.log(`fetched Events`)),
@@ -79,4 +82,9 @@ export class EventService {
     this.messageService.add(`EventService: ${message}`);
   }
 
+}
+
+export interface SearchFilter {
+  name: string;
+  value: string;
 }

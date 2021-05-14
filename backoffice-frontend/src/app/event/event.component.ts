@@ -7,6 +7,8 @@ import {EventOutputData} from '../acdc/eventoutputdata.model';
 import {EventService} from '../event.service';
 import {FormBuilder} from '@angular/forms';
 import {Event} from '../acdc/event.model';
+import {MatChipInputEvent} from '@angular/material/chips';
+import {ENTER} from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-event',
@@ -20,13 +22,26 @@ export class EventComponent implements OnInit {
   filterPanelOpenState = false;
   mapEvents?: Event[];
 
+  /** chipsInputFilters are inputs that accept multiple values as input, used in filter form */
+  chipsInputs: ChipInputFilter[] = [
+    {label: 'Event ids', name: 'eventId', elements: []},
+    {label: 'Batches', name: 'batch', elements: []},
+    {label: 'GTIN', name: 'gtin', elements: []},
+    {label: 'Serial Number', name: 'serialNumber', elements: []},
+    {label: 'Product Name', name: 'productName', elements: []},
+    {label: 'Location (lat, long)', name: 'snCheckLocation', elements: []},
+    {label: 'Check Result', name: 'snCheckResult', elements: []},
+  ];
+
   /** Object for dynamically attributes/data */
-  private pageAttributesToHandle: DataHandlerForm = {
+  pageAttributesToHandle: DataHandlerForm = {
     pageIndex: 0,
     pageSize: 5,
     itemsCount: 10,
-    startDate: '',
-    endDate: ''
+    createdOnStart: '',
+    createdOnEnd: '',
+    expiryDateStart: '',
+    expiryDateEnd: '',
   };
 
   /** MaterialTable Config */
@@ -43,9 +58,33 @@ export class EventComponent implements OnInit {
   }
 
   set dataHandler(value: DataHandlerForm) {
+    console.log('set data handler:', value);
     this.dataHandlerForm.patchValue(value);
   }
 
+  get filters(): any[] {
+    const filters: any[] = [];
+
+    this.chipsInputs.forEach(filter => {
+      if (filter.elements.length > 0) {
+        filters.push({
+          name: filter.name,
+          value: filter.elements
+        });
+      }
+    });
+
+    return filters;
+  }
+
+  /** Chips Input Config */
+  visible = true;
+  selectable = true;
+  removable = true;
+  addOnBlur = true;
+  readonly separatorKeysCodes: number[] = [ENTER];
+
+  /** Init function */
   ngOnInit(): void {
     this.appComponent.setNavMenuHighlight('admin', 'event', 'List of Event (scans performed by users)');
     this.getEvents(this.dataHandler.pageSize, this.dataHandler.pageIndex);
@@ -56,16 +95,42 @@ export class EventComponent implements OnInit {
    * @param pageSize Number of records in each page
    */
   getEvents(pageSize: number, pageIndex: number): void {
-    console.log(`event.component.getEvents page: ${pageIndex} pageSize: ${pageSize} startDate: ${this.dataHandler.startDate} endDate: ${this.dataHandler.endDate}`);
 
-    this.eventService.getEvents(pageIndex, pageSize, this.dataHandler.startDate, this.dataHandler.endDate)
+    const filters: any[] = [
+      {name: 'page', value: pageIndex},
+      {name: 'limit', value: pageSize},
+    ];
+
+    const acceptFilterForm = ['createdOnStart', 'createdOnEnd', 'expiryDateStart', 'expiryDateEnd'];
+    for (const [name, value] of Object.entries(this.dataHandler)) {
+      if (acceptFilterForm.includes(name) && !!value) {
+        filters.push({
+          name,
+          value
+        });
+      }
+    }
+
+    this.chipsInputs.forEach(filter => {
+      if (filter.elements.length > 0) {
+        filters.push({
+          name: filter.name,
+          value: filter.elements
+        });
+      }
+    });
+
+    console.log('event.component.getEvents filters=', filters);
+    this.eventService.getEvents(filters)
       .subscribe((resp) => {
         this.dataHandler = {
           pageIndex: resp.meta.currentPage,
-          pageSize: pageSize > resp.meta.itemsCount ? resp.meta.itemsCount : resp.meta.itemsPerPage,
+          pageSize,
           itemsCount: resp.meta.itemsCount,
-          startDate: this.dataHandler.startDate,
-          endDate: this.dataHandler.endDate,
+          createdOnStart: this.dataHandler.createdOnStart,
+          createdOnEnd: this.dataHandler.createdOnEnd,
+          expiryDateStart: this.dataHandler.expiryDateStart,
+          expiryDateEnd: this.dataHandler.expiryDateEnd,
         };
         this.mapEvents = resp.items;
 
@@ -87,11 +152,33 @@ export class EventComponent implements OnInit {
     this.getEvents(pageEvent.pageSize, pageEvent.pageIndex);
   }
 
-  /** Listen filterForm, when form data is submitted, data is retrieved from the form by property "value" */
+  /** Listen filterForm/dataHandler, when form data is submitted, data is retrieved from the form by property "value" */
   handleFilter(): void {
     console.warn('event.component.handleFilter formSubmitted=', this.dataHandler);
     this.filterPanelOpenState = false;
     this.getEvents(this.dataHandler.pageSize, 0);
+  }
+
+  /** TODO */
+  handleAddChip(chipInputFilter: any, event: MatChipInputEvent): void {
+    console.log('chips.add -> chipInputFilter=', chipInputFilter);
+    console.log('chips.add -> event=', event);
+    const value = (event.value || '').trim();
+    if (!!value && chipInputFilter.elements.lastIndexOf(value) < 0) {
+      chipInputFilter.elements.push(value);
+    }
+    event.input.value = '';
+    console.log('event.component.handleAddChip dataHandler=', this.dataHandler);
+    console.log('event.component.handleAddChip chipsInputFilters=', this.chipsInputs);
+  }
+
+  /** TODO */
+  handleRemoveChip(chipInputFilter: any, element: any): void {
+    console.log('chips.remove -> chipInputFilter=', chipInputFilter);
+    console.log('chips.remove -> element=', element);
+    chipInputFilter.elements = chipInputFilter.elements.filter((r: any) => r !== element);
+    console.log('event.component.handleRemoveChip dataHandler=', this.dataHandler);
+    console.log('event.component.handleRemoveChip chipsInputFilters=', this.chipsInputs);
   }
 
   /**
@@ -121,6 +208,15 @@ interface DataHandlerForm {
   pageIndex: number;
   pageSize: number;
   itemsCount: number;
-  startDate: string;
-  endDate: string;
+  createdOnStart: string;
+  createdOnEnd: string;
+  expiryDateStart: string;
+  expiryDateEnd: string;
+  chipsInputFilters?: any;
+}
+
+interface ChipInputFilter {
+  label: string;
+  name: string;
+  elements: string[];
 }
