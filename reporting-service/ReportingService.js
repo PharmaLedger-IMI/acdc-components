@@ -40,23 +40,22 @@ class ReportingService {
                     "Share location?",
                     locationSetting);
 
-                self._bindModelChangeEvents(model);
+                // self._bindModelChangeEvents(model);
                 callback();
             })
-
         });
     }
 
     _bindModelChangeEvents(model){
         const self = this;
-        model.onChange("acdc.did", () => {
+        model.onChange("acdc.did.value", () => {
             self.settingsService.writeSetting(SETTINGS.didKey, model.acdc.did.value, (err) => {
                 if (err)
                     console.log(`Could not update ${SETTINGS.didKey} in settings`, err);
             });
         });
 
-        model.onChange("acdc.location", () => {
+        model.onChange("acdc.location.value", () => {
             self.settingsService.writeSetting(SETTINGS.locationKey, model.acdc.location.value, (err) => {
                 if (err)
                     console.log(`Could not update ${SETTINGS.locationKey} in settings`, err);
@@ -87,15 +86,17 @@ class ReportingService {
 
 let acdc;
 
-function getACDC(dsuStorage){
+function getACDC(dsuStorage, settingsService){
     if (!acdc){
-        if (!dsuStorage)
-            throw new Error("No DSU Storage Provided");
-        acdc = new ReportingService(dsuStorage);
+        if (!dsuStorage || !settingsService)
+            throw new Error("No DSU Storage/SettingsService Provided");
+        acdc = new ReportingService(dsuStorage, settingsService);
     }
 
     return acdc;
 }
 
-module.exports = getACDC;
+module.exports = {
+    getACDC
+};
 

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     ENDPOINT: 'localhost:3000/scan',
     SETTINGS: {
         didKey: 'acdc-did',
