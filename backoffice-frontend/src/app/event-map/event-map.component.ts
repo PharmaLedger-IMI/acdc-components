@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import {Event} from '../acdc/event.model';
 import * as L from 'leaflet';
 import {Icon, Map, Marker} from 'leaflet';
+import 'leaflet.markercluster';
 
 @Component({
   selector: 'app-event-map',
@@ -32,13 +33,20 @@ export class EventMapComponent {
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
+
     const markers = L.layerGroup(dataSource);
+    const markersClusters = L.markerClusterGroup({
+      chunkedLoading: true,
+      disableClusteringAtZoom: 11,
+      spiderfyOnMaxZoom: false
+    });
+    markersClusters.addLayer(markers);
 
     // TODO -> Set map center dynamically
     return L.map('map', {
       center: [46.28945, 2.351519],
       zoom: 5,
-      layers: [title, markers]
+      layers: [title, markersClusters]
     });
   }
 
