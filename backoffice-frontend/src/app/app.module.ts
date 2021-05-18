@@ -28,6 +28,7 @@ import { AuthService } from './auth/auth.service';
 import { EventComponent } from './event/event.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
 import { EventMapComponent } from './event-map/event-map.component';
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { EventMapComponent } from './event-map/event-map.component';
     MatTabsModule,
     MatInputModule,
     MatChipsModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatSortModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
