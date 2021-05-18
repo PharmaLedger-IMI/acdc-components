@@ -34,10 +34,6 @@ table {
   color: white;
 }
 
-.table-event-data-cell {
-  width: 35%;
-}
-
 .table-event-data-cell.input {
   color: #ee9900;
 }

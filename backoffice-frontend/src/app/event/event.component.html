@@ -84,6 +84,34 @@
             </mat-form-field>
           </div>
 
+          <!-- Select table columns -->
+          <div fxLayout="row" fxLayoutGap="20px">
+
+            <!-- Select table columns DEFAULT -->
+            <div fxLayout="column">
+              <strong>Default Columns: </strong>
+              <div *ngFor="let checkBox of checkInputsDefault; let i=index">
+                <label>
+                  <input type="checkbox" [value]="checkBox.value" (change)="handleCheckChangeDefault($event)" checked="true">
+                  {{checkBox.label}}
+                </label>
+              </div>
+            </div>
+
+            <!-- Select table columns CUSTOM -->
+            <div fxLayout="column">
+              <strong>Custom columns: </strong>
+              <div *ngFor="let checkBox of checkInputsCustom; let i=index">
+                <label>
+                  <input type="checkbox" [value]="checkBox.value" (change)="handleCheckChange($event)">
+                  {{checkBox.label}}
+                </label>
+              </div>
+            </div>
+
+          </div>
+          <!-- END Select table columns -->
+
         </div>
         <!-- END 2nd Column Filter -->
       </div>
@@ -127,35 +155,47 @@
 
           <!-- Event Id Column -->
           <ng-container matColumnDef="eventId">
-            <th mat-header-cell *matHeaderCellDef> Event Id</th>
+            <th mat-header-cell *matHeaderCellDef>{{columnsData['eventId'].label}}</th>
             <td mat-cell *matCellDef="let element">
               <a routerLink="/event/{{element.eventId}}">
-                {{element.eventId.slice(0, 8)}}
+                {{columnsData['eventId'].data(element)}}
               </a>
             </td>
           </ng-container>
 
           <!-- Created On Column -->
           <ng-container matColumnDef="createdOn">
-            <th mat-header-cell *matHeaderCellDef> Created On</th>
-            <td mat-cell *matCellDef="let element"> {{element.createdOn}} </td>
+            <th mat-header-cell *matHeaderCellDef>{{columnsData['createdOn'].label}}</th>
+            <td mat-cell *matCellDef="let element"> {{columnsData['createdOn'].data(element)}} </td>
           </ng-container>
 
           <!-- EventInput Column -->
           <ng-container matColumnDef="eventInputData">
-            <th mat-header-cell *matHeaderCellDef> Event Inputs [0]</th>
+            <th mat-header-cell *matHeaderCellDef>{{columnsData['eventInputData'].label}}</th>
             <td class="table-event-data-cell input" mat-cell *matCellDef="let element">
-              <pre>{{element.eventInputData | json}}</pre>
+              <pre>{{columnsData['eventInputData'].data(element) | json}}</pre>
             </td>
           </ng-container>
 
           <!-- EventOutput Column -->
           <ng-container matColumnDef="eventOutputData">
-            <th mat-header-cell *matHeaderCellDef> Event Outputs [0]</th>
+            <th mat-header-cell *matHeaderCellDef>{{columnsData['eventOutputData'].label}}</th>
             <td class="table-event-data-cell output" mat-cell *matCellDef="let element">
-              <pre>{{element.eventOutputData | json}}</pre>
+              <pre>{{columnsData['eventOutputData'].data(element) | json}}</pre>
             </td>
           </ng-container>
+
+          <!-- Selected Columns by CheckBox - CUSTOM -->
+          <div *ngFor="let checkColumnSelected of checksSelected">
+            <ng-container [matColumnDef]="checkColumnSelected">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ columnsData[checkColumnSelected].label }}
+              </th>
+              <td class="table-event-data-cell" mat-cell *matCellDef="let element">
+                {{columnsData[checkColumnSelected].data(element)}}
+              </td>
+            </ng-container>
+          </div>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -184,7 +224,7 @@
   <mat-tab label="Map">
     <ng-template matTabContent> <!-- Lazy Loading Tab -->
       <!-- Map component -->
-      <app-event-map [dataReceiver]="mapEvents"></app-event-map>
+      <app-event-map [dataReceiver]="dataSource"></app-event-map>
     </ng-template> <!-- End Lazy Loading Tab -->
   </mat-tab>
   <!-- End Map tab -->

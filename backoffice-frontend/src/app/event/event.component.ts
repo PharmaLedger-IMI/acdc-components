@@ -2,11 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 
 import {AppComponent} from '../app.component';
-import {EventInputData} from '../acdc/eventinputdata.model';
-import {EventOutputData} from '../acdc/eventoutputdata.model';
 import {EventService} from '../event.service';
-import {FormBuilder} from '@angular/forms';
-import {Event} from '../acdc/event.model';
+import {FormArray, FormBuilder, FormControl} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {ENTER} from '@angular/cdk/keycodes';
 
@@ -20,7 +17,6 @@ export class EventComponent implements OnInit {
   }
 
   filterPanelOpenState = false;
-  mapEvents?: Event[];
 
   /** chipsInputFilters are inputs that accept multiple values as input, used in filter form */
   chipsInputs: ChipInputFilter[] = [
@@ -42,13 +38,71 @@ export class EventComponent implements OnInit {
     createdOnEnd: '',
     expiryDateStart: '',
     expiryDateEnd: '',
+    checkColumns: new FormArray([])
   };
 
   /** MaterialTable Config */
   pageSizeOptions = [5, 10, 25, 50, 100];
   showFirstLastButtons = true;
-  displayedColumns: string[] = ['eventId', 'createdOn', 'eventInputData', 'eventOutputData'];
-  dataSource: EventTableData[] = [];
+  defaultColumns: string[] = ['eventId', 'createdOn', 'eventInputData', 'eventOutputData'];
+  displayedColumns: string[] = this.defaultColumns;
+  dataSource: any[] = [];
+
+  /** CheckInputs - columns to be show on Table */
+  checksSelected: string[] = [];
+
+  checkInputsDefault = [
+    {label: 'Created On', value: 'createdOn'},
+    {label: 'Event Input Data', value: 'eventInputData'},
+    {label: 'Event Output Data', value: 'eventOutputData'},
+  ];
+
+  checkInputsCustom = [
+    {label: 'GTIN', value: 'gtin'},
+    {label: 'Batch', value: 'batch'},
+    {label: 'Product Name', value: 'productName'},
+    {label: 'Serial Number', value: 'serialNumber'},
+    {label: 'Check Result', value: 'snCheckResult'}
+  ];
+
+  columnsData: { [key: string]: { label: string, data: any } } = {
+    eventId: {
+      label: 'Event Id',
+      data: (event: any) => event.eventId.slice(0, 8)
+    },
+    createdOn: {
+      label: 'Created On',
+      data: (event: any) => this.datePrettify(event.createdOn)
+    },
+    eventInputData: {
+      label: 'Event Inputs[0]',
+      data: (event: any) => event.eventInputs[0].eventInputData
+    },
+    eventOutputData: {
+      label: 'Event Outputs[0]',
+      data: (event: any) => event.eventOutputs[0].eventOutputData
+    },
+    gtin: {
+      label: 'GTIN',
+      data: (event: any) => event.eventInputs[0].eventInputData.gtin
+    },
+    batch: {
+      label: 'Batch',
+      data: (event: any) => event.eventInputs[0].eventInputData.batch
+    },
+    productName: {
+      label: 'Product Name',
+      data: (event: any) => event.eventInputs[0].eventInputData.productName
+    },
+    serialNumber: {
+      label: 'Serial Number',
+      data: (event: any) => event.eventInputs[0].eventInputData.serialNumber
+    },
+    snCheckResult: {
+      label: 'Check Result',
+      data: (event: any) => event.eventOutputs[0].eventOutputData.snCheckResult
+    }
+  };
 
   /** Data handler capture any changes in dynamically attributes */
   dataHandlerForm = this.formBuilder.group(this.pageAttributesToHandle);
@@ -60,21 +114,6 @@ export class EventComponent implements OnInit {
   set dataHandler(value: DataHandlerForm) {
     console.log('set data handler:', value);
     this.dataHandlerForm.patchValue(value);
-  }
-
-  get filters(): any[] {
-    const filters: any[] = [];
-
-    this.chipsInputs.forEach(filter => {
-      if (filter.elements.length > 0) {
-        filters.push({
-          name: filter.name,
-          value: filter.elements
-        });
-      }
-    });
-
-    return filters;
   }
 
   /** Chips Input Config */
@@ -123,6 +162,11 @@ export class EventComponent implements OnInit {
     console.log('event.component.getEvents filters=', filters);
     this.eventService.getEvents(filters)
       .subscribe((resp) => {
+
+        this.checksSelected = this.dataHandlerForm.get('checkColumns')?.value;
+        this.displayedColumns = this.defaultColumns.concat(this.checksSelected);
+        console.log('event.component.getEvents displayedColumns =', this.displayedColumns);
+
         this.dataHandler = {
           pageIndex: resp.meta.currentPage,
           pageSize,
@@ -132,15 +176,8 @@ export class EventComponent implements OnInit {
           expiryDateStart: this.dataHandler.expiryDateStart,
           expiryDateEnd: this.dataHandler.expiryDateEnd,
         };
-        this.mapEvents = resp.items;
 
-        this.dataSource = resp.items.map(event => {
-          const eventId = event.eventId;
-          const createdOn = this.datePrettify(event.createdOn);
-          const eventInputData = event.eventInputs[0].eventInputData;
-          const eventOutputData = event.eventOutputs[0].eventOutputData;
-          return {eventId, createdOn, eventInputData, eventOutputData};
-        });
+        this.dataSource = resp.items;
       });
   }
 
@@ -181,6 +218,33 @@ export class EventComponent implements OnInit {
     console.log('event.component.handleRemoveChip chipsInputFilters=', this.chipsInputs);
   }
 
+  handleCheckChange(event: any): void {
+    console.log('event.component.handleCheckChange change =', event.target.value, ' checked =', event.target.checked);
+    const checkForm: FormArray = this.dataHandlerForm.get('checkColumns') as FormArray;
+
+    if (event.target.checked) {
+      checkForm.push(new FormControl(event.target.value));
+    } else {
+      const values = this.dataHandlerForm.get('checkColumns')?.value;
+      const index = values.indexOf(event.target.value);
+      checkForm.removeAt(index);
+    }
+    console.log('event.component.handleCheckChange dataHandler =', this.dataHandlerForm.get('checkColumns')?.value);
+  }
+
+  handleCheckChangeDefault(event: any): void {
+    console.log('event.component.handleCheckChange change =', event.target.value, ' checked =', event.target.checked);
+    const checkForm = this.defaultColumns;
+
+    if (event.target.checked) {
+      checkForm.push(event.target.value);
+    } else {
+      const index = checkForm.indexOf(event.target.value);
+      checkForm.splice(index, 1);
+    }
+    console.log('event.component.handleCheckChangeDefault checkForm =', checkForm);
+  }
+
   /**
    * Prettify a javascript date to human format
    * @param date in format: YYYY-MM-dd HH-mm-ss
@@ -197,13 +261,6 @@ export class EventComponent implements OnInit {
   }
 }
 
-interface EventTableData {
-  eventId: string;
-  createdOn: string;
-  eventInputData: EventInputData;
-  eventOutputData: EventOutputData;
-}
-
 interface DataHandlerForm {
   pageIndex: number;
   pageSize: number;
@@ -212,7 +269,7 @@ interface DataHandlerForm {
   createdOnEnd: string;
   expiryDateStart: string;
   expiryDateEnd: string;
-  chipsInputFilters?: any;
+  checkColumns?: any;
 }
 
 interface ChipInputFilter {
