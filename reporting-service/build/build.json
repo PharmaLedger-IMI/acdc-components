@@ -1,0 +1,3 @@
+{
+  "acdc-reporting":{"deps":"reporting-service","autoLoad":true}
+}

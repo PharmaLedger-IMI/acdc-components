@@ -245,6 +245,16 @@
             ]
         },
         {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm install"
+                }
+            ]
+        },
+        {
             "name": "gtin-dsu-wizard",
             "src": "https://github.com/PharmaLedger-IMI/gtin-dsu-wizard.git",
             "actions": [
@@ -480,6 +490,16 @@
                 {
                     "type": "execute",
                     "cmd": "cd gtin-resolver && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm run build"
                 }
             ]
         },
