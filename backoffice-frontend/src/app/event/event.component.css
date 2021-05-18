@@ -51,3 +51,7 @@ mat-form-field {
 .mat-expansion-panel-header-description {
   justify-content: flex-end;
 }
+
+::ng-deep .mat-sort-header-arrow {
+  color: white;
+}

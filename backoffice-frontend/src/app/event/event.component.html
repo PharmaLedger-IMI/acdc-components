@@ -151,7 +151,7 @@
 
       <!-- Event Table div -->
       <div class="row-center">
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <table mat-table matSort [dataSource]="dataSource" >
 
           <!-- Event Id Column -->
           <ng-container matColumnDef="eventId">
@@ -165,7 +165,7 @@
 
           <!-- Created On Column -->
           <ng-container matColumnDef="createdOn">
-            <th mat-header-cell *matHeaderCellDef>{{columnsData['createdOn'].label}}</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{columnsData['createdOn'].label}}</th>
             <td mat-cell *matCellDef="let element"> {{columnsData['createdOn'].data(element)}} </td>
           </ng-container>
 
@@ -188,7 +188,7 @@
           <!-- Selected Columns by CheckBox - CUSTOM -->
           <div *ngFor="let checkColumnSelected of checksSelected">
             <ng-container [matColumnDef]="checkColumnSelected">
-              <th mat-header-cell *matHeaderCellDef>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 {{ columnsData[checkColumnSelected].label }}
               </th>
               <td class="table-event-data-cell" mat-cell *matCellDef="let element">
@@ -224,7 +224,7 @@
   <mat-tab label="Map">
     <ng-template matTabContent> <!-- Lazy Loading Tab -->
       <!-- Map component -->
-      <app-event-map [dataReceiver]="dataSource"></app-event-map>
+      <app-event-map [dataReceiver]="dataSource.data"></app-event-map>
     </ng-template> <!-- End Lazy Loading Tab -->
   </mat-tab>
   <!-- End Map tab -->

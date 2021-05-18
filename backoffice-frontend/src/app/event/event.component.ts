@@ -1,11 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 
+import {Event} from '../acdc/event.model';
 import {AppComponent} from '../app.component';
 import {EventService} from '../event.service';
 import {FormArray, FormBuilder, FormControl} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {ENTER} from '@angular/cdk/keycodes';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: 'app-event',
@@ -16,6 +19,8 @@ export class EventComponent implements OnInit {
   constructor(private appComponent: AppComponent, private eventService: EventService, private formBuilder: FormBuilder) {
   }
 
+  dataSource: MatTableDataSource<Event> = new MatTableDataSource();
+  @ViewChild(MatSort) sort: MatSort = new MatSort();
   filterPanelOpenState = false;
 
   /** chipsInputFilters are inputs that accept multiple values as input, used in filter form */
@@ -46,7 +51,6 @@ export class EventComponent implements OnInit {
   showFirstLastButtons = true;
   defaultColumns: string[] = ['eventId', 'createdOn', 'eventInputData', 'eventOutputData'];
   displayedColumns: string[] = this.defaultColumns;
-  dataSource: any[] = [];
 
   /** CheckInputs - columns to be show on Table */
   checksSelected: string[] = [];
@@ -177,7 +181,11 @@ export class EventComponent implements OnInit {
           expiryDateEnd: this.dataHandler.expiryDateEnd,
         };
 
-        this.dataSource = resp.items;
+        this.dataSource = new MatTableDataSource(resp.items);
+        this.dataSource.sortingDataAccessor = (event, property) => {
+          return this.columnsData[property].data(event);
+        };
+        this.dataSource.sort = this.sort;
       });
   }
 
