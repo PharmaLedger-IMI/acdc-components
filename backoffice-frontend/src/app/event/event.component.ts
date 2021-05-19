@@ -62,7 +62,7 @@ export class EventComponent implements OnInit {
   ];
 
   checkInputsCustom = [
-    {label: 'GTIN', value: 'gtin'},
+    {label: 'Product Code', value: 'productCode'},
     {label: 'Batch', value: 'batch'},
     {label: 'Product Name', value: 'productName'},
     {label: 'Expiry Date', value: 'expiryDate'},
@@ -87,9 +87,9 @@ export class EventComponent implements OnInit {
       label: 'Event Outputs[0]',
       data: (event: any) => event.eventOutputs[0].eventOutputData
     },
-    gtin: {
-      label: 'GTIN',
-      data: (event: any) => event.eventInputs[0].eventInputData.gtin
+    productCode: {
+      label: 'Product Code',
+      data: (event: any) => event.eventInputs[0].eventInputData.productCode
     },
     batch: {
       label: 'Batch',

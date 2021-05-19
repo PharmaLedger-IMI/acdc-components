@@ -126,7 +126,7 @@ export class EventController {
     @ApiQuery({required: false, type: String, isArray: true, name: 'productName'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'serialNumber'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'batch'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'gtin'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'productCode'})
     @ApiQuery({required: false, type: Date, isArray: false, example: '2021-12-31', name: 'createdOnEnd'})
     @ApiQuery({required: false, type: Date, isArray: false, example: '2021-01-01', name: 'createdOnStart'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'eventId'})

@@ -2,7 +2,7 @@ import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger"
 
 export class EventInputDataDto {
     @ApiProperty({description: "GTIN/NTIN"})
-    readonly gtin: string
+    readonly productCode: string
 
     @ApiProperty({description: "Lot number or batch ID, up to 10 digits, alphanumeric"})
     readonly batch: string

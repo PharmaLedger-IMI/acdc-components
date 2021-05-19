@@ -19,7 +19,7 @@ export class ScanService {
     }
 
     async create(eventInputData: EventInputDataDto): Promise<EventOuputDataDto> {
-        const eventOutputData = await ScanService.dummyCheckAuthentication(eventInputData.gtin);
+        const eventOutputData = await ScanService.dummyCheckAuthentication(eventInputData.productCode);
 
         const eventInput = await this.eventInputRepository.add({
             eventInputData: eventInputData
@@ -46,7 +46,7 @@ export class ScanService {
         return authenticationResponse[randomIdx]
     }
 
-    private static async dummyCheckAuthentication(gtin: string): Promise<EventOuputDataDto> {
+    private static async dummyCheckAuthentication(productCode: string): Promise<EventOuputDataDto> {
         let response = new EventOuputDataDto();
         response.snCheckResult = ScanService.dummyVerification();
         let mahCollection = await Mah.find({});

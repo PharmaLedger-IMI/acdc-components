@@ -61,8 +61,8 @@ export class EventRepository extends Repository<Event> {
             createdOnEnd(date: string): string {
                 return `event.createdOn <= '${date}'`
             },
-            gtin(gtins: string[] | string): string {
-                return getJsonWhereStatement('eventinput.eventinputdata', 'gtin', gtins)
+            productCode(productsCode: string[] | string): string {
+                return getJsonWhereStatement('eventinput.eventinputdata', 'productCode', productsCode)
             },
             batch(batches: string[]  | string): string {
                 return getJsonWhereStatement('eventinput.eventinputdata', 'batch', batches)
