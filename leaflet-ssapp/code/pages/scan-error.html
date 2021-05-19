@@ -1,0 +1,45 @@
+<psk-example class="mobile-example">
+    <psk-mobile>
+        <psk-container controller-name="ScanErrorController">
+            <div class="header-row">
+                <psk-button-link icon="arrow-left" class="go-back-link" page="scan"></psk-button-link>
+                <psk-label class="scan-error-title" label="@title"></psk-label>
+            </div>
+
+            <psk-form template-columns="1fr" align-items="center" class="scan-error-form">
+
+                <div class="scan-error-message-label">
+                    <psk-label class="scan-error-message" label="@message"></psk-label>
+                </div>
+
+                <div>
+                    <psk-echo value="Serial number: "></psk-echo>
+                    <strong>
+                        <psk-echo value="@fields.serialNumber"></psk-echo>
+                    </strong>
+                </div>
+
+                <div>
+                    <psk-echo value="Product Code (GTIN/ NTIN): "></psk-echo>
+                    <strong>
+                        <psk-echo value="@fields.gtin"></psk-echo>
+                    </strong>
+                </div>
+
+                <div>
+                    <psk-echo value="Batch Number: "></psk-echo>
+                    <strong>
+                        <psk-echo value="@fields.batchNumber"></psk-echo>
+                    </strong>
+                </div>
+
+                <div>
+                    <psk-echo value="Expiry: "></psk-echo>
+                    <strong>
+                        <psk-echo value="@fields.expiry"></psk-echo>
+                    </strong>
+                </div>
+            </psk-form>
+        </psk-container>
+    </psk-mobile>
+</psk-example>

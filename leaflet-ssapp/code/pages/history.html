@@ -1,0 +1,47 @@
+<psk-example class="mobile-example">
+    <psk-mobile class="historyPage">
+
+        <psk-container controller-name="HistoryController">
+            <psk-for-each data-view-model="@products">
+                <psk-layout template-columns="1fr 2fr" align-items="center" row-gap="20px" class="productItem">
+                    <psk-layout-item onclick="this.dispatchEvent(new Event('view-details'))" keySSI="@keySSI">
+                        <psk-img class="productItem_img" src="@photo" height='80' width='80' />
+                    </psk-layout-item>
+                    <psk-layout-item onclick="this.dispatchEvent(new Event('view-details'))" keySSI="@keySSI">
+                        <div>
+                            <div>
+                                <psk-label class="productItem_name" label="@name"></psk-label>
+                            </div>
+                            <div>
+                                <psk-label class="productItem_manufName" label="@manufName"></psk-label>
+                            </div>
+                            <div style="display: flex">
+                                <psk-label class="productItem_expiry" label="Expiry: &nbsp"></psk-label>
+                                <psk-label class="productItem_expiry" label="@expiry"></psk-label>
+                            </div>
+                        </div>
+
+                    </psk-layout-item>
+                </psk-layout>
+                <psk-label slot="no-data" class="history-products-empty-list"
+                           label="@loadingStatusMessage"></psk-label>
+            </psk-for-each>
+        </psk-container>
+
+        <div slot="footer">
+            <psk-link page="scan" class='button-link alignBottom'>
+                <psk-img class="navbar-img" src="assets/images/footer/data.png" height='22'></psk-img>
+            </psk-link>
+            <psk-link page="home" class='button-link alignBottom'>
+                <psk-img class="navbar-img" src="assets/images/footer/home.png" height='22'></psk-img>
+            </psk-link>
+            <psk-link page="history" class='button-link alignBottom'>
+                <psk-img class="navbar-img" src="assets/images/footer/history.png" height='22'></psk-img>
+            </psk-link>
+            <psk-link page="help" class='button-link alignBottom'>
+                <psk-img class="navbar-img" src="assets/images/footer/about.png" height='22'></psk-img>
+            </psk-link>
+        </div>
+
+    </psk-mobile>
+</psk-example>

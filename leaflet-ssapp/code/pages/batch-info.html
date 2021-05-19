@@ -1,0 +1,18 @@
+<psk-container controller-name="LoadingController">
+    <psk-modal class="mobile-modal" opened>
+        <h5 slot="title">
+            <psk-echo  value="@title"></psk-echo>
+        </h5>
+        <div class="content">
+            <p class="description">
+                <psk-echo value="@modalContent.recallMessage"></psk-echo>
+            </p>
+            <p class="description">
+                <psk-echo value="@modalContent.defaultMessage"></psk-echo>
+            </p>
+        </div>
+        <div slot="footer" class="epi-footer">
+            <psk-button class="epi-button" event-name="modal-button-click">OK</psk-button>
+        </div>
+    </psk-modal>
+</psk-container>

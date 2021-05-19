@@ -1,0 +1,30 @@
+<psk-example class="mobile-example">
+    <style>
+        #scandit-barcode-picker video {
+            width: 100% !important;
+            height: 100vh !important;
+        }
+    </style>
+    <psk-mobile disable-sidebar enable-back class="noPadding">
+        <psk-container controller-name="ScanController">
+            <psk-condition condition="@hasError">
+                <psk-label slot="condition-true" class="products-does-not-exist"
+                           label="Product scanned does not exist."></psk-label>
+            </psk-condition>
+            <psk-condition condition="@useScandit">
+                <div slot="condition-true" id="scandit-barcode-picker-wrapper">
+                    <div id="scandit-barcode-picker"></div>
+                </div>
+                <psk-condition slot="condition-false" condition="@hasCode">
+                    <psk-condition condition="@nativeSupport" slot="condition-false">
+                        <psk-barcode-scanner slot="condition-false" data="@data" normal-size></psk-barcode-scanner>
+                        <div slot="condition-true">
+                            In a few seconds a native API will pop on you screen and guide you.
+                        </div>
+                    </psk-condition>
+                    <psk-ui-loader slot="condition-true" should-be-rendered="true"></psk-ui-loader>
+                </psk-condition>
+            </psk-condition>
+        </psk-container>
+    </psk-mobile>
+</psk-example>

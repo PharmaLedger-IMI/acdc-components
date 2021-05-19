@@ -14,7 +14,8 @@ reporting-service/build/bundles
 mobile/scan-app
 privatesky
 menu-wallet-prototype
-leaflet-ssapp
+leaflet-ssapp/code/constitution
+leaflet-ssapp/code/scripts/bundles
 apihub-root/leaflet-wallet/loader
 apihub-root/dsu-fabric-wallet/loader
 themes

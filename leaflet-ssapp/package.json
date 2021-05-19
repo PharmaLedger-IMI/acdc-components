@@ -1,0 +1,26 @@
+{
+  "name": "leaflet-ssapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "node ./node_modules/octopus/scripts/run prebuild devmode",
+    "build": "node ./node_modules/octopus/scripts/buildDossier.js",
+    "postbuild": "node ./node_modules/octopus/scripts/run postbuild devmode",
+    "update": "npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PharmaLedger-IMI/leaflet-ssapp.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PharmaLedger-IMI/leaflet-ssapp/issues"
+  },
+  "homepage": "https://github.com/PharmaLedger-IMI/leaflet-ssapp#readme",
+  "dependencies": {
+    "octopus": "git+http://github.com/privatesky/octopus.git"
+  }
+}
