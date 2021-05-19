@@ -19,6 +19,7 @@ export class ScanController {
             properties: {
                 snCheckResult: {type: 'string'},
                 mahId: {type: 'string'},
+                mahName: {type: 'string'},
             }
         },
     })
