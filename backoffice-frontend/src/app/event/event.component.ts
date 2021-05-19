@@ -65,8 +65,9 @@ export class EventComponent implements OnInit {
     {label: 'GTIN', value: 'gtin'},
     {label: 'Batch', value: 'batch'},
     {label: 'Product Name', value: 'productName'},
+    {label: 'Expiry Date', value: 'expiryDate'},
     {label: 'Serial Number', value: 'serialNumber'},
-    {label: 'Check Result', value: 'snCheckResult'}
+    {label: 'Check Result', value: 'snCheckResult'},
   ];
 
   columnsData: { [key: string]: { label: string, data: any } } = {
@@ -97,6 +98,10 @@ export class EventComponent implements OnInit {
     productName: {
       label: 'Product Name',
       data: (event: any) => event.eventInputs[0].eventInputData.productName
+    },
+    expiryDate: {
+      label: 'Expiry Date',
+      data: (event: any) => this.dateFormatYYMMDD(event.eventInputs[0].eventInputData.expireDate)
     },
     serialNumber: {
       label: 'Serial Number',
@@ -271,6 +276,15 @@ export class EventComponent implements OnInit {
     const s = d.getSeconds();
     return `${year}-${month}-${day} ${h}:${m}:${s}`;
   }
+
+  dateFormatYYMMDD(date: Date): string {
+    const d = new Date(date);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear().toString().substr(-2);;
+    return `${year}${month}${day}`;
+  }
+
 }
 
 interface DataHandlerForm {
