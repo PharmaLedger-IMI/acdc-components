@@ -169,7 +169,24 @@ mobile/scan-app/android/app/build/outputs/apk/release
 
 ## How to pull latest ePi changes
 
-'''sh
+```sh
 git remote add epi https://github.com/PharmaLedger-IMI/epi-workspace
-git pull epi
-'''
+git pull epi master
+```
+
+# Contributions
+
+If you think you can contribute, please check with the team, if it is ok to submit a pull-request.
+
+## Follow the "10 commandments" at https://jaxenter.com/10-commandments-committing-pull-requests-115707.html
+
+1. Thou Shalt not reformat
+2. Thou shalt absolutely not fix whitespace
+3. Thou Shalt not refactor
+5. Thou Shalt not rename
+6. Thou shalt document
+7. Thou shalt not implement more than one thing in a single commit
+8. Thou shalt ask the vendor / community first
+9. Thou shalt not demand
+10. Thou shalt accept the license terms
+

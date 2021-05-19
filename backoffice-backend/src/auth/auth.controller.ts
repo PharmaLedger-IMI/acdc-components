@@ -17,7 +17,8 @@ export class AuthController {
         schema: {
             type: "object",
             properties: {
-                username: { type: 'string' },
+                userId: { type: 'string' },
+                email: { type: 'string' },
                 token: { type: 'string' },
             }
         },
@@ -25,17 +26,26 @@ export class AuthController {
    @ApiUnauthorizedResponse({ description: 'The credentials are not valid.', })
     async login(@Body() userCredentials: UserCredentials, @Request() req: any) {
         // @Body is here to tell swagger what fields are required.
-        // local.strategy already validated the username/password and filled req.user with an AppUser
+        // local.strategy already validated the username/password and filled req.user with an AcdcUser
         let auDb = req.user;
         console.log("/auth/login auDb =", auDb);
-        let auJwt = this.authService.login(auDb);
-        return auJwt;
+        return this.authService.login(auDb);
     }
 
 
     // just to test the /login
     @UseGuards(AuthGuard('jwt'))
     @ApiBearerAuth()
+    @ApiOkResponse({
+        description: 'Get information from an authenticated user.',
+        schema: {
+            type: "object",
+            properties: {
+                userId: { type: 'string' },
+                email: { type: 'string' }
+            }
+        },
+    })
     @Post('/get/current')
     async getCurrentLoggedUser(@Request() req: any) {
         if (req.user) {

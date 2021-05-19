@@ -4,6 +4,12 @@
       <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
     </button>
     <h1>{{title}}</h1>
+    <div style="padding-left: 4em; float: right;">
+      <div style="font-size: small; height: 1em; line-height: 1em;" *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
+      <div style="font-size: 0.4em; height: 1em; line-height: 1em;">{{sideTime.toISOString()}}</div>
+      <div style="font-size: 0.4em; height: 1em; line-height: 1em;">v{{v.version}}-{{v.hash}}</div>
+    </div>
+    <div><img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/></div>
   </mat-toolbar-row>
 </mat-toolbar>
 <mat-sidenav-container>
@@ -17,7 +23,7 @@
         </mat-expansion-panel-header>
         <mat-selection-list [multiple]="false">
           <mat-list-option [selected]="sideNavMenu1Item=='data' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/physician">Dashboard</a>
+            <a mat-list-item routerLink="/event">Event</a>
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
@@ -66,9 +72,6 @@
           <a mat-list-item *ngIf="authService.isLoggedIn()" (click)="logout()" routerLink="/login">Logout</a>
         </mat-list-option>
       </mat-selection-list>
-      <div *ngIf="authService.isLoggedIn()" style="font-size: smaller;">{{authService.getUsername()}}</div>
-      <div style="font-size: smaller;">{{sideTime.toISOString()}}</div>
-      <div style="font-size: x-small;">v{{v.version}}-{{v.hash}}</div>
     </mat-accordion>
   </mat-sidenav>
   <mat-sidenav-content style="padding: 5px;">

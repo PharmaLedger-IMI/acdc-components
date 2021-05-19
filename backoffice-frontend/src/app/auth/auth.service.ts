@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MessageService } from '../message.service';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User } from '../user';
+import { User } from '../user.model';
 
 @Injectable()
 export class AuthService {
@@ -25,11 +25,12 @@ export class AuthService {
    */
   login(username: string, password: string|undefined, callback: (err:any, data:any) => void) : void {
     // backend /auth/login returns token
+    username = username && username.trim();
     this.http.post<{ token: string; }>(this.authLoginUrl, { username, password })
     .subscribe(
       (res: any) => {
         this.log(`posted ${username},${password}, ${res}`);
-        if (!res.token || !res.username) {
+        if (!res.token || !res.email) {
           callback("Missing username/token field in "+JSON.stringify(res), null);
           return;
         }
@@ -44,8 +45,8 @@ export class AuthService {
 
   private setSession(authResult: any): void {
     let user = new User();
-    user.id = authResult.id;
-    user.username = authResult.username;
+    user.userid = authResult.userid;
+    user.email = authResult.email;
     user.token = authResult.token;
     sessionStorage.setItem(AuthService.ACDC_USER, JSON.stringify(user));
   }
@@ -91,7 +92,7 @@ export class AuthService {
   }
 
   public getUsername() : string | undefined {
-    return this.getUser()?.username;
+    return this.getUser()?.email;
   }
 
   /**
@@ -108,7 +109,7 @@ export class AuthService {
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
- 
+
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

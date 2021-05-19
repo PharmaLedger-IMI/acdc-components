@@ -9,6 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,6 +23,9 @@ import { MessagesComponent } from './messages/messages.component';
 import { AppresourceSearchComponent } from './appresource-search/appresource-search.component';
 import { LoginComponent } from './login/login.component';
 import { AuthService } from './auth/auth.service';
+import { EventComponent } from './event/event.component';
+import { EventDetailComponent } from './event-detail/event-detail.component';
+import { EventMapComponent } from './event-map/event-map.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +34,10 @@ import { AuthService } from './auth/auth.service';
     AppResourceDetailComponent,
     MessagesComponent,
     AppresourceSearchComponent,
-    LoginComponent
+    LoginComponent,
+    EventComponent,
+    EventDetailComponent,
+    EventMapComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +51,11 @@ import { AuthService } from './auth/auth.service';
     MatButtonModule,
     MatIconModule,
     MatExpansionModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatTabsModule,
+    MatInputModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

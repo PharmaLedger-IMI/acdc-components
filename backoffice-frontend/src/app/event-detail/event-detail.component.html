@@ -1,0 +1,31 @@
+<div class="event-detail" *ngIf="event">
+  <div class="row">
+    <!-- Column of Event Detail -->
+    <div class="column">
+      <!-- Code box for eventMetadata -->
+      <div class="box box-event">
+        <p>Event:</p>
+        <h4>{{event.eventId}}</h4>
+        <h6>{{event.createdOn}}</h6>
+        <pre>{{eventMetadata | json}}</pre>
+      </div>
+      <!-- Code box for event input -->
+      <div class="box box-input">
+        <p>Event Input:</p>
+        <pre>{{eventInputs | json}}</pre>
+      </div>
+      <!-- Code box for event output -->
+      <div class="box box-output">
+        <p>Event Output:</p>
+        <pre>{{eventOutputs | json}}</pre>
+      </div>
+    </div>
+    <!-- End column of Event -->
+
+    <!-- Column of Map -->
+    <div class="column">
+      <app-event-map [dataReceiver]="[event]"></app-event-map>
+    </div>
+    <!-- End column of Map -->
+  </div>
+</div>

@@ -1,0 +1,13 @@
+.container{
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 10px;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
