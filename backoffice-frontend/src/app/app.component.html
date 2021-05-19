@@ -1,15 +1,19 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <button mat-icon-button>
-      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
-    </button>
-    <h1>{{title}}</h1>
-    <div style="padding-left: 4em; float: right;">
-      <div style="font-size: small; height: 1em; line-height: 1em;" *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
-      <div style="font-size: 0.4em; height: 1em; line-height: 1em;">{{sideTime.toISOString()}}</div>
-      <div style="font-size: 0.4em; height: 1em; line-height: 1em;">v{{v.version}}-{{v.hash}}</div>
+    <div fxFlex fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button>
+        <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+      </button>
+      <h1>{{title}}</h1>
     </div>
-    <div><img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/></div>
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <div style="padding-left: 4em; float: right;">
+        <div style="font-size: small; height: 1em; line-height: 1em;" *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
+        <div style="font-size: 0.4em; height: 1em; line-height: 1em;">{{sideTime.toISOString()}}</div>
+        <div style="font-size: 0.4em; height: 1em; line-height: 1em;">v{{v.version}}-{{v.hash}}</div>
+      </div>
+      <div><img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/></div>
+    </div>
   </mat-toolbar-row>
 </mat-toolbar>
 <mat-sidenav-container>
