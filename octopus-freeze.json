@@ -2,6 +2,22 @@
     "workDir": ".",
     "dependencies": [
         {
+            "name": "webcardinal",
+            "src": "https://github.com/webcardinal/webcardinal-bundler",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false,
+                    "commit": "934a0e528f916e8cc4cd4e5b422b73a3eb2b2f20"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd webcardinal && npm install && npm run bundle-all && npm run build"
+                }
+            ]
+        },
+        {
             "name": "cardinal",
             "src": "http://github.com/privatesky/cardinal.git",
             "actions": [
@@ -9,7 +25,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "3ac61b6f75bd376a8778cbc25907d9bfc7bccb79"
+                    "commit": "2ffbfae1d80b3251c5d39c3820fb2e99dba7bda3"
                 },
                 {
                     "type": "execute",
@@ -22,22 +38,6 @@
             ]
         },
         {
-            "name": "webcardinal",
-            "src": "https://github.com/webcardinal/webcardinal-bundler",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false,
-                    "commit": "21243c530664355a5ed8537d0ae7d3e1c5ab0525"
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd webcardinal && npm install && npm run bundle-all && npm run build"
-                }
-            ]
-        },
-        {
             "name": "privatesky",
             "src": "http://github.com/privatesky/privatesky.git",
             "actions": [
@@ -45,7 +45,8 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "69059b92e7abe7c3b94ecb95b8bbe6ddd3410e2a"
+                    "branch": "release_important_fix",
+                    "commit": "518e0e6a62427052be09ce4a8be59503fd2a245b"
                 },
                 {
                     "type": "execute",
@@ -86,7 +87,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "5ffdbcc5d8703329fa72534056b74688c68f56e9"
+                    "commit": "3a99cce80291d675fde3da7d9e99579dbdb1f1da"
                 },
                 {
                     "type": "execute",
@@ -102,7 +103,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "7fb45ead4022ed835c01e0071a914c0673c46ee0"
+                    "commit": "dd2d5a6bd5c431478cd6a75239e2c3f72c6fdff4"
                 },
                 {
                     "type": "execute",
@@ -126,7 +127,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "7fb45ead4022ed835c01e0071a914c0673c46ee0"
+                    "commit": "dd2d5a6bd5c431478cd6a75239e2c3f72c6fdff4"
                 },
                 {
                     "type": "execute",
@@ -226,7 +227,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "7fb45ead4022ed835c01e0071a914c0673c46ee0"
+                    "commit": "dd2d5a6bd5c431478cd6a75239e2c3f72c6fdff4"
                 },
                 {
                     "type": "execute",
@@ -250,7 +251,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "1f0274c13dfe3f605ccec9fced79c692181eb958"
+                    "commit": "f1be80a76e7a07f644c161c8095802344c4a62a2"
                 },
                 {
                     "type": "execute",
@@ -354,7 +355,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "7dab20eac908054c9ee1f34e4cbe85a5d04290e1"
+                    "commit": "6eacc109840b64f677ff5405a42560a812dd7565"
                 },
                 {
                     "type": "execute",
