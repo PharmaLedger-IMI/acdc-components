@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.appComponent.logout();
-    this.appComponent.setNavMenuHighlight("", "login", "Login");
+    this.appComponent.setNavMenuHighlight("", "login", "ACDC DEMONSTRATOR Login");
     this.loginForm.reset();
     if (this.authService.isLoggedIn())
       this.router.navigate(['/event']); // TODO navigate to proper profile entry page
