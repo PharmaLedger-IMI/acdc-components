@@ -56,18 +56,10 @@ export class AuthService {
   }
 
   public hasAdminProfile() : boolean {
-    return this.isLoggedIn(); // && ...
+    return this.isLoggedIn() && this.getUsername()!.endsWith("@pdmfc.com"); // jpsl - so far, only PDM are admins...
   }
 
-  public hasPhysicianProfile() : boolean {
-    return this.isLoggedIn(); // && ...
-  }
-
-  public hasSiteProfile() : boolean {
-    return this.isLoggedIn(); // && ...
-  }
-
-  public hasSponsorProfile() : boolean {
+  public hasAnyProfile() : boolean {
     return this.isLoggedIn(); // && ...
   }
 

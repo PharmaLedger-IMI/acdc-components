@@ -19,7 +19,7 @@
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="side" [(opened)]="sideNavOpened" style="padding: 5px; width: 14em;">
     <mat-accordion [multi]="false">
-      <mat-expansion-panel *ngIf="authService.hasPhysicianProfile()" [expanded]="sideNavMenu1Item=='data'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='data'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Scan-Data
@@ -31,7 +31,7 @@
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasSiteProfile()" [expanded]="sideNavMenu1Item=='site'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='site'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Rules
@@ -43,7 +43,7 @@
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasSponsorProfile()" [expanded]="sideNavMenu1Item=='sponsor'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='sponsor'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Alerts

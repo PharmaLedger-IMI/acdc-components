@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
           }
         } else {
           self.log("Logged in " + auUsername + " res=" + JSON.stringify(res));
-          self.router.navigate(['/appresource']); // TODO navigate to proper profile entry page
+          self.router.navigate(['/event']); // TODO navigate to proper profile entry page
         }
       }
     );
