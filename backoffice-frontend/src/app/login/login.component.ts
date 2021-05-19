@@ -34,6 +34,8 @@ export class LoginComponent implements OnInit {
     this.appComponent.logout();
     this.appComponent.setNavMenuHighlight("", "login", "Login");
     this.loginForm.reset();
+    if (this.authService.isLoggedIn())
+      this.router.navigate(['/event']); // TODO navigate to proper profile entry page
   }
 
   login() {

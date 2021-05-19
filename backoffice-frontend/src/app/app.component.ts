@@ -28,9 +28,9 @@ export class AppComponent {
     this.sideNavMenu1Item = menu1;
     this.sideNavMenu2Item = menu2;
     this.sideTime = new Date();
-    this.title = aTitle || "Anti-Counterfeiting Data Collaboration Backoffice";
-    if (aTitle && !aTitle.startsWith("Anti-Counterfeiting Data Collaboration ")) {
-      this.titleService.setTitle("Anti-Counterfeiting Data Collaboration Backoffice - "+aTitle);
+    this.title = aTitle || "ACDC DEMONSTRATOR";
+    if (aTitle && !aTitle.startsWith("ACDC DEMONSTRATOR ")) {
+      this.titleService.setTitle("ACDC DEMONSTRATOR - "+aTitle);
     } else {
       this.titleService.setTitle(this.title);
     }

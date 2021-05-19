@@ -31,6 +31,7 @@ import { EventMapComponent } from './event-map/event-map.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TodoComponent } from './todo/todo.component';
+import { LoggedInGuard } from './auth/logged-in.guard';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { TodoComponent } from './todo/todo.component';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    AuthService
+    AuthService,
+    LoggedInGuard
   ],
 
   bootstrap: [AppComponent]
