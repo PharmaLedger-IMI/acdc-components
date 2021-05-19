@@ -6,7 +6,6 @@ import constants from "../../constants.js";
 import DSUDataRetrievalService from "../services/DSUDataRetrievalService/DSUDataRetrievalService.js";
 
 const gtinResolver = require("gtin-resolver");
-const getACDC = require('acdc').ReportingService.getACDC;
 
 export default class ScanController extends ContainerController {
     constructor(element, history) {
@@ -15,7 +14,7 @@ export default class ScanController extends ContainerController {
         this.setModel({data: '', hasCode: false, hasError: false, nativeSupport: false, useScandit: false});
         this.settingsService = new SettingsService(this.DSUStorage);
         this.history = history;
-
+        this.acdc = require('acdc').ReportingService.getAcdc(this.DSUStorage, this.settingsService);
         this.model.onChange("data", () => {
             this.process(this.parseGS1Code(this.model.data));
         });
@@ -113,6 +112,8 @@ export default class ScanController extends ContainerController {
             return this.redirectToError("Barcode is not readable, please contact pharmacy / doctor who issued the medicine package.", gs1Fields);
         }
 
+        const evt = this.acdc.createScanEvent(gs1Fields);
+
         this.buildSSI(gs1Fields, (err, gtinSSI) => {
             this.dsuDataRetrievalService = new DSUDataRetrievalService(this.DSUStorage, gtinSSI, utils.getMountPath(gtinSSI, gs1Fields));
             this.packageAlreadyScanned(gtinSSI, gs1Fields, (err, status) => {
@@ -122,13 +123,14 @@ export default class ScanController extends ContainerController {
                 if (status === false) {
                     this.batchAnchorExists(gtinSSI, (err, status) => {
                         if (status) {
+                            evt.setBatchDSUStatus(true)
                             this.addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, (err) => {
                                 if (err) {
                                     return console.log("Failed to add package to history", err);
                                 }
                             });
                         } else {
-                            this.addConstProductDSUToHistory(gs1Fields);
+                            this.addConstProductDSUToHistory(gs1Fields, evt);
                         }
                     });
                 } else {
@@ -245,7 +247,7 @@ export default class ScanController extends ContainerController {
         });
     }
 
-    addConstProductDSUToHistory(gs1Fields) {
+    addConstProductDSUToHistory(gs1Fields, evt) {
         this.createConstProductDSU_SSI(gs1Fields, (err, constProductDSU_SSI) => {
             if (err) {
                 //todo: what to do in this case?
@@ -253,15 +255,21 @@ export default class ScanController extends ContainerController {
 
             this.constProductDSUExists(constProductDSU_SSI, (err, status) => {
                 if (err) {
+                    evt.setProductDSUStatus(false);
+                    evt.report();
                     return console.log("Failed to check constProductDSU existence", err);
                 }
                 if (status) {
+                    evt.setProductDSUStatus(true);
+                    evt.report();
                     this.addPackageToHistoryAndRedirect(constProductDSU_SSI, gs1Fields, (err) => {
                         if (err) {
                             return console.log("Failed to add package to history", err);
                         }
                     });
                 } else {
+                    evt.setProductDSUStatus(false);
+                    evt.report();
                     return this.redirectToError("Product code combination could not be resolved.", gs1Fields);
                 }
             });

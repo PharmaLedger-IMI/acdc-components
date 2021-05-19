@@ -83,27 +83,11 @@ export default class SettingsController extends ContainerController {
         });
 
         // ACDC integration settings
-        const self = this;
-        this.acdc = require('acdc').ReportingService.getACDC(this.DSUStorage, this.settingsService);
-        const SETTINGS = require('acdc').CONSTANTS;
+        this.acdc = require('acdc').ReportingService.getAcdc(this.DSUStorage, this.settingsService);
 
-        this.acdc.setSettingsToModel(this.model, (err) => {
-            if (err)
-                console.log(err);
-            this.on('set-did', () => {
-                self.settingsService.writeSetting(SETTINGS.didKey, self.model.acdc.did.value, (err) => {
-                    if (err)
-                        console.log(`Could not update ${SETTINGS.didKey} in settings`, err);
-                });
-            });
-            this.on('set-location', () => {
-                self.settingsService.writeSetting(SETTINGS.locationKey, self.model.location.did.value, (err) => {
-                    if (err)
-                        console.log(`Could not update ${SETTINGS.locationKey} in settings`, err);
-                });
-            });
-        });
-
+        this.acdc.setSettingsToModel(this.model, err => console.log(err
+            ? `Error Binding ACDC settings to model: ${err}`
+            : "Acdc Settings Added"));
     }
 
     initNetworkSettingsTab(){

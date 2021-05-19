@@ -36,8 +36,16 @@
 
                 <!-- ACDC SETTINGS -->
                 <psk-accordion-item title="Setup Anti-Counterfeiting Integration">
-                    <psk-checkbox view-model="acdc.did"></psk-checkbox>
-                    <psk-checkbox view-model="acdc.location"></psk-checkbox>
+                    <psk-select view-model="acdc.enabled"></psk-select>
+<!--                    <psk-checkbox view-model="acdc.enabled"></psk-checkbox>-->
+                    <psk-condition condition="@acdc.enabled.value">
+                        <psk-select view-model="acdc.did"></psk-select>
+                        <psk-select view-model="acdc.location"></psk-select>
+
+<!--                    <psk-checkbox view-model="acdc.did"></psk-checkbox>-->
+ <!--                    <psk-checkbox view-model="acdc.location"></psk-checkbox>-->
+                    </psk-condition>
+
                 </psk-accordion-item>
             </psk-accordion>
         </psk-container>
