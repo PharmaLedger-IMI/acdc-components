@@ -5,8 +5,12 @@ module.exports = class ScanEvent {
     expireDate;
     snCheckDateTime;
 
+    // user optional
     snCheckLocation;
     did;
+    // optional
+    // batchdsustatus
+    // productdsustatus
 
     constructor(gs1Data){
         this.batch = gs1Data.batchNumber;

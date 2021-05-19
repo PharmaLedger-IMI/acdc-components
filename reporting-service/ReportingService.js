@@ -19,7 +19,7 @@ class ReportingService {
         }
     }
 
-    getSettingsForDisplay(model, callback){
+    setSettingsToModel(model, callback){
         const self = this;
         model.acdc = model.acdc || {};
 
@@ -40,7 +40,7 @@ class ReportingService {
                     "Share location?",
                     locationSetting);
 
-                // self._bindModelChangeEvents(model);
+                self._bindModelChangeEvents(model);
                 callback();
             })
         });
