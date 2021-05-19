@@ -73,7 +73,7 @@ class AcdcEventDataGenerator {
             batch: product.batchNumber,
             serialNumber: product.serialNumber,
             productName: `${location.country}-${product.productName}`,
-            expireDate: this.expirationDateTime[randomExpDateIdx],
+            expiryDate: this.expirationDateTime[randomExpDateIdx],
             snCheckDateTime: this.checkDateTime[randomCheckDateIdx],
             snCheckLocation: location.geolocation
         }

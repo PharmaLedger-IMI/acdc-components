@@ -14,7 +14,7 @@ export class EventInputDataDto {
     readonly productName: string
 
     @ApiProperty({description: "Expiration date in format: YYMMDD"})
-    readonly expireDate: Date
+    readonly expiryDate: Date
 
     @ApiProperty({description: "Date&time, when the check was requested YYYYMMDD_HHMMSS and timezone"})
     readonly snCheckDateTime: Date

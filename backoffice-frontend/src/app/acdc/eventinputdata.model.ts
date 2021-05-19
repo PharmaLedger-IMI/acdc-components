@@ -3,7 +3,7 @@ export interface EventInputData {
   batch: string;
   serialNumber: string;
   productName: string;
-  expireDate: Date;
+  expiryDate: Date;
   snCheckDateTime: Date;
   snCheckLocation: string;
 }
