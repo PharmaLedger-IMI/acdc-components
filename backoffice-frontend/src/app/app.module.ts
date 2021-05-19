@@ -32,6 +32,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TodoComponent } from './todo/todo.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { LoggedInGuard } from './auth/logged-in.guard';
     EventDetailComponent,
     EventMapComponent,
     TodoComponent,
+    PageNotFoundComponent,
   ],
   imports: [
     BrowserModule,

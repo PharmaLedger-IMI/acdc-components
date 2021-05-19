@@ -4,10 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { AppResourceComponent } from './appresource/appresource.component';
 import { AppResourceDetailComponent } from './appresource-detail/appresource-detail.component';
 import { LoginComponent } from './login/login.component';
+import { LoggedInGuard } from './auth/logged-in.guard';
 import { EventComponent } from './event/event.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
 import { TodoComponent } from './todo/todo.component';
-import { LoggedInGuard } from './auth/logged-in.guard';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {path: 'appresource', component: AppResourceComponent, canActivate: [LoggedInGuard]},
@@ -16,7 +17,7 @@ const routes: Routes = [
   {path: 'event/:id', component: EventDetailComponent, canActivate: [LoggedInGuard]},
   {path: 'login', component: LoginComponent},
   {path: '', redirectTo: '/login', pathMatch: "full"},
-  {path: '**', component: TodoComponent}
+  {path: '**', component: PageNotFoundComponent}
 ];
 
 @NgModule({
