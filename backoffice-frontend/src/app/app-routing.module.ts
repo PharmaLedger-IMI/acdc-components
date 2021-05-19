@@ -11,11 +11,13 @@ import { TodoComponent } from './todo/todo.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
+  {path: 'alert', component: TodoComponent, canActivate: [LoggedInGuard]},
   {path: 'appresource', component: AppResourceComponent, canActivate: [LoggedInGuard]},
   {path: 'appresource/:id', component: AppResourceDetailComponent, canActivate: [LoggedInGuard]},
   {path: 'event', component: EventComponent, canActivate: [LoggedInGuard]},
   {path: 'event/:id', component: EventDetailComponent, canActivate: [LoggedInGuard]},
   {path: 'login', component: LoginComponent},
+  {path: 'rule', component: TodoComponent, canActivate: [LoggedInGuard]},
   {path: '', redirectTo: '/login', pathMatch: "full"},
   {path: '**', component: PageNotFoundComponent}
 ];
