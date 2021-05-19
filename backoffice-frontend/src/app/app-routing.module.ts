@@ -6,6 +6,7 @@ import { AppResourceDetailComponent } from './appresource-detail/appresource-det
 import { LoginComponent } from './login/login.component';
 import { EventComponent } from './event/event.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
+import { TodoComponent } from './todo/todo.component';
 
 const routes: Routes = [
   {path: 'appresource', component: AppResourceComponent},
@@ -13,7 +14,8 @@ const routes: Routes = [
   {path: 'event', component: EventComponent},
   {path: 'event/:id', component: EventDetailComponent},
   {path: 'login', component: LoginComponent},
-  {path: '', redirectTo: '/event', pathMatch: 'full'}
+  {path: '', redirectTo: '/event', pathMatch: 'full'},
+  {path: '**', component: TodoComponent}
 ];
 
 @NgModule({

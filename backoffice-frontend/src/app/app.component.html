@@ -31,7 +31,7 @@
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='site'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='rules'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Rules
@@ -39,11 +39,11 @@
         </mat-expansion-panel-header>
         <mat-selection-list [multiple]="false">
           <mat-list-option [selected]="sideNavMenu1Item=='rules' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/site">Dashboard</a>
+            <a mat-list-item routerLink="/rule">Dashboard</a>
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='sponsor'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='alerts'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Alerts
@@ -51,7 +51,7 @@
         </mat-expansion-panel-header>
         <mat-selection-list [multiple]="false">
           <mat-list-option [selected]="sideNavMenu1Item=='alerts' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/sponsor">Dashboard</a>
+            <a mat-list-item routerLink="/alerts">Dashboard</a>
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>

@@ -30,6 +30,7 @@ import { EventDetailComponent } from './event-detail/event-detail.component';
 import { EventMapComponent } from './event-map/event-map.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TodoComponent } from './todo/todo.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     EventComponent,
     EventDetailComponent,
     EventMapComponent,
+    TodoComponent,
   ],
   imports: [
     BrowserModule,
