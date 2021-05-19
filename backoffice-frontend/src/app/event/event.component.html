@@ -91,10 +91,9 @@
             <div fxLayout="column">
               <strong>Default Columns: </strong>
               <div *ngFor="let checkBox of checkInputsDefault; let i=index">
-                <label>
-                  <input type="checkbox" [value]="checkBox.value" (change)="handleCheckChangeDefault($event)" checked="true">
-                  {{checkBox.label}}
-                </label>
+                  <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChangeDefault($event)" [checked]="true">
+                    {{checkBox.label}}
+                  </mat-checkbox>
               </div>
             </div>
 
@@ -102,10 +101,9 @@
             <div fxLayout="column">
               <strong>Custom columns: </strong>
               <div *ngFor="let checkBox of checkInputsCustom; let i=index">
-                <label>
-                  <input type="checkbox" [value]="checkBox.value" (change)="handleCheckChange($event)">
-                  {{checkBox.label}}
-                </label>
+                  <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChange($event)">
+                    {{checkBox.label}}
+                  </mat-checkbox>
               </div>
             </div>
 

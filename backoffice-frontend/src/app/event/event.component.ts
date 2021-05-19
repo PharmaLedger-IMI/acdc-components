@@ -227,30 +227,34 @@ export class EventComponent implements OnInit {
   }
 
   handleCheckChange(event: any): void {
-    console.log('event.component.handleCheckChange change =', event.target.value, ' checked =', event.target.checked);
-    const checkForm: FormArray = this.dataHandlerForm.get('checkColumns') as FormArray;
+    const {checked, source} = event;
+    const value = source.value;
+    console.log('event.component.handleCheckChange change =', value, ' checked =', checked);
+    const checkColumnsForm: FormArray = this.dataHandlerForm.get('checkColumns') as FormArray;
 
-    if (event.target.checked) {
-      checkForm.push(new FormControl(event.target.value));
+    if (checked) {
+      checkColumnsForm.push(new FormControl(value));
     } else {
-      const values = this.dataHandlerForm.get('checkColumns')?.value;
-      const index = values.indexOf(event.target.value);
-      checkForm.removeAt(index);
+      const checkColumnsFormValues = this.dataHandlerForm.get('checkColumns')?.value;
+      const index = checkColumnsFormValues.indexOf(value);
+      checkColumnsForm.removeAt(index);
     }
     console.log('event.component.handleCheckChange dataHandler =', this.dataHandlerForm.get('checkColumns')?.value);
   }
 
   handleCheckChangeDefault(event: any): void {
-    console.log('event.component.handleCheckChange change =', event.target.value, ' checked =', event.target.checked);
-    const checkForm = this.defaultColumns;
+    const {checked, source} = event;
+    const value = source.value;
+    console.log('event.component.handleCheckChange change =', value, ' checked =', checked);
+    const defaultColumns = this.defaultColumns;
 
-    if (event.target.checked) {
-      checkForm.push(event.target.value);
+    if (checked) {
+      defaultColumns.push(value);
     } else {
-      const index = checkForm.indexOf(event.target.value);
-      checkForm.splice(index, 1);
+      const index = defaultColumns.indexOf(value);
+      defaultColumns.splice(index, 1);
     }
-    console.log('event.component.handleCheckChangeDefault checkForm =', checkForm);
+    console.log('event.component.handleCheckChangeDefault checkForm =', defaultColumns);
   }
 
   /**
