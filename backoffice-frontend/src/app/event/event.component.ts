@@ -134,7 +134,7 @@ export class EventComponent implements OnInit {
 
   /** Init function */
   ngOnInit(): void {
-    this.appComponent.setNavMenuHighlight('admin', 'event', 'Scanning transactions');
+    this.appComponent.setNavMenuHighlight('data', 'event', 'Scanning transactions');
     this.getEvents(this.dataHandler.pageSize, this.dataHandler.pageIndex);
   }
 
