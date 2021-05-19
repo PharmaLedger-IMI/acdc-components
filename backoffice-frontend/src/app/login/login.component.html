@@ -1,4 +1,7 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <div *ngIf="errorMessage" class="form-error-messages" style="display: inline;">
+        {{errorMessage}}
+    </div>
     <div>
         <label>Username:
             <input id="username" formControlName="username" placeholder="username" type="text" class="form-control"
