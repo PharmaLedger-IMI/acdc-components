@@ -1,6 +1,6 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# ePi ignores .package-lock
+# parent ePi ignores .package-lock.json Don't do that when working with Angular.
 !package-lock.json
 
 # compiled output
