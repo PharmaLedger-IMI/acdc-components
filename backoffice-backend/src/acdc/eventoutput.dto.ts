@@ -7,6 +7,9 @@ export class EventOuputDataDto {
     @ApiProperty({required: true, description: "Name of the medicinal product"})
     nameMedicinalProduct: string
 
+    @ApiProperty({required: true, description: "Status of the product"})
+    productStatus: string
+
     @ApiProperty({required: false, description: "Marketing Authorization Holder identifier"})
     mahId: string | undefined
 

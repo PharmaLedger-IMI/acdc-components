@@ -1,11 +1,11 @@
-import {Injectable} from "@nestjs/common"
+import {BadRequestException, Injectable} from "@nestjs/common"
 import {EventRepository} from "../acdc/event.repository"
 import {EventInputDataDto} from "../acdc/eventinput.dto"
 import {EventOuputDataDto} from "../acdc/eventoutput.dto"
 import {EventInputRepository} from "../acdc/eventinput.repository"
 import {EventOutputRepository} from "../acdc/eventoutput.repository"
 import {InjectRepository} from "@nestjs/typeorm"
-import { Mah } from "src/acdc/mah.entity"
+import {Mah} from "src/acdc/mah.entity"
 
 
 @Injectable()
@@ -19,7 +19,7 @@ export class ScanService {
     }
 
     async create(eventInputData: EventInputDataDto): Promise<EventOuputDataDto> {
-        const eventOutputData = await ScanService.dummyCheckAuthentication(eventInputData.productCode);
+        const eventOutputData = await ScanService.dummyCheckAuthentication(eventInputData);
 
         const eventInput = await this.eventInputRepository.add({
             eventInputData: eventInputData
@@ -45,10 +45,39 @@ export class ScanService {
         return arr[randomIdx]
     }
 
-    private static async dummyCheckAuthentication(productCode: string): Promise<EventOuputDataDto> {
+    private static getMedicinalProductInfo(eventInputData: EventInputDataDto) {
+        const productsCode = {
+            '01201419000158': 'Cosentyx 150mg/ml x2',
+            '29653329154760': 'Ritalin LA HGC 40mg 1x30',
+            '30652009514715': 'Aspirin 500mg 1x25',
+            '49408945163108': 'Keytruda 25mg/ml'
+        }
+
+        const productsStatus = {
+            'RMKT': 'Released to market',
+            'NREG': 'Not released',
+            'NREL': 'Not registered', 'RSTO': 'Reported stolen',
+            'RDES': 'Reported destroyed',
+            'RSUS': 'Reported suspect',
+        }
+        const productStatusKey = eventInputData.batch.substr(0, 4)
+        const nameMedicinalProduct = productsCode[eventInputData.productCode]
+        const productStatus = productsStatus[productStatusKey]
+        return {nameMedicinalProduct, productStatus}
+    }
+
+    private static async dummyCheckAuthentication(eventInputData: EventInputDataDto): Promise<EventOuputDataDto> {
         let response = new EventOuputDataDto();
         response.snCheckResult = ScanService.randomChoice(["Authentic", "Suspect", "TimeOut", "UserAbort", "Unsure"]);
-        response.nameMedicinalProduct = ScanService.randomChoice(["Cosentyx 150mg/ml x2", "Ritalin LA HGC 40mg 1x30", "Aspirin 500mg 1x25", "Keytruda 25mg/ml"]);
+
+        const {nameMedicinalProduct, productStatus} = ScanService.getMedicinalProductInfo(eventInputData)
+        response.nameMedicinalProduct = nameMedicinalProduct
+        response.productStatus = productStatus
+
+        if(!nameMedicinalProduct || !productStatus) {
+            throw new BadRequestException('productCode or Batch invalid');
+        }
+
         let mahCollection = await Mah.find({});
         if (mahCollection.length > 0) {
             let mah = mahCollection[0];
