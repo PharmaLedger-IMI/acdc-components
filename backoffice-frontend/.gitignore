@@ -1,5 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+# ePi ignores .package-lock
+!package-lock.json
+
 # compiled output
 /src/environments/version.ts
 /dist
