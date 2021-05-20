@@ -15,6 +15,7 @@ export default class ScanController extends ContainerController {
         this.settingsService = new SettingsService(this.DSUStorage);
         this.history = history;
         this.barcodePicker = null;
+        this.acdc = require('acdc').ReportingService.getInstance(this.settingsService);
 
         const popStateHandler = (event) => {
             this.disposeOfBarcodePicker();
