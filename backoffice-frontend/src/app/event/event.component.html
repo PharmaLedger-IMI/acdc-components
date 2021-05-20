@@ -7,10 +7,10 @@
   >
     <!-- Filter Expansion Panel (HEADER) -->
     <mat-expansion-panel-header>
-      <mat-panel-title>Filter</mat-panel-title>
-      <mat-panel-description>
+      <mat-panel-title fxLayout="row" fxLayoutAlign="start center">
         <mat-icon>filter_list_alt</mat-icon>
-      </mat-panel-description>
+        <h4>Filter</h4>
+      </mat-panel-title>
     </mat-expansion-panel-header>
     <!-- END Filter Expansion Panel (HEADER) -->
 
@@ -61,20 +61,6 @@
               <input type="date" formControlName="createdOnEnd" matInput>
             </mat-form-field>
           </div>
-
-          <!-- expiryDate -->
-          <fieldset disabled>
-            <div fxLayout="row">
-              <mat-form-field>
-                <mat-label>expiryDate - start</mat-label>
-                <input type="date" formControlName="expiryDateStart" matInput>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>expiryDate - end</mat-label>
-                <input type="date" formControlName="expiryDateEnd" matInput>
-              </mat-form-field>
-            </div>
-          </fieldset>
 
           <!-- Items per page -->
           <div fxLayout="row">
