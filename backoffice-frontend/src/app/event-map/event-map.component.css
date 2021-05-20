@@ -11,7 +11,3 @@
   height: 100%;
   width: 100%;
 }
-
-.leaflet-popup-pane {
-  z-index: 700 !important;
-}
