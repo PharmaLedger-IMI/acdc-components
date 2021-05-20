@@ -1,4 +1,0 @@
-delete /
-addfolder code
-mount ../cardinal/seed /cardinal
-mount ../themes/*/seed /themes/*
