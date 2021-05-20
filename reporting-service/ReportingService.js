@@ -63,7 +63,7 @@ class ReportingService {
         model.acdc = model.acdc || {};
 
         self.settingsService.readSetting(SETTINGS.enableAcdc, (err, acdcSetting) => {
-            acdcSetting = !(err || !acdcSetting || acdcSetting !== 'true');
+            acdcSetting = !(err || !acdcSetting);
 
             // model.acdc.enabled = self._getCheckboxModel("input-acdc-enabled",
             //     "Please contribute to fraud prevention by sharing unidentified data!",
@@ -77,7 +77,7 @@ class ReportingService {
                 ], acdcSetting + '');
 
             self.settingsService.readSetting(SETTINGS.didKey, (err, didSetting) => {
-                didSetting = !(err || !didSetting || didSetting !== "true");
+                didSetting = !(err || !didSetting);
                 //
                 // model.acdc.did = self._getCheckboxModel("input-acdc-did",
                 //     "Please help us prevent fraud by sharing an untraceable identifier",
@@ -91,7 +91,7 @@ class ReportingService {
                     ], didSetting + '');
 
                 self.settingsService.readSetting(SETTINGS.locationKey, (err, locationSetting) => {
-                    locationSetting = !(err || !locationSetting || locationSetting !== "true");
+                    locationSetting = !(err || !locationSetting);
                     // model.acdc.location = self._getCheckboxModel("input-acdc-location",
                     //     "Please help us identify counterfeit drugs by sharing your location",
                     //     "Share location?",

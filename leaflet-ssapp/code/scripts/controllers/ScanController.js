@@ -135,7 +135,7 @@ export default class ScanController extends ContainerController {
                             });
 
                         } else {
-                            evt.setBatchDSUStatus(true);
+                            evt.setBatchDSUStatus(false);
                             this.addConstProductDSUToHistory(gs1Fields, evt);
                         }
                     });
