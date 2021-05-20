@@ -1,52 +1,6 @@
-const {SETTINGS, ENDPOINT} = require('./constants');
-
-const formatDate = function(date){
-    return date.split('-').map(s => s.trim().slice(-2)).reverse().join('');
-}
-
-class ScanEvent {
-    productCode;
-    batch;
-    serialNumber;
-    expiryDate;
-    snCheckDateTime;
-
-    // user optional
-    snCheckLocation;
-    did;
-
-    // optional
-    batchDsuStatus;
-    productDsuStatus;
-
-    constructor(gs1Data){
-        this.batch = gs1Data.batchNumber;
-        this.productCode = gs1Data.gtin;
-        this.expiryDate = formatDate(gs1Data.expiryDate); // 10 - 12 - 2342 -> YYMMDD
-        this.serialNumber = gs1Data.serialNumber;
-        this.snCheckDateTime = Date.now();
-    }
-
-    _bindUserDetails(did, location){
-        this.did = did;
-        this.snCheckLocation = location;
-    }
-
-    setBatchDSUStatus(status){
-        this.batchDsuStatus = status;
-    }
-
-    setProductDSUStatus(status){
-        this.productDsuStatus = status;
-    }
-
-    /**
-     * Reports the event to ACDC via {@link ReportingService#_report}
-     * @param {function(err, response)} [callback]
-     */
-    report(callback){}
-}
-
+const {API_HUB_ENDPOINT, SETTINGS, ACDC_STATUS, HEADERS} = require('./constants');
+const ScanEvent = require('./model/ScanEvent');
+const ScanResult = require('./model/ScanResult');
 
 class ReportingService {
     constructor(dsuStorage, settingsService) {
@@ -205,8 +159,8 @@ class ReportingService {
     _bindModelChangeEvents(model){
         const self = this;
 
-        model.onChange("acdc.did.enabled", () => {
-            self.settingsService.writeSetting(SETTINGS.enableAcdc, model.acdc.enableAcdc.value === 'true', (err) => {
+        model.onChange("acdc.enabled.value", () => {
+            self.settingsService.writeSetting(SETTINGS.enableAcdc, model.acdc.enabled.value === 'true', (err) => {
                 if (err)
                     console.log(`Could not update ${SETTINGS.enableAcdc} in settings`, err);
             });
@@ -279,30 +233,38 @@ class ReportingService {
 
     _report(evt, callback){
         const self = this;
-
-        callback = callback || function(err, result){
+        self.settingsService.readSetting(SETTINGS.enableAcdc, (err, enabled) => {
             if (err)
-                return console.log(err);
-            console.log(JSON.stringify(result));
-        }
+                return callback(err);
 
-        this._bindUserDetails(evt, (err, boundEvt) => {
-            if (err)
-                return callback(`Could not bind user details`);
-            self.http.doPost(ENDPOINT, JSON.stringify(boundEvt), callback);
+            if (!enabled)
+                return callback ? callback(undefined, new ScanResult()) : undefined;
+
+            callback = callback || function(err, result){
+                if (err)
+                    return console.log(err);
+                console.log(JSON.stringify(result));
+            }
+
+            this._bindUserDetails(evt, (err, boundEvt) => {
+                if (err)
+                    return callback(`Could not bind user details`);
+                self.http.doPost(API_HUB_ENDPOINT, JSON.stringify(boundEvt), HEADERS, callback);
+            });
         });
     }
 }
 
 let reportingService;
 
-const getAcdc = function(dsuStorage, settingsServices){
+const getInstance = function(dsuStorage, settingsServices){
     if (!reportingService)
         reportingService = new ReportingService(dsuStorage, settingsServices);
     return reportingService;
 }
 
 module.exports = {
-    getAcdc
+    getInstance,
+    ACDC_STATUS
 };
 

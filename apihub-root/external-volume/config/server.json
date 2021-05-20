@@ -14,11 +14,16 @@
     "bricking",
     "anchoring",
     "dsu-wizard",
+    "acdc-reporting",
     "gtin-dsu-wizard",
     "debugLogger",
     "staticServer"
   ],
   "endpointsConfig": {
+    "acdc-reporting": {
+      "module": "./../../reporting-service/middleware",
+      "function": "Init"
+    },
     "gtin-dsu-wizard": {
       "module": "./../../gtin-dsu-wizard"
     },
