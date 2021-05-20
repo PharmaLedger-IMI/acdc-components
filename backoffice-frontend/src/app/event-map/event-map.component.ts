@@ -20,6 +20,10 @@ export class EventMapComponent {
       const markers = this.buildMarkers(events);
       this.resetMap();
       this.map = this.buildMap(markers);
+
+      this.map.on('click', (ev: any) => {
+        console.log('# map', ev);
+      });
     }
   }
 
@@ -36,9 +40,9 @@ export class EventMapComponent {
 
     const markers = L.layerGroup(dataSource);
     const markersClusters = L.markerClusterGroup({
-      chunkedLoading: true,
-      disableClusteringAtZoom: 11,
-      spiderfyOnMaxZoom: false
+      // chunkedLoading: true,
+      // disableClusteringAtZoom: 11,
+      // spiderfyOnMaxZoom: false
     });
     markersClusters.addLayer(markers);
 
@@ -64,7 +68,12 @@ export class EventMapComponent {
       const icon = this.buildMarkerIcon(result);
       const popup = this.buildMarkerPopup(event.eventId, [eventInputData.productCode, eventOutputData.nameMedicinalProduct, result]);
 
-      return L.marker([lat, long], {icon}).bindPopup(popup);
+      const marker = L.marker([lat, long], {icon}).bindPopup(popup).openPopup();
+      marker.on('click', (ev: any) => {
+        console.log('# marker', ev);
+      });
+
+      return marker;
     });
   }
 
