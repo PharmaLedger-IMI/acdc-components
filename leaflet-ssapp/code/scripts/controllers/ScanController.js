@@ -14,7 +14,7 @@ export default class ScanController extends ContainerController {
         this.setModel({data: '', hasCode: false, hasError: false, nativeSupport: false, useScandit: false});
         this.settingsService = new SettingsService(this.DSUStorage);
         this.history = history;
-        this.acdc = require('acdc').ReportingService.getInstance(this.DSUStorage, this.settingsService);
+        this.acdc = require('acdc').ReportingService.getInstance(this.settingsService);
         this.model.onChange("data", () => {
             this.process(this.parseGS1Code(this.model.data));
         });

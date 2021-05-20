@@ -1,7 +1,18 @@
 const {ACDC_STATUS} = require('../constants')
 
-module.exports = class ScanResult{
+/**
+ * Represents the scan resul from ACDC
+ * @class ScanResult
+ * @module Model
+ */
+class ScanResult{
+    /**
+     * {{}} the scan result definitions
+     */
     snCheckResult;
+    /**
+     * {string} the mahId for the provided product
+     */
     mahId;
     acdcStatus = ACDC_STATUS.DISABLED;
     err;
@@ -13,3 +24,5 @@ module.exports = class ScanResult{
                     this[prop] = props[prop];
     }
 }
+
+module.exports = ScanResult;

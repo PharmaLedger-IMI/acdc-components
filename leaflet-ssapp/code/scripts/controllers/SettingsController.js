@@ -83,7 +83,7 @@ export default class SettingsController extends ContainerController {
         });
 
         // ACDC integration settings
-        this.acdc = require('acdc').ReportingService.getInstance(this.DSUStorage, this.settingsService);
+        this.acdc = require('acdc').ReportingService.getInstance(this.settingsService);
 
         this.acdc.setSettingsToModel(this.model, err => console.log(err
             ? `Error Binding ACDC settings to model: ${err}`

@@ -2,9 +2,13 @@ const {API_HUB_ENDPOINT, SETTINGS, ACDC_STATUS, HEADERS} = require('./constants'
 const ScanEvent = require('./model/ScanEvent');
 const ScanResult = require('./model/ScanResult');
 
+/**
+ * Class responsible for managing ACDC integration in the eLeafletApp
+ * @class ReportingService
+ * @module Reporting
+ */
 class ReportingService {
-    constructor(dsuStorage, settingsService) {
-        this.storage = dsuStorage;
+    constructor(settingsService) {
         this.settingsService = settingsService;
         this.http = require('opendsu').loadApi('http');
     }
@@ -257,9 +261,16 @@ class ReportingService {
 
 let reportingService;
 
-const getInstance = function(dsuStorage, settingsServices){
+/**
+ * Singleton enforcing method
+ * @param {SettingServices} [settingsServices] the App's settings provider
+ * @return {ReportingService}
+ * @module Reporting
+ */
+const getInstance = function(settingsServices){
     if (!reportingService)
-        reportingService = new ReportingService(dsuStorage, settingsServices);
+        reportingService = new ReportingService(settingsServices);
+
     return reportingService;
 }
 
