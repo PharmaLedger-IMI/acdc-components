@@ -215,7 +215,10 @@ export class EventComponent implements OnInit {
     this.getEvents(this.dataHandler.pageSize, 0);
   }
 
-  /** TODO */
+  /** Handle add user inputs in chip inputs
+   * @param chipInputFilter - object metadata to identifier the chipInput
+   * @param event - object input element from html DOM
+   */
   handleAddChip(chipInputFilter: any, event: MatChipInputEvent): void {
     console.log('chips.add -> chipInputFilter=', chipInputFilter);
     console.log('chips.add -> event=', event);
@@ -228,7 +231,10 @@ export class EventComponent implements OnInit {
     console.log('event.component.handleAddChip chipsInputFilters=', this.chipsInputs);
   }
 
-  /** TODO */
+  /** Handle remove inputs in chip inputs
+   * @param chipInputFilter - object metadata to identifier the chipInput
+   * @param element - user input data (string)
+   */
   handleRemoveChip(chipInputFilter: any, element: any): void {
     console.log('chips.remove -> chipInputFilter=', chipInputFilter);
     console.log('chips.remove -> element=', element);
@@ -237,6 +243,9 @@ export class EventComponent implements OnInit {
     console.log('event.component.handleRemoveChip chipsInputFilters=', this.chipsInputs);
   }
 
+  /** Handle the change of checkboxes in the selection of CUSTOM columns
+   * @param event - object with checkBox status and input element from html DOM
+   */
   handleCheckChange(event: any): void {
     const {checked, source} = event;
     const value = source.value;
@@ -253,6 +262,9 @@ export class EventComponent implements OnInit {
     console.log('event.component.handleCheckChange dataHandler =', this.dataHandlerForm.get('checkColumns')?.value);
   }
 
+  /** Handle the change of checkboxes in the selection of DEFAULT columns
+   * * @param event - object with checkBox status and input element from html DOM
+   */
   handleCheckChangeDefault(event: any): void {
     const {checked, source} = event;
     const value = source.value;
