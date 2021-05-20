@@ -33,7 +33,7 @@ export class EventSearchQuery {
 
     @IsOptional()
     @IsString({each: true})
-    readonly gtin: string
+    readonly productCode: string
 
     @IsOptional()
     @IsString({each: true})
@@ -45,7 +45,11 @@ export class EventSearchQuery {
 
     @IsOptional()
     @IsString({each: true})
-    readonly productName: string
+    readonly nameMedicinalProduct: string
+
+    @IsOptional()
+    @IsString({each: true})
+    readonly productStatus: string
 
     @IsOptional()
     @IsDateString()

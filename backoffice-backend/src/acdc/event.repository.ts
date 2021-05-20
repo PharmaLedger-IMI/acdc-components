@@ -70,8 +70,11 @@ export class EventRepository extends Repository<Event> {
             serialNumber(serialNumbers: string[] | string): string {
                 return getJsonWhereStatement('eventinput.eventinputdata', 'serialNumber', serialNumbers)
             },
-            productName(productNames: string[]  | string): string {
-                return getJsonWhereStatement('eventinput.eventinputdata', 'productName', productNames)
+            nameMedicinalProduct(nameMedicinalProducts: string[]  | string): string {
+                return getJsonWhereStatement('eventoutput.eventoutputdata', 'nameMedicinalProduct', nameMedicinalProducts)
+            },
+            productStatus(productsStatus: string[] | string): string {
+                return getJsonWhereStatement('eventoutput.eventoutputdata', 'productStatus', productsStatus)
             },
             // expiryDateStart(date: string): string {
             //     return `eventinput.eventinputdata ->> 'expiryDate' >= '${date}'`
