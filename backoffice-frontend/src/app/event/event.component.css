@@ -26,14 +26,6 @@ table {
   width: 95%;
 }
 
-.mat-header-row {
-  background: #4054b4;
-}
-
-.mat-header-cell {
-  color: white;
-}
-
 .table-event-data-cell.input {
   color: #ee9900;
 }

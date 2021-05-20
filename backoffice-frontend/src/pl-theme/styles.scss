@@ -244,3 +244,11 @@ $altTheme: mat-dark-theme($theme-primary, $theme-accent, $theme-warn);
     font-family: 'Roboto';
   }
 }
+
+.mat-header-row {
+  background: #00345b;
+}
+
+.mat-header-cell {
+  color: white;
+}
