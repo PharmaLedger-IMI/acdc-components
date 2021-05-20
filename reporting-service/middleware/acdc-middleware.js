@@ -41,7 +41,7 @@ function startACDCMiddleware(server){
 
         parseRequestBody(req, (err, event) => {
             if (err)
-                return sendResponse(new ScanResult({err: `Error parsing input ${req.body}: ${err}`}));
+                return sendResponse(new ScanResult({acdcStatus: undefined, err: `Error parsing input ${req.body}: ${err}`}));
 
             http.doPost(ENDPOINT, JSON.stringify(event), HEADERS, (err, result) => {
                 if (err)
