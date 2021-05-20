@@ -140,7 +140,7 @@ export class EventComponent implements OnInit {
 
   /** Init function */
   ngOnInit(): void {
-    this.appComponent.setNavMenuHighlight('data', 'event', 'List of Event (Scans performed by dummy users)');
+    this.appComponent.setNavMenuHighlight('data', 'event', 'List of Event (Scans performed by users)');
     this.getEvents(this.dataHandler.pageSize, this.dataHandler.pageIndex);
   }
 
@@ -155,7 +155,7 @@ export class EventComponent implements OnInit {
       {name: 'limit', value: pageSize},
     ];
 
-    const acceptFilterForm = ['createdOnStart', 'createdOnEnd', 'expiryDateStart', 'expiryDateEnd'];
+    const acceptFilterForm = ['createdOnStart', 'createdOnEnd'];
     for (const [name, value] of Object.entries(this.dataHandler)) {
       if (acceptFilterForm.includes(name) && !!value) {
         filters.push({
