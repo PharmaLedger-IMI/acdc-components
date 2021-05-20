@@ -27,11 +27,12 @@ export class EventComponent implements OnInit {
   chipsInputs: ChipInputFilter[] = [
     {label: 'Event ids', name: 'eventId', elements: []},
     {label: 'Batches', name: 'batch', elements: []},
-    {label: 'GTIN', name: 'gtin', elements: []},
+    {label: 'Product Code', name: 'productCode', elements: []},
     {label: 'Serial Number', name: 'serialNumber', elements: []},
-    {label: 'Product Name', name: 'nameMedicinalProduct', elements: []},
+    {label: 'Name Medicinal Product', name: 'nameMedicinalProduct', elements: []},
     {label: 'Location (lat, long)', name: 'snCheckLocation', elements: []},
     {label: 'Check Result', name: 'snCheckResult', elements: []},
+    {label: 'Product Status', name: 'productStatus', elements: []},
   ];
 
   /** Object for dynamically attributes/data */
@@ -68,48 +69,53 @@ export class EventComponent implements OnInit {
     {label: 'Expiry Date', value: 'expiryDate'},
     {label: 'Serial Number', value: 'serialNumber'},
     {label: 'Check Result', value: 'snCheckResult'},
+    {label: 'Product Status', value: 'productStatus'},
   ];
 
   columnsData: { [key: string]: { label: string, data: any } } = {
     eventId: {
       label: 'Event Id',
-      data: (event: any) => event.eventId.slice(0, 8)
+      data: (event: Event) => event.eventId.slice(0, 8)
     },
     createdOn: {
       label: 'Created On',
-      data: (event: any) => this.datePrettify(event.createdOn)
+      data: (event: Event) => this.datePrettify(event.createdOn)
     },
     eventInputData: {
       label: 'Event Inputs[0]',
-      data: (event: any) => event.eventInputs[0].eventInputData
+      data: (event: Event) => event.eventInputs[0].eventInputData
     },
     eventOutputData: {
       label: 'Event Outputs[0]',
-      data: (event: any) => event.eventOutputs[0].eventOutputData
+      data: (event: Event) => event.eventOutputs[0].eventOutputData
     },
     productCode: {
       label: 'Product Code',
-      data: (event: any) => event.eventInputs[0].eventInputData.productCode
+      data: (event: Event) => event.eventInputs[0].eventInputData.productCode
     },
     batch: {
       label: 'Batch',
-      data: (event: any) => event.eventInputs[0].eventInputData.batch
+      data: (event: Event) => event.eventInputs[0].eventInputData.batch
     },
     nameMedicinalProduct: {
       label: 'Name Medicinal Product',
-      data: (event: any) => event.eventOutputs[0].eventOutputData.nameMedicinalProduct
+      data: (event: Event) => event.eventOutputs[0].eventOutputData.nameMedicinalProduct
+    },
+    productStatus: {
+      label: 'Product Status',
+      data: (event: Event) => event.eventOutputs[0].eventOutputData.productStatus
     },
     expiryDate: {
       label: 'Expiry Date',
-      data: (event: any) => this.dateFormatYYMMDD(event.eventInputs[0].eventInputData.expireDate)
+      data: (event: Event) => event.eventInputs[0].eventInputData.expiryDate
     },
     serialNumber: {
       label: 'Serial Number',
-      data: (event: any) => event.eventInputs[0].eventInputData.serialNumber
+      data: (event: Event) => event.eventInputs[0].eventInputData.serialNumber
     },
     snCheckResult: {
       label: 'Check Result',
-      data: (event: any) => event.eventOutputs[0].eventOutputData.snCheckResult
+      data: (event: Event) => event.eventOutputs[0].eventOutputData.snCheckResult
     }
   };
 
@@ -134,7 +140,7 @@ export class EventComponent implements OnInit {
 
   /** Init function */
   ngOnInit(): void {
-    this.appComponent.setNavMenuHighlight('data', 'event', 'List of Event (Scans perfomed by users)');
+    this.appComponent.setNavMenuHighlight('data', 'event', 'List of Event (Scans performed by dummy users)');
     this.getEvents(this.dataHandler.pageSize, this.dataHandler.pageIndex);
   }
 
@@ -276,15 +282,6 @@ export class EventComponent implements OnInit {
     const s = d.getSeconds();
     return `${year}-${month}-${day} ${h}:${m}:${s}`;
   }
-
-  dateFormatYYMMDD(date: Date): string {
-    const d = new Date(date);
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const year = d.getFullYear().toString().substr(-2);;
-    return `${year}${month}${day}`;
-  }
-
 }
 
 interface DataHandlerForm {
