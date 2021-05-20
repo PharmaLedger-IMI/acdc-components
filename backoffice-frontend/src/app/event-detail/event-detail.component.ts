@@ -29,7 +29,7 @@ export class EventDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appComponent.setNavMenuHighlight('admin', 'event', 'Event Detail');
+    this.appComponent.setNavMenuHighlight('data', 'event', 'Event Detail');
     this.getEvent();
   }
 
