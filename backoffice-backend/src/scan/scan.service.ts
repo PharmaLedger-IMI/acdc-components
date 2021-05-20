@@ -1,7 +1,7 @@
 import {Injectable} from "@nestjs/common"
 import {EventRepository} from "../acdc/event.repository"
 import {EventInputDataDto} from "../acdc/eventinput.dto"
-import {EventOuputDataDto, EventOutputDto} from "../acdc/eventoutput.dto"
+import {EventOuputDataDto} from "../acdc/eventoutput.dto"
 import {EventInputRepository} from "../acdc/eventinput.repository"
 import {EventOutputRepository} from "../acdc/eventoutput.repository"
 import {InjectRepository} from "@nestjs/typeorm"
@@ -40,15 +40,15 @@ export class ScanService {
         return eventOutputData
     }
 
-    private static dummyVerification(): string {
-        const authenticationResponse = ["Authentic", "Suspect", "TimeOut", "UserAbort", "Unsure"]
-        const randomIdx = (Math.random() * authenticationResponse.length) | 0
-        return authenticationResponse[randomIdx]
+    private static randomChoice(arr: string[]): string {
+        const randomIdx = (Math.random() * arr.length) | 0
+        return arr[randomIdx]
     }
 
     private static async dummyCheckAuthentication(productCode: string): Promise<EventOuputDataDto> {
         let response = new EventOuputDataDto();
-        response.snCheckResult = ScanService.dummyVerification();
+        response.snCheckResult = ScanService.randomChoice(["Authentic", "Suspect", "TimeOut", "UserAbort", "Unsure"]);
+        response.nameMedicinalProduct = ScanService.randomChoice(["Cosentyx 150mg/ml x2", "Ritalin LA HGC 40mg 1x30", "Aspirin 500mg 1x25", "Keytruda 25mg/ml"]);
         let mahCollection = await Mah.find({});
         if (mahCollection.length > 0) {
             let mah = mahCollection[0];

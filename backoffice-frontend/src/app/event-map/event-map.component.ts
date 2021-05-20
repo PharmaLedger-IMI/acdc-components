@@ -62,7 +62,7 @@ export class EventMapComponent {
       const result = eventOutputData.snCheckResult;
 
       const icon = this.buildMarkerIcon(result);
-      const popup = this.buildMarkerPopup(event.eventId, [eventInputData.gtin, eventInputData.productName, result]);
+      const popup = this.buildMarkerPopup(event.eventId, [eventInputData.productCode, eventOutputData.nameMedicinalProduct, result]);
 
       return L.marker([lat, long], {icon}).bindPopup(popup);
     });

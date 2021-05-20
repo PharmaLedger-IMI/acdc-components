@@ -18,6 +18,7 @@ export class ScanController {
             type: "object",
             properties: {
                 snCheckResult: {type: 'string'},
+                nameMedicinalProduct: {type: 'string'},
                 mahId: {type: 'string'},
                 mahName: {type: 'string'},
             }

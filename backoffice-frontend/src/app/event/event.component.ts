@@ -29,7 +29,7 @@ export class EventComponent implements OnInit {
     {label: 'Batches', name: 'batch', elements: []},
     {label: 'GTIN', name: 'gtin', elements: []},
     {label: 'Serial Number', name: 'serialNumber', elements: []},
-    {label: 'Product Name', name: 'productName', elements: []},
+    {label: 'Product Name', name: 'nameMedicinalProduct', elements: []},
     {label: 'Location (lat, long)', name: 'snCheckLocation', elements: []},
     {label: 'Check Result', name: 'snCheckResult', elements: []},
   ];
@@ -64,7 +64,7 @@ export class EventComponent implements OnInit {
   checkInputsCustom = [
     {label: 'Product Code', value: 'productCode'},
     {label: 'Batch', value: 'batch'},
-    {label: 'Product Name', value: 'productName'},
+    {label: 'Name Medicinal Product', value: 'nameMedicinalProduct'},
     {label: 'Expiry Date', value: 'expiryDate'},
     {label: 'Serial Number', value: 'serialNumber'},
     {label: 'Check Result', value: 'snCheckResult'},
@@ -95,9 +95,9 @@ export class EventComponent implements OnInit {
       label: 'Batch',
       data: (event: any) => event.eventInputs[0].eventInputData.batch
     },
-    productName: {
-      label: 'Product Name',
-      data: (event: any) => event.eventInputs[0].eventInputData.productName
+    nameMedicinalProduct: {
+      label: 'Name Medicinal Product',
+      data: (event: any) => event.eventOutputs[0].eventOutputData.nameMedicinalProduct
     },
     expiryDate: {
       label: 'Expiry Date',

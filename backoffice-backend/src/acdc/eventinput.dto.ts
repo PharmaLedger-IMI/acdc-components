@@ -1,7 +1,7 @@
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger"
 
 export class EventInputDataDto {
-    @ApiProperty({description: "GTIN/NTIN"})
+    @ApiProperty({description: "GTIN, NTIN or PPN only"})
     readonly productCode: string
 
     @ApiProperty({description: "Lot number or batch ID, up to 10 digits, alphanumeric"})
@@ -9,9 +9,6 @@ export class EventInputDataDto {
 
     @ApiProperty({description: "Serial number, up to 20 digits alphanumeric"})
     readonly serialNumber: string
-
-    @ApiProperty({description: "Name of the product"})
-    readonly productName: string
 
     @ApiProperty({description: "Expiration date in format: YYMMDD"})
     readonly expiryDate: Date
