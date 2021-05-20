@@ -8,14 +8,15 @@ apihub-root/dsu-fabric-wallet/wallet-patch/seed
 apihub-root/leaflet-wallet/wallet-patch/seed
 apihub-root/seedsBackup
 apihub-root/external-volume/dsu-wizard/
+apihub-root/external-volume/config/issuers-public-identities
 
 reporting-service/build/bundles
+reporting-service/node_modules
 
 mobile/scan-app
 privatesky
 menu-wallet-prototype
-leaflet-ssapp/code/constitution
-leaflet-ssapp/code/scripts/bundles
+leaflet-ssapp
 apihub-root/leaflet-wallet/loader
 apihub-root/dsu-fabric-wallet/loader
 themes
