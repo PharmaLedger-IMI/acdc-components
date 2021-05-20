@@ -29,8 +29,8 @@ function startACDCMiddleware(server){
                 return console.log(`Error parsing body: ${err}`);
 
             const sendResponse = function(response){
-                res.status(200);
-                res.send(JSON.stringify(response));
+                response.statusCode = 200;
+                res.write(JSON.stringify(response));
                 res.end();
             }
 

@@ -7,8 +7,9 @@ module.exports = class ScanResult{
     err;
 
     constructor(props){
-        for(let prop in props)
-            if (this.hasOwnProperty(prop))
-                this[prop] = props[prop];
+        if (!!props)
+            for(let prop in props)
+                if (props.hasOwnProperty(prop))
+                    this[prop] = props[prop];
     }
 }
