@@ -1,4 +1,7 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <div *ngIf="errorMessage" class="form-error-messages" style="display: inline;">
+        {{errorMessage}}
+    </div>
     <div>
         <label>Username:
             <input id="username" formControlName="username" placeholder="username" type="text" class="form-control"
@@ -17,10 +20,5 @@
         </label>
     </div>
     <button class="button" type="submit">Login</button>
-    <p>For testing purposes, please login with
-        <br />
-        Username=j******@pdmfc.com
-        <br />
-        Password=123456
-    </p>
+    <p>For testing purposes, please login with your PharmaLedger ACDC team email, and Password=123456.</p>
 </form>

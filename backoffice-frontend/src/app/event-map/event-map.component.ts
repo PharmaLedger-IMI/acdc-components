@@ -1,7 +1,8 @@
 import {Component, Input} from '@angular/core';
-import {Event} from '../event.model';
+import {Event} from '../acdc/event.model';
 import * as L from 'leaflet';
 import {Icon, Map, Marker} from 'leaflet';
+import 'leaflet.markercluster';
 
 @Component({
   selector: 'app-event-map',
@@ -19,6 +20,10 @@ export class EventMapComponent {
       const markers = this.buildMarkers(events);
       this.resetMap();
       this.map = this.buildMap(markers);
+
+      this.map.on('click', (ev: any) => {
+        console.log('# map', ev);
+      });
     }
   }
 
@@ -32,13 +37,20 @@ export class EventMapComponent {
       minZoom: 3,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
+
     const markers = L.layerGroup(dataSource);
+    const markersClusters = L.markerClusterGroup({
+      // chunkedLoading: true,
+      // disableClusteringAtZoom: 11,
+      // spiderfyOnMaxZoom: false
+    });
+    markersClusters.addLayer(markers);
 
     // TODO -> Set map center dynamically
     return L.map('map', {
       center: [46.28945, 2.351519],
       zoom: 5,
-      layers: [title, markers]
+      layers: [title, markersClusters]
     });
   }
 
@@ -54,9 +66,14 @@ export class EventMapComponent {
       const result = eventOutputData.snCheckResult;
 
       const icon = this.buildMarkerIcon(result);
-      const popup = this.buildMarkerPopup(event.eventId, [eventInputData.gtin, eventInputData.productName, result]);
+      const popup = this.buildMarkerPopup(event.eventId, [eventInputData.productCode, eventOutputData.nameMedicinalProduct, result]);
 
-      return L.marker([lat, long], {icon}).bindPopup(popup);
+      const marker = L.marker([lat, long], {icon}).bindPopup(popup).openPopup();
+      marker.on('click', (ev: any) => {
+        console.log('# marker', ev);
+      });
+
+      return marker;
     });
   }
 

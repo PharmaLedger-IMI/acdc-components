@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Validators } from '@angular/forms';
 
-import { User } from '../user.model';
+import { User } from '../acdc/user.model';
 import { MessageService } from '../message.service';
 import { AuthService } from '../auth/auth.service';
 import { AppComponent } from '../app.component';
@@ -21,6 +21,8 @@ export class LoginComponent implements OnInit {
     password: ['']
   });
 
+  errorMessage = "";
+  
   constructor(
     private appComponent: AppComponent,
     private formBuilder: FormBuilder,
@@ -32,8 +34,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.appComponent.logout();
-    this.appComponent.setNavMenuHighlight("", "login", "Login");
+    this.appComponent.setNavMenuHighlight("", "login", "ACDC DEMONSTRATOR Login");
     this.loginForm.reset();
+    this.errorMessage = "";
+    if (this.authService.isLoggedIn())
+      this.router.navigate(['/event']); // TODO navigate to proper profile entry page
   }
 
   login() {
@@ -51,13 +56,13 @@ export class LoginComponent implements OnInit {
         if (err) {
           self.log("Logged in \"" + auUsername + "\" failed " + JSON.stringify(err));
           if (err?.status == 401) { // HTTP status Unauthorized
-            self.log("WRONG USER/PASS! TRY AGAIN!");
+            self.errorMessage = "Wrong username or password!";
           } else {
-            self.log("Weird error!");
+            self.errorMessage = "Weird error!";
           }
         } else {
           self.log("Logged in " + auUsername + " res=" + JSON.stringify(res));
-          self.router.navigate(['/appresource']); // TODO navigate to proper profile entry page
+          self.router.navigate(['/event']); // TODO navigate to proper profile entry page
         }
       }
     );

@@ -1,53 +1,57 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <button mat-icon-button>
-      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
-    </button>
-    <h1>{{title}}</h1>
-    <div style="padding-left: 4em; float: right;">
-      <div style="font-size: small; height: 1em; line-height: 1em;" *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
-      <div style="font-size: 0.4em; height: 1em; line-height: 1em;">{{sideTime.toISOString()}}</div>
-      <div style="font-size: 0.4em; height: 1em; line-height: 1em;">v{{v.version}}-{{v.hash}}</div>
+    <div fxFlex fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button>
+        <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+      </button>
+      <h1>{{title}}</h1>
     </div>
-    <div><img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/></div>
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <div style="padding-left: 4em; float: right;">
+        <div style="font-size: small; height: 1em; line-height: 1em;" *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
+        <div style="font-size: 0.4em; height: 1em; line-height: 1em;">{{sideTime.toISOString()}}</div>
+        <div style="font-size: 0.4em; height: 1em; line-height: 1em;">v{{v.version}}-{{v.hash}}</div>
+      </div>
+      <div><a [routerLink]="['/event']"><img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/></a></div>
+    </div>
   </mat-toolbar-row>
 </mat-toolbar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="side" [(opened)]="sideNavOpened" style="padding: 5px; width: 14em;">
     <mat-accordion [multi]="false">
-      <mat-expansion-panel *ngIf="authService.hasPhysicianProfile()" [expanded]="sideNavMenu1Item=='data'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='data'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Scan-Data
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='data' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/event">Event</a>
+          <mat-list-option [selected]="sideNavMenu1Item=='data' && sideNavMenu2Item=='event'">
+            <a mat-list-item routerLink="/event">Events</a>
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasSiteProfile()" [expanded]="sideNavMenu1Item=='site'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='rule'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Rules
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='rules' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/site">Dashboard</a>
+          <mat-list-option [selected]="sideNavMenu1Item=='rule' && sideNavMenu2Item=='dashboard'">
+            <a mat-list-item routerLink="/rule">Dashboard</a>
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasSponsorProfile()" [expanded]="sideNavMenu1Item=='sponsor'">
+      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='alert'">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Alerts
           </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='alerts' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/sponsor">Dashboard</a>
+          <mat-list-option [selected]="sideNavMenu1Item=='alert' && sideNavMenu2Item=='dashboard'">
+            <a mat-list-item routerLink="/alerts">Dashboard</a>
           </mat-list-option>
         </mat-selection-list>
       </mat-expansion-panel>

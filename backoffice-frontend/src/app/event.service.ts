@@ -5,43 +5,42 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 import {environment} from '../environments/environment';
 import {MessageService} from './message.service';
-import {Events} from './events.model';
-import {Event} from './event.model';
+import {Events} from './acdc/events.model';
+import {Event} from './acdc/event.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
+
+  constructor(private http: HttpClient, private messageService: MessageService) {
+  }
+
+  private eventUrl = environment.restBaseUrl + '/acdc/event';
+  private eventSearchUrl = environment.restBaseUrl + '/acdc/event/search';
   httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
 
-  private eventUrl = environment.restBaseUrl + '/acdc/event';
-  private eventSearchUrl = environment.restBaseUrl + '/acdc/event/search';
-
-  constructor(
-    private http: HttpClient,
-    private messageService: MessageService) {
-  }
-
   /**
    * Perform API Request and get a list of events
-   * @param page Number of page
-   * @param limit Number of records in each page
-   * @param startDate from createdOn field
-   * @param endDate from createdOn field
+   * @param filters -> filters to apply in the Http request according to the API documentation for the "Event Search" route
    */
-  getEvents(page: number, limit: number, startDate: string = '', endDate: string = ''): Observable<Events> {
+  getEvents(filters: SearchFilter[]): Observable<Events> {
     const url = this.eventSearchUrl;
-    const query = `?page=${page}&limit=${limit}&startDate=${startDate}&endDate=${endDate}`;
-    const tempUrl = `${this.eventSearchUrl + query}`;
     this.messageService.add(`EventService: fetching eventCollection from ${url}`);
 
     let params = new HttpParams();
-    params = params.append('page', page.toString());
-    params = params.append('limit', limit.toString());
-    params = params.append('startDate', startDate);
-    params = params.append('endDate', endDate);
+    filters.forEach(filter => {
+      if (Array.isArray(filter.value)) {
+        filter.value.forEach(value => {
+          params = params.append(filter.name, value);
+        });
+      } else {
+        params = params.append(filter.name, filter.value);
+      }
+    });
+    console.log('event.service.getEvents params=', params);
 
     return this.http.get<Events>(url, {params}).pipe(
       tap(_ => this.log(`fetched Events`)),
@@ -83,4 +82,9 @@ export class EventService {
     this.messageService.add(`EventService: ${message}`);
   }
 
+}
+
+export interface SearchFilter {
+  name: string;
+  value: string;
 }

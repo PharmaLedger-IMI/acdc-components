@@ -26,35 +26,24 @@ table {
   width: 95%;
 }
 
-.mat-header-row {
-  background: #4054b4;
-}
-
-.mat-header-cell {
-  color: white;
-}
-
-.event-data-cell {
-  width: 35%;
-}
-
-.event-data-cell.input {
+.table-event-data-cell.input {
   color: #ee9900;
 }
 
-.event-data-cell.output {
+.table-event-data-cell.output {
   color: #2f9c0a;
 }
 
-.btn-row {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
-.btn-row button {
-  margin-right: 15px;
-}
-
 mat-form-field {
-  margin-right: 25px;
+  padding: 2px;
+  margin-right: 10px;
+  width: 80%;
+}
+
+.mat-expansion-panel-header-description {
+  justify-content: flex-end;
+}
+
+::ng-deep .mat-sort-header-arrow {
+  color: white;
 }

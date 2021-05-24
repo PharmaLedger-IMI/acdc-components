@@ -1,9 +1,8 @@
 export interface EventInputData {
-  gtin: string;
+  productCode: string;
   batch: string;
   serialNumber: string;
-  productName: string;
-  expireDate: Date;
+  expiryDate: Date;
   snCheckDateTime: Date;
   snCheckLocation: string;
 }

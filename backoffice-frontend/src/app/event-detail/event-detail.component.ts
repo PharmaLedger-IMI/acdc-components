@@ -1,12 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {AppComponent} from '../app.component';
-import {Event} from '../event.model';
+import {Event} from '../acdc/event.model';
 import {EventService} from '../event.service';
 import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
-import {EventInput} from '../eventinput.model';
-import {EventOutput} from '../eventoutput.model';
+import {EventInput} from '../acdc/eventinput.model';
+import {EventOutput} from '../acdc/eventoutput.model';
 
 @Component({
   selector: 'app-event',
@@ -29,7 +29,7 @@ export class EventDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appComponent.setNavMenuHighlight('admin', 'event', 'Event Detail');
+    this.appComponent.setNavMenuHighlight('data', 'event', 'Event Detail');
     this.getEvent();
   }
 

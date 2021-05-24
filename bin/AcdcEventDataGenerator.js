@@ -2,99 +2,145 @@ const fetch = require('node-fetch')
 
 class AcdcEventDataGenerator {
     url = ""
-    checkDateTime = []
-    expirationDateTime = []
-    products = []
-    countries = {}
 
+    // nameMedicinalProduct it's just for reference with backend, not used in EventInput
+    products = [
+        {productCode: '01201419000158', nameMedicinalProduct: 'Cosentyx 150mg/ml x2'},
+        {productCode: '29653329154760', nameMedicinalProduct: 'Ritalin LA HGC 40mg 1x30'},
+        {productCode: '30652009514715', nameMedicinalProduct: 'Aspirin 500mg 1x25'},
+        {productCode: '49408945163108', nameMedicinalProduct: 'Keytruda 25mg/ml'},
+    ]
+
+    productStatus = [
+        'Released to market', 'Released to market', 'Released to market', 'Released to market', 'Released to market',
+        'Not released', 'Not released', 'Not released',
+        'Not registered', 'Not registered',
+        'Reported stolen',
+        'Reported destroyed',
+        'Reported suspect',
+    ]
+
+    // batch Prefix: for backend return ProductStatus for dummy scan response
+    batchPrefix = {
+        'Released to market': 'RMKT',
+        'Not released': 'NREG',
+        'Not registered': 'NREL',
+        'Reported stolen': 'RSTO',
+        'Reported destroyed': 'RDES',
+        'Reported suspect': 'RSUS',
+    }
+
+    // Countries that will be generated geolocation
+    countries = [
+        {code: "FR", lat: 46.227638, long: 2.213749},
+        {code: "DE", lat: 51.165691, long: 10.451526},
+        {code: "IT", lat: 41.87194, long: 12.56738},
+        {code: "PT", lat: 39.399872, long: -8.224454},
+        {code: "ES", lat: 40.463667, long: -3.74922},
+        {code: "US", lat: 40.654382, long: -103.994355},
+        {code: "BR", lat: -15.297258, long: -49.140362},
+        {code: "UK", lat: 52.111281, long: -0.992124},
+    ]
+
+    /** each product has multiple batches, each batch has a status and an expiration date
+     serial number = gtin + batch
+     checkDateTime -> aleatory
+     expirationDateTime -> according to batch (format: YYMMDD)
+     */
     constructor(url) {
         console.log("AcdcEventDataGenerator: initialized.")
         this.url = url
-        this.checkDateTime = this.buildRandomDate(200, 60)
-        this.expirationDateTime = this.buildRandomDate(10, 3)
-
-        const randomInterval = (min = 1000000, max = 9999999) => {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        this.products = [
-            { gtin: `0908881${randomInterval()}`, batchNumber: `SPM${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Cstyx 150mg/ml"},
-            { gtin: `0908882${randomInterval()}`, batchNumber: `SPN${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Cstyx 200mg/ml"},
-            { gtin: `0908883${randomInterval()}`, batchNumber: `SPO${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Cstyx 75mg/ml"},
-            { gtin: `0908884${randomInterval()}`, batchNumber: `SPP${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Abdxo 75mg/ml"},
-            { gtin: `0908885${randomInterval()}`, batchNumber: `SSQ${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Abdxo 45mg/ml"},
-            { gtin: `0908886${randomInterval()}`, batchNumber: `SSR${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Abdxo 150mg/ml"},
-            { gtin: `0908887${randomInterval()}`, batchNumber: `SSS${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Yuzyx 250mg/ml"},
-            { gtin: `0908888${randomInterval()}`, batchNumber: `SST${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Yuzyx 125mg/ml"},
-            { gtin: `0908889${randomInterval()}`, batchNumber: `SSU${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Yuzyx 400mg/ml"},
-            { gtin: `0908880${randomInterval()}`, batchNumber: `SSX${randomInterval(10, 99)}`, serialNumber: `91006482${randomInterval()}`, productName: "Amnid 40mg/ml"},
-        ]
-
-        // Countries that will be generated geolocation
-        this.countries = [
-            {code: "FR", lat: 46.227638, long: 2.213749},
-            {code: "DE", lat: 51.165691, long: 10.451526},
-            {code: "IT", lat: 41.87194, long: 12.56738},
-            {code: "PT", lat: 39.399872, long: -8.224454},
-            {code: "ES", lat: 40.463667, long: -3.74922}
-        ]
     }
 
-    // Generates a random date array, from today to the number of previous days informed
-    buildRandomDate(qty = 1, daysBefore = 1) {
-        let arr = []
-        for (let i = 0 ; i < qty ; i++){
-            const dateOffset = (24 * 60 * 60 * 1000) *  ((Math.random() * daysBefore) | 0); //60 days
-            const randomDate = new Date(new Date() - dateOffset)
-            arr.push(randomDate)
-        }
-        return arr
+    // Choose a random element from a list
+    randomChoice(list) {
+        const idx = (Math.random() * list.length) | 0
+        return list[idx]
     }
 
-    // Generate a random geolocation in format: { contry: country_code, geolocation: "lat, long" }
+    // Take a random number between two numbers
+    randomInterval(min = 1, max = 9) {
+        return Math.floor(Math.random() * (max - min + 1)) + min
+    }
+
+    // Format data to YYMMDD
+    dateFormatYYMMDD(date) {
+        const d = new Date(date);
+        const day = d.getDate().toString().padStart(2, '0');
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const year = d.getFullYear().toString().substr(-2);;
+        return `${year}${month}${day}`;
+    }
+
+    // Generates a random date between today and the number of previous days informed
+    buildRandomDate(untilDaysBefore = 1, callback = null) {
+        const dateOffset = (24 * 60 * 60 * 1000) * ((Math.random() * untilDaysBefore) | 0);
+        let randomDate = new Date(new Date() - dateOffset)
+        if(!!callback) {
+            randomDate = callback(randomDate)
+        }
+        return randomDate
+    }
+
+    // Generate a random geolocation
     buildDummyGeolocation() {
         const randomIdx = (Math.random() * this.countries.length) | 0
         const country = this.countries[randomIdx]
         const randomLat = (country.lat + (Math.random() * 1.835)).toFixed(6)
         const randomLong = (country.long + (Math.random() * 1.835)).toFixed(6)
-        return {country: country.code, geolocation: `${randomLat}, ${randomLong}`}
+        return `${randomLat}, ${randomLong}`
     }
 
-    // Generate a random metadata to input in scan route
-    buildDummyData() {
-        const randomProductIdx = (Math.random() * this.products.length) | 0
-        const randomExpDateIdx = (Math.random() * this.expirationDateTime.length) | 0
-        const randomCheckDateIdx = (Math.random() * this.checkDateTime.length) | 0
-        const location = this.buildDummyGeolocation()
-        const product = this.products[randomProductIdx]
+    // Build batches for each product
+    buildShipments(products, batchQtyMax = 1) {
+        const shipments = []
+        products.forEach(product => {
+            const batchQty = this.randomInterval(1, batchQtyMax)
+            for (let i = 0; i < batchQty; i++) {
+                const productCode = product.productCode
+                const expiryDate = this.buildRandomDate(90, this.dateFormatYYMMDD)
 
+                const productStatus = this.randomChoice(this.productStatus)
+                const batch = `${this.batchPrefix[productStatus]}${productCode.substr(0, 3)}${this.randomInterval(10000, 99999)}`
+                const serialNumber = productCode + batch
+
+                const shipment = {productCode, batch, serialNumber, expiryDate}
+                shipments.push(shipment)
+            }
+        })
+        return shipments
+    }
+
+    // Generate a random AcdcScan data structure
+    buildDummyScan(shipment) {
+        const snCheckDateTime = this.buildRandomDate(150)
+        const snCheckLocation = this.buildDummyGeolocation()
         return {
-            gtin: product.gtin,
-            batch: product.batchNumber,
-            serialNumber: product.serialNumber,
-            productName: `${location.country}-${product.productName}`,
-            expireDate: this.expirationDateTime[randomExpDateIdx],
-            snCheckDateTime: this.checkDateTime[randomCheckDateIdx],
-            snCheckLocation: location.geolocation
+            ...shipment,
+            snCheckDateTime,
+            snCheckLocation
         }
     }
 
     // Send dummy scan data to Acdc
-    populate(qty, verbose = false) {
+    async populate(qty, verbose = false) {
+        const shipments = this.buildShipments(this.products, Math.ceil(qty / 1000) + 1)
         console.log("AcdcEventDataGenerator: populating " + qty + " records...")
         for (let i = 1; i <= qty; i++) {
-            const data = this.buildDummyData()
+            const shipment = this.randomChoice(shipments)
+            const dummyData = this.buildDummyScan(shipment)
             fetch(this.url, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(data)
+                body: JSON.stringify(dummyData)
             }).then(res => res.json()).then(json => {
-                if(verbose) {
-                    console.log("count:", i, " product:", data.productName, "geolocation:",  data.snCheckLocation," response:", json)
+                if (verbose) {
+                    console.log("count:", i, dummyData, " response:", json)
                 }
             }).catch(err => {
                 throw new Error(err)
             });
+            await new Promise(r => setTimeout(r, 85));
         }
     }
 }
@@ -102,5 +148,5 @@ class AcdcEventDataGenerator {
 if (require.main === module) {
     const url = "http://localhost:3000/borest/scan"
     const generator = new AcdcEventDataGenerator(url)
-    generator.populate(3000, true)
+    generator.populate(3000, true).then(r => console.log('AcdcEventDataGenerator finish'))
 }

@@ -13,6 +13,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
+import { MatChipsModule } from '@angular/material/chips';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +28,11 @@ import { AuthService } from './auth/auth.service';
 import { EventComponent } from './event/event.component';
 import { EventDetailComponent } from './event-detail/event-detail.component';
 import { EventMapComponent } from './event-map/event-map.component';
+import { MatSortModule } from '@angular/material/sort';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TodoComponent } from './todo/todo.component';
+import { LoggedInGuard } from './auth/logged-in.guard';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +45,8 @@ import { EventMapComponent } from './event-map/event-map.component';
     EventComponent,
     EventDetailComponent,
     EventMapComponent,
+    TodoComponent,
+    PageNotFoundComponent,
   ],
   imports: [
     BrowserModule,
@@ -56,10 +65,15 @@ import { EventMapComponent } from './event-map/event-map.component';
     MatTableModule,
     MatTabsModule,
     MatInputModule,
+    MatChipsModule,
+    FlexLayoutModule,
+    MatSortModule,
+    MatCheckboxModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    AuthService
+    AuthService,
+    LoggedInGuard
   ],
 
   bootstrap: [AppComponent]
