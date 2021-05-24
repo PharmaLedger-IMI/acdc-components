@@ -125,8 +125,8 @@ export class EventMapComponent {
 }
 
 enum CustomIcon {
-  Authentic = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-  Suspect = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  Other = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
-  Shadow = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png'
+  Authentic = 'assets/leaflet-color-markers/marker-icon-green.png',
+  Suspect = 'assets/leaflet-color-markers/marker-icon-red.png',
+  Other = 'assets/leaflet-color-markers/marker-icon-gold.png',
+  Shadow = 'assets/leaflet-color-markers/marker-shadow.png',
 }
