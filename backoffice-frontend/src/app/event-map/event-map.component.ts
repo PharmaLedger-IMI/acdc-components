@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {Event} from '../acdc/event.model';
 import * as L from 'leaflet';
-import {Icon, Map, Marker} from 'leaflet';
+import {Icon, LatLngTuple, Map, Marker} from 'leaflet';
 import 'leaflet.markercluster';
 
 @Component({
@@ -12,15 +12,37 @@ import 'leaflet.markercluster';
 export class EventMapComponent {
 
   private map: any;
+  private dataPoints: any = [];
 
   /** CORE: Receive an input from event-map component and render a map */
   @Input() set dataReceiver(events: Event[] | undefined) {
-    console.log('event-map.component.dataReceiver:', events);
+    console.log('event-map.component.dataReceiver=', events);
     if (events) {
-      const markers = this.buildMarkers(events);
-      this.resetMap();
-      this.map = this.buildMap(markers);
+      const markers = events.map(event => {
+        const eventInputData = event.eventInputs[0].eventInputData;
+        const [lat, long] = eventInputData.snCheckLocation.split(',').map(value => parseFloat(value));
+        this.dataPoints.push([lat, long]);
 
+        const eventOutputData = event.eventOutputs[0].eventOutputData;
+        const checkResult = eventOutputData.snCheckResult;
+
+        const icon = this.buildIcon(checkResult);
+        const popup = this.buildPopup(event.eventId, [
+          eventInputData.productCode,
+          eventOutputData.nameMedicinalProduct,
+          checkResult
+        ]);
+
+        return this.buildMarker([lat, long], icon, popup);
+      });
+
+      if (typeof this.map !== 'undefined') {
+        this.resetMap(this.map);
+      }
+
+      this.map = this.buildMap(markers);
+      this.map.fitBounds(this.dataPoints);
+      this.map.setMaxBounds([[-90, -180], [90, 180]]);
       this.map.on('click', (ev: any) => {
         console.log('# map', ev);
       });
@@ -28,90 +50,83 @@ export class EventMapComponent {
   }
 
   /**
-   * Receive a Marker collection to return a map compiled
-   * @param dataSource Data points collection
-   */
-  buildMap(dataSource: Marker[]): Map {
-    const title = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 3,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-
-    const markers = L.layerGroup(dataSource);
-    const markersClusters = L.markerClusterGroup({
-      // chunkedLoading: true,
-      // disableClusteringAtZoom: 11,
-      // spiderfyOnMaxZoom: false
-    });
-    markersClusters.addLayer(markers);
-
-    // TODO -> Set map center dynamically
-    return L.map('map', {
-      center: [46.28945, 2.351519],
-      zoom: 5,
-      layers: [title, markersClusters]
-    });
-  }
-
-  /**
-   * Build data points (Markers) from a data collection
-   * @param events events data collection
-   */
-  buildMarkers(events: Event[]): Marker[] {
-    return events.map(event => {
-      const eventInputData = event.eventInputs[0].eventInputData;
-      const eventOutputData = event.eventOutputs[0].eventOutputData;
-      const [lat, long] = eventInputData.snCheckLocation.split(',').map(value => parseFloat(value));
-      const result = eventOutputData.snCheckResult;
-
-      const icon = this.buildMarkerIcon(result);
-      const popup = this.buildMarkerPopup(event.eventId, [eventInputData.productCode, eventOutputData.nameMedicinalProduct, result]);
-
-      const marker = L.marker([lat, long], {icon}).bindPopup(popup).openPopup();
-      marker.on('click', (ev: any) => {
-        console.log('# marker', ev);
-      });
-
-      return marker;
-    });
-  }
-
-  /**
    * Build a personalized icon according to the type of event output
    * @param checkResult type of event output
    * @return Icon red -> Suspect,  green -> Authentic, yellow -> Others (TimeOut, Aborted, etc.)
    */
-  buildMarkerIcon(checkResult: string): Icon<{ shadowUrl: IconsUrl; iconUrl: IconsUrl }> {
-    const typeIconsUrl = checkResult as keyof typeof IconsUrl;
-    const url = IconsUrl[typeIconsUrl] || IconsUrl.Other;
-    return new L.Icon({iconUrl: url, shadowUrl: url});
+  buildIcon(checkResult: string): Icon<any> {
+    const typeIcons = checkResult as keyof typeof CustomIcon;
+    const iconUrl = CustomIcon[typeIcons] || CustomIcon.Other;
+    return new L.Icon({iconUrl, shadowUrl: CustomIcon.Shadow});
   }
 
   /**
    * Build a popup to be displayed when a marker is clicked
-   * @param popupTitle Popup first line, in bold
-   * @param poputContent Each element in array is a line
+   * @param popupTitle - Popup first line (bold)
+   * @param popupContent - Each element in array is a line
    */
-  buildMarkerPopup(popupTitle: string, poputContent: string[]): L.Popup {
+  buildPopup(popupTitle: string, popupContent: string[]): L.Popup {
     const url = '/backoffice/event/' + popupTitle;
     const title = `<strong><a href=${url}>${popupTitle}</a></strong>`;
-    const content = poputContent.join('<br/>');
+    const content = popupContent.join('<br/>');
     return L.popup().setContent(`${title}<br/>${content}`);
   }
 
+  /**
+   * Build a data point (Marker) from data provided
+   * @param latLong - Latitude and Longitude as [lat, long]
+   * @param icon - marker icon
+   * @param popup - marker popup
+   */
+  buildMarker(latLong: LatLngTuple, icon: Icon, popup: L.Popup): Marker {
+    return L.marker(latLong, {icon})
+      .bindPopup(popup)
+      .on('click', (ev: any) => {
+        console.log('# marker', ev);
+      });
+  }
+
+  /**
+   * Receive a Marker collection to return a map compiled
+   * @param markers data points collection
+   */
+  buildMap(markers: Marker[]): Map {
+    const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      minZoom: 3,
+      maxZoom: 18,
+      // noWrap: true,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+
+    const markersLayer = L.layerGroup(markers);
+    const markersClustersLayer = L.markerClusterGroup({
+      chunkedLoading: true,
+      disableClusteringAtZoom: 11,
+      spiderfyOnMaxZoom: false
+    });
+    markersClustersLayer.addLayer(markersLayer);
+
+    return L.map('map', {
+      center: [0, 0],
+      zoom: 5,
+      layers: [baseLayer, markersClustersLayer]
+    });
+  }
+
   /** Reset map to be render with new data */
-  resetMap(): void {
+  resetMap(map: Map): void {
     try {
-      this.map.off();
-      this.map.remove();
+      map.off();
+      map.remove();
     } catch (e) {
+      console.error('event-map.component.resetMap error ', e);
     }
   }
 }
 
-enum IconsUrl {
+enum CustomIcon {
   Authentic = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   Suspect = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
   Other = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
+  Shadow = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png'
 }
