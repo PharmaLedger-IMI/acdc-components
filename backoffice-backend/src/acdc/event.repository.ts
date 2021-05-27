@@ -31,22 +31,18 @@ export class EventRepository extends Repository<Event> {
     async search(eventSearchQuery: EventSearchQuery): Promise<{ count: number; query: EventSearchQuery; eventCollection: any; }> {
         console.log('event.repository.search query=', eventSearchQuery)
 
+        /** Transform a array in a comma-separated string
+         * @param arr - e.g.: (1) 'ABC' / (2) ['ABC', 'XYZ']
+         * @return string -   (1) 'ABC' / (2) 'ABC','XYZ'
+         */
         const transformValueToCommaList = (arr: string[] | string): string => {
             arr = Array.isArray(arr) ? arr : [arr]
             return arr.map(value => `'${value}'`).join(',');
         }
 
-        const getJsonWhereStatement = (fieldName: string, jsonProperty: string, values: string[] | string): string => {
+        const getJsonWhereStatement = (dbColumn: string, jsonPropertyTree: string, values: string[] | string): string => {
             values = Array.isArray(values) ? values : [values]
-            let str = ''
-            values.forEach((value: string, index: number) => {
-                if (index == 0) {
-                    str += `${fieldName} ::jsonb @> \'{"${jsonProperty}":"${value}"}\'`
-                } else {
-                    str += `OR ${fieldName} ::jsonb @> \'{"${jsonProperty}":"${value}"}\'`
-                }
-            })
-            return str
+            return `${dbColumn} ->> '${jsonPropertyTree}' IN (${transformValueToCommaList(values)})`
         }
 
         // TODO -> add filter by expiryDate & ? option: OR or AND in where ?
