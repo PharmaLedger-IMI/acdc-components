@@ -459,9 +459,8 @@ COPY public.appresource (id, key, locale, value, help) FROM stdin;
 --
 
 COPY public.appuser (id, username, passhash) FROM stdin;
-5c6d5a11-9144-49ed-a4ad-7233804ed1a4	joao.luis@pdmfc.com	123456
-706a903e-b29e-46c3-9d50-0fa66d3b9ee2	miguel.coelho@pdmfc.com	123456
-a5bcfe2c-acc9-4c3d-8f5f-afb7c9b0dee9	tiago.venceslau@pdmfc.com	123456
+5c6d5a11-9144-49ed-a4ad-7233804ed1a4	admin@somecompany.com	123456
+706a903e-b29e-46c3-9d50-0fa66d3b9ee2	username@somecompany.com	123456
 \.
 
 
@@ -519,17 +518,6 @@ COPY public.mah (mahid, name) FROM stdin;
 COPY public.mahuser (mahuserid, mahid, userid) FROM stdin;
 adc6e4b3-df5e-4426-8b97-45b6fcad5eb4	0c1aec99-a17f-495d-adfc-008888baef6c	744b02da-ee30-46dd-b894-35218029e87e
 3aaba9fb-8af7-4b62-9b08-bf1d27214af7	0c1aec99-a17f-495d-adfc-008888baef6c	06127849-9b1c-41fa-8461-4fac6eeb1d97
-c82ca558-5645-4789-811f-be2c01373e17	0c1aec99-a17f-495d-adfc-008888baef6c	43580d4f-44d0-4967-bd08-73a222afcdb5
-95b050ae-df82-43de-8eda-ef0d0463a266	0c1aec99-a17f-495d-adfc-008888baef6c	e0fe8193-a7c4-4aa7-9ad5-e16e22354f2f
-589dccd7-4575-42b9-ac2c-1e4af5653c6a	0c1aec99-a17f-495d-adfc-008888baef6c	ceeafe46-9b61-4282-badf-45f0258b5627
-7bee4b73-a78c-400a-84d4-c9e75c58d170	0c1aec99-a17f-495d-adfc-008888baef6c	1c25676c-0208-430e-9e8b-ea4186c234f5
-32bad9c4-c261-4c17-bc2e-0167db3a3815	0c1aec99-a17f-495d-adfc-008888baef6c	4676387d-e459-4cdb-9224-130e855cf524
-b1c203ff-b1fa-4961-825a-e0de91b23757	0c1aec99-a17f-495d-adfc-008888baef6c	92a7df2a-3b1a-4b7e-9653-923769703877
-033fb67b-bce0-4cf1-b5fc-da86d5959a9a	0c1aec99-a17f-495d-adfc-008888baef6c	5b5d7358-eef6-4eac-9011-e23c58dec43b
-4757654f-23ed-447c-9c4e-92784d2fc8c5	0c1aec99-a17f-495d-adfc-008888baef6c	858d859d-eaba-44bc-9424-c0fe9583cf6e
-46b86d97-a5b3-45fc-8a89-1516f09df071	0c1aec99-a17f-495d-adfc-008888baef6c	283bd98e-bd62-4077-837b-2e1b05d2126c
-8aa5ead9-32d7-4e7e-9994-e03140a366f3	0c1aec99-a17f-495d-adfc-008888baef6c	670bbe91-7a30-4293-ba67-8d44ab2def1b
-741991af-b4a8-44a3-b809-864a2f79d5b9	0c1aec99-a17f-495d-adfc-008888baef6c	4a9e4bdf-a5de-4683-be3e-8e5ebbc3cfef
 \.
 
 
