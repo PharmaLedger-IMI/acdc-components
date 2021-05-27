@@ -56,10 +56,10 @@ export class EventRepository extends Repository<Event> {
                 return `event.eventid IN (${transformValueToCommaList(eventIds)})`
             },
             createdOnStart(date: string): string {
-                return `event.createdOn >= '${date}'`
+                return `event.createdOn::date >= '${date}'`
             },
             createdOnEnd(date: string): string {
-                return `event.createdOn <= '${date}'`
+                return `event.createdOn::date <= '${date}'`
             },
             productCode(productsCode: string[] | string): string {
                 return getJsonWhereStatement('eventinput.eventinputdata', 'productCode', productsCode)
