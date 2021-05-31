@@ -121,8 +121,6 @@ export class EventController {
     })
     @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckResult'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckLocation'})
-    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-12-31', name: 'expiryDateEnd'})
-    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-01-01', name: 'expiryDateStart'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'productName'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'serialNumber'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'batch'})

@@ -66,12 +66,6 @@ export class EventRepository extends Repository<Event> {
             productStatus(productsStatus: string[] | string): string {
                 return queryBuilderHelper.jsonWhereStatement('eventoutput.eventoutputdata', 'productStatus', Operators.IN, productsStatus)
             },
-            // expiryDateStart(date: string): string {
-            //     return `eventinput.eventinputdata ->> 'expiryDate' >= '${date}'`
-            // },
-            // expiryDateEnd(date: string): string {
-            //     return `eventinput.eventinputdata ->> 'expiryDate' <= '${date}'`
-            // },
             snCheckLocation(snCheckLocations: string[] | string): string {
                 const arr = Array.isArray(snCheckLocations) ? snCheckLocations : [snCheckLocations]
                 let stmt = '('
