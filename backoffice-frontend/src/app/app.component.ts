@@ -4,6 +4,7 @@ import { Title } from '@angular/platform-browser';
 
 import { VERSION } from 'src/environments/version';
 import { AuthService } from './auth/auth.service';
+import {MediaMatcher} from "@angular/cdk/layout";
 
 @Component({
   selector: 'app-root',
@@ -18,11 +19,16 @@ export class AppComponent {
   sideTime = new Date();
   v = VERSION;
 
+  mediaQuery: MediaQueryList;
+
   constructor(
     private titleService: Title,
     private cdRef: ChangeDetectorRef,
     public authService: AuthService,
-  ) { }
+    media: MediaMatcher,
+  ) {
+    this.mediaQuery = media.matchMedia('(min-width: 768px)');
+  }
 
   public setNavMenuHighlight(menu1 : string, menu2 : string, aTitle? : string) {
     this.sideNavMenu1Item = menu1;

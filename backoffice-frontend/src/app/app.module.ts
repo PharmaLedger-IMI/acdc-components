@@ -33,6 +33,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TodoComponent } from './todo/todo.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     AppResourceDetailComponent,
     MessagesComponent,
     AppresourceSearchComponent,
+    SidebarComponent,
     LoginComponent,
     EventComponent,
     EventDetailComponent,

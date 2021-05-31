@@ -1,85 +1,45 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
-    <div fxFlex fxLayout="row" fxLayoutAlign="start center">
-      <button mat-icon-button>
-        <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
-      </button>
-      <h1>{{title}}</h1>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="start center">
+<div class="main-container">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="topbar">
+    <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
+      <mat-icon>menu</mat-icon>
+    </button>
+    {{title}}
+    <span fxFlex></span>
+    <div fxLayout="row" fxLayoutAlign="start center" class="toolbar-info">
       <div style="padding-left: 4em; float: right;">
-        <div style="font-size: small; height: 1em; line-height: 1em;" *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
+        <div style="font-size: small; height: 1em; line-height: 1em;"
+             *ngIf="authService.isLoggedIn()">{{authService.getUsername()}}</div>
         <div style="font-size: 0.4em; height: 1em; line-height: 1em;">{{sideTime.toISOString()}}</div>
         <div style="font-size: 0.4em; height: 1em; line-height: 1em;">v{{v.version}}-{{v.hash}}</div>
       </div>
-      <div><a [routerLink]="['/event']"><img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/></a></div>
+      <div><a [routerLink]="['/home']">
+        <img src="assets/PLDarkBlue.png" style="height: 3em;" alt="PharmaLedger - Blockchain Enabled Healthcare"/>
+      </a>
+      </div>
     </div>
-  </mat-toolbar-row>
-</mat-toolbar>
-<mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side" [(opened)]="sideNavOpened" style="padding: 5px; width: 14em;">
-    <mat-accordion [multi]="false">
-      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='data'">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Scan-Data
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='data' && sideNavMenu2Item=='event'">
-            <a mat-list-item routerLink="/event">Events</a>
-          </mat-list-option>
-        </mat-selection-list>
-      </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='rule'">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Rules
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='rule' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/rule">Dashboard</a>
-          </mat-list-option>
-        </mat-selection-list>
-      </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasAnyProfile()" [expanded]="sideNavMenu1Item=='alert'">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Alerts
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='alert' && sideNavMenu2Item=='dashboard'">
-            <a mat-list-item routerLink="/alerts">Dashboard</a>
-          </mat-list-option>
-        </mat-selection-list>
-      </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="authService.hasAdminProfile()" [expanded]="sideNavMenu1Item=='admin'">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Administration
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-selection-list [multiple]="false">
-          <mat-list-option [selected]="sideNavMenu1Item=='admin' && sideNavMenu2Item=='locale'">
-            <a mat-list-item routerLink="/locales">Locales</a>
-          </mat-list-option>
-          <mat-list-option [selected]="sideNavMenu1Item=='admin' && sideNavMenu2Item=='appresource'">
-            <a mat-list-item routerLink="/appresource">AppResource</a>
-          </mat-list-option>
-        </mat-selection-list>
-      </mat-expansion-panel>
-      <mat-selection-list [multiple]="false">
-        <mat-list-option [selected]="sideNavMenu1Item=='' && sideNavMenu2Item=='login'">
-          <a mat-list-item *ngIf="authService.isLoggedOut()" routerLink="/login">Login</a>
-          <a mat-list-item *ngIf="authService.isLoggedIn()" (click)="logout()" routerLink="/login">Logout</a>
-        </mat-list-option>
-      </mat-selection-list>
-    </mat-accordion>
-  </mat-sidenav>
-  <mat-sidenav-content style="padding: 5px;">
-    <router-outlet></router-outlet>
-    <app-messages></app-messages>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </mat-toolbar>
+  <!-- END Toolbar -->
+
+
+  <mat-sidenav-container>
+    <!-- Toggle sidebar -->
+    <mat-sidenav #snav id="snav"
+                 [mode]="mediaQuery.matches ? 'side' : 'over'"
+                 fixedTopGap="0"
+                 [opened]="mediaQuery.matches"
+                 [disableClose]="mediaQuery.matches"
+    >
+      <!-- Sidebar -->
+      <app-sidebar></app-sidebar>
+    </mat-sidenav>
+
+    <!-- Main panel -->
+    <mat-sidenav-content class="page-wrapper">
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+    <!-- END Main panel -->
+  </mat-sidenav-container>
+</div>
