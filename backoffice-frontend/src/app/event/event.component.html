@@ -48,18 +48,22 @@
 
 
         <!-- 2nd Column Filter -->
-        <div fxFlex="30">
+        <div fxFlex="30" fxFlex.lt-lg="100">
 
           <!-- createdOn -->
-          <div fxLayout="row">
-            <mat-form-field>
-              <mat-label>createdOn - start date</mat-label>
-              <input type="date" formControlName="createdOnStart" matInput>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>createdOn - end date</mat-label>
-              <input type="date" formControlName="createdOnEnd" matInput>
-            </mat-form-field>
+          <div fxLayout="row" fxLayout.lt-md="column">
+            <div class="flex-item" fxFlex=50>
+              <mat-form-field>
+                <mat-label>createdOn - start date</mat-label>
+                <input type="date" formControlName="createdOnStart" matInput>
+              </mat-form-field>
+            </div>
+            <div class="flex-item" fxFlex=50>
+              <mat-form-field>
+                <mat-label>createdOn - end date</mat-label>
+                <input type="date" formControlName="createdOnEnd" matInput>
+              </mat-form-field>
+            </div>
           </div>
 
           <!-- Items per page -->
@@ -77,19 +81,22 @@
             <div fxLayout="column">
               <strong>Default Columns: </strong>
               <div *ngFor="let checkBox of checkInputsDefault; let i=index">
-                  <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChangeDefault($event)" [checked]="true">
-                    {{checkBox.label}}
-                  </mat-checkbox>
+                <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChangeDefault($event)"
+                              [checked]="true">
+                  {{checkBox.label}}
+                </mat-checkbox>
               </div>
             </div>
 
             <!-- Select table columns CUSTOM -->
             <div fxLayout="column">
               <strong>Custom columns: </strong>
-              <div *ngFor="let checkBox of checkInputsCustom; let i=index">
-                  <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChange($event)">
+              <div fxLayout="row" *ngFor="let checkBox of checkInputsCustom; let i=index">
+                <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChange($event)">
+                  <div class="text-wrap">
                     {{checkBox.label}}
-                  </mat-checkbox>
+                  </div>
+                </mat-checkbox>
               </div>
             </div>
 
@@ -135,7 +142,7 @@
 
       <!-- Event Table div -->
       <div class="table-rasponsive">
-        <table mat-table matSort [dataSource]="dataSource" >
+        <table mat-table matSort [dataSource]="dataSource">
 
           <!-- Event Id Column -->
           <ng-container matColumnDef="eventId">
@@ -216,4 +223,3 @@
 
 </mat-tab-group>
 <!-- End Tabs -->
-
