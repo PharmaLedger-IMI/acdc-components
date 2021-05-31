@@ -1,0 +1,588 @@
+/* Global */
+* {
+  outline: none;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family;
+  margin: 0;
+  overflow-x: hidden;
+  font-weight: 300;
+  background: $bodycolor;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+  background: $white;
+}
+
+a:hover,
+a:focus,
+a {
+  text-decoration: none;
+}
+
+a.link {
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: $text-hover;
+  }
+}
+
+.img-responsive {
+  width: 100%;
+  height: auto;
+  display: inline-block;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.img-rounded {
+  border-radius: $radius;
+}
+
+html body .mdi:before,
+html body .mdi-set {
+  line-height: initial;
+}
+
+.shadow-none {
+  box-shadow: none !important;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
+.rounded {
+  border-radius: $radius;
+}
+
+/* Headings */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family;
+  font-weight: 400;
+}
+
+h1 {
+  line-height: 40px;
+  font-size: 36px;
+}
+
+h2 {
+  line-height: 36px;
+  font-size: 30px;
+}
+
+h3 {
+  line-height: 30px;
+  font-size: 21px;
+}
+
+h4 {
+  line-height: 22px;
+  font-size: 18px;
+}
+
+h5 {
+  line-height: 18px;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+h6 {
+  line-height: 16px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+html,
+body {
+  .display-5 {
+    font-size: 3rem;
+  }
+
+  .display-6 {
+    font-size: 36px;
+  }
+}
+
+.box {
+  border-radius: $radius;
+  padding: 10px;
+}
+
+html body {
+  .dl {
+    display: inline-block;
+  }
+
+  .db {
+    display: block;
+  }
+
+  .op-5 {
+    opacity: 0.5;
+  }
+
+  .op-3 {
+    opacity: 0.3;
+  }
+}
+
+.no-wrap {
+  td,
+  th {
+    white-space: nowrap;
+  }
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.no-shrink {
+  flex-shrink: 0;
+}
+
+.oh {
+  overflow: hidden;
+}
+
+/* Paddings */
+html body {
+  .p-0 {
+    padding: 0px;
+  }
+
+  .p-10 {
+    padding: 10px;
+  }
+
+  .p-20 {
+    padding: 20px;
+  }
+
+  .p-30 {
+    padding: 30px;
+  }
+
+  .p-l-0 {
+    padding-left: 0px;
+  }
+
+  .p-l-10 {
+    padding-left: 10px;
+  }
+
+  .p-l-20 {
+    padding-left: 20px;
+  }
+
+  .p-r-0 {
+    padding-right: 0px;
+  }
+
+  .p-r-10 {
+    padding-right: 10px;
+  }
+
+  .p-r-20 {
+    padding-right: 20px;
+  }
+
+  .p-r-30 {
+    padding-right: 30px;
+  }
+
+  .p-r-40 {
+    padding-right: 40px;
+  }
+
+  .p-t-0 {
+    padding-top: 0px;
+  }
+
+  .p-t-10 {
+    padding-top: 10px;
+  }
+
+  .p-t-20 {
+    padding-top: 20px;
+  }
+
+  .p-t-30 {
+    padding-top: 30px;
+  }
+
+  .p-b-0 {
+    padding-bottom: 0px;
+  }
+
+  .p-b-5 {
+    padding-bottom: 5px;
+  }
+
+  .p-b-10 {
+    padding-bottom: 10px;
+  }
+
+  .p-b-20 {
+    padding-bottom: 20px;
+  }
+
+  .p-b-30 {
+    padding-bottom: 30px;
+  }
+
+  .p-b-40 {
+    padding-bottom: 40px;
+  }
+}
+
+/* Margin */
+.m-0 {
+  margin: 0px;
+}
+
+.m-l-5 {
+  margin-left: 5px;
+}
+
+.m-l-10 {
+  margin-left: 10px;
+}
+
+.m-l-15 {
+  margin-left: 15px;
+}
+
+.m-l-20 {
+  margin-left: 20px;
+}
+
+.m-l-30 {
+  margin-left: 30px;
+}
+
+.m-l-40 {
+  margin-left: 40px;
+}
+
+.m-r-5 {
+  margin-right: 5px;
+}
+
+.m-r-10 {
+  margin-right: 10px;
+}
+
+.m-r-15 {
+  margin-right: 15px;
+}
+
+.m-r-20 {
+  margin-right: 20px;
+}
+
+.m-r-30 {
+  margin-right: 30px;
+}
+
+.m-r-40 {
+  margin-right: 40px;
+}
+
+.m-t-0 {
+  margin-top: 0;
+}
+
+.m-t-5 {
+  margin-top: 5px;
+}
+
+.m-t-10 {
+  margin-top: 10px;
+}
+
+.m-t-15 {
+  margin-top: 15px;
+}
+
+.m-t-20 {
+  margin-top: 20px;
+}
+
+.m-t-30 {
+  margin-top: 30px;
+}
+
+.m-t-40 {
+  margin-top: 40px;
+}
+
+.m-b-0 {
+  margin-bottom: 0;
+}
+
+.m-b-5 {
+  margin-bottom: 5px;
+}
+
+.m-b-10 {
+  margin-bottom: 10px;
+}
+
+.m-b-15 {
+  margin-bottom: 15px;
+}
+
+.m-b-20 {
+  margin-bottom: 20px;
+}
+
+.m-b-30 {
+  margin-bottom: 30px;
+}
+
+.m-b-40 {
+  margin-bottom: 40px;
+}
+
+/* Alignment */
+.vt {
+  vertical-align: top;
+}
+
+.vm {
+  vertical-align: middle;
+}
+
+.vb {
+  vertical-align: bottom;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* Font */
+html body {
+  .font-bold {
+    font-weight: 700;
+  }
+
+  .font-normal {
+    font-weight: normal;
+  }
+
+  .font-light {
+    font-weight: 300;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .font-10 {
+    font-size: 10px;
+  }
+
+  .font-12 {
+    font-size: 12px;
+  }
+
+  .font-14 {
+    font-size: 14px;
+  }
+
+  .font-16 {
+    font-size: 16px;
+  }
+
+  .font-18 {
+    font-size: 18px;
+  }
+
+  .font-20 {
+    font-size: 20px;
+  }
+}
+
+/* Border */
+html body {
+  .b-0 {
+    border: none;
+  }
+
+  .b-r {
+    border-right: 1px solid $border;
+  }
+
+  .b-l {
+    border-left: 1px solid $border;
+  }
+
+  .b-b {
+    border-bottom: 1px solid $border;
+  }
+
+  .b-t {
+    border-top: 1px solid $border;
+  }
+
+  .b-all {
+    border: 1px solid $border;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-wrap {
+  white-space: normal !important;
+}
+
+/* Text Colors */
+.text-white {
+  color: $white !important;
+}
+
+.text-danger {
+  color: $danger !important;
+}
+
+.text-muted {
+  color: $muted !important;
+}
+
+.text-warning {
+  color: $warning !important;
+}
+
+.text-success {
+  color: $success !important;
+}
+
+.text-info {
+  color: $info !important;
+}
+
+.text-inverse {
+  color: $inverse !important;
+}
+
+/* Background Colors */
+.bg-primary {
+  background-color: $primary !important;
+}
+
+.bg-success {
+  background-color: $success !important;
+}
+
+.bg-info {
+  background-color: $info !important;
+}
+
+.bg-warning {
+  background-color: $warning !important;
+}
+
+.bg-danger {
+  background-color: $danger !important;
+}
+
+.img-circle {
+  border-radius: 100%;
+}
+
+.no-shadow {
+  box-shadow: none;
+}
+
+hr {
+  border: 0px;
+  height: 1px;
+  background: $border;
+}
+
+/* Forms */
+.form-control {
+  border: 0px;
+  line-height: 25px;
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+}
+
+.mat-form-field-underline {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+/* Grid */
+.row {
+  margin: 0 -10px;
+}
+
+/* Table */
+table {
+  width: 100%;
+  text-align: left;
+}
+
+.table-rasponsive {
+  overflow: auto;
+
+  .mat-table {
+    min-width: 280px;
+  }
+
+  .mat-header-row {
+    .mat-header-cell {
+      white-space: nowrap;
+    }
+  }
+
+  .mat-cell {
+    white-space: nowrap;
+    padding: 0 8px;
+  }
+}

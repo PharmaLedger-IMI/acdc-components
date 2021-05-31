@@ -1,0 +1,14 @@
+mat-toolbar {
+  box-shadow: 1px 0 10px rgba(0, 0, 252, 0.5);
+
+  &.topbar {
+    padding: 0 15px;
+  }
+}
+
+/* Make sure the toolbar stays on top of the content as it scrolls past */
+.topbar {
+  position: relative;
+  z-index: 2;
+}
+

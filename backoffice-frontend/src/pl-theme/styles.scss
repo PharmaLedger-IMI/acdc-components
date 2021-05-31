@@ -10,7 +10,22 @@
 // Fonts
 @import 'https://fonts.googleapis.com/css?family=Material+Icons';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
-     
+
+/* Theme */
+$font-family: Roboto, "Helvetica Neue", sans-serif;
+$primary: #00345b;
+$lighter: #b3c2ce;
+$darker: #002140;
+$white: white;
+
+$sidebar: #fff;
+$bodycolor: #fafafa;
+$sidebar-text: #607d8b;
+$sidebar-icons: #99abb4;
+$sidebar-text-selected: #002140;
+$sidebar-icon-selected: #002140;
+$text-hover: #1463DB;
+
 $fontConfig: (
   display-4: mat-typography-level(112px, 112px, 300, 'Roboto', -0.0134em),
   display-3: mat-typography-level(56px, 56px, 400, 'Roboto', -0.0089em),
@@ -239,7 +254,7 @@ $altTheme: mat-dark-theme($theme-primary, $theme-accent, $theme-warn);
 
 .material-icons {
   font-size: 24px;
-  font-family: 'Material Icons', 'Material Icons';  
+  font-family: 'Material Icons', 'Material Icons';
   .mat-badge-content {
     font-family: 'Roboto';
   }
