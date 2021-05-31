@@ -4,5 +4,11 @@ export interface EventInputData {
   serialNumber: string;
   expiryDate: Date;
   snCheckDateTime: Date;
-  snCheckLocation: string;
+  snCheckLocation: {
+    latitude: number,
+    longitude: number,
+    altitude?: number,
+    accuracy?: number,
+    altitudeAccuracy?: number
+  };
 }

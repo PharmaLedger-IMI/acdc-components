@@ -86,9 +86,10 @@ class AcdcEventDataGenerator {
     buildDummyGeolocation() {
         const randomIdx = (Math.random() * this.countries.length) | 0
         const country = this.countries[randomIdx]
-        const randomLat = (country.lat + (Math.random() * 1.835)).toFixed(6)
-        const randomLong = (country.long + (Math.random() * 1.835)).toFixed(6)
-        return `${randomLat}, ${randomLong}`
+        return {
+            latitude: parseFloat((country.lat + (Math.random() * 1.835)).toFixed(6)),
+            longitude: parseFloat((country.long + (Math.random() * 1.835)).toFixed(6))
+        }
     }
 
     // Build batches for each product
@@ -118,7 +119,10 @@ class AcdcEventDataGenerator {
         return {
             ...shipment,
             snCheckDateTime,
-            snCheckLocation
+            snCheckLocation,
+            did: 'AcdcEventDataGenerator',
+            batchDsuStatus: true,
+            productDsuStatus: false,
         }
     }
 

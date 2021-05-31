@@ -20,7 +20,8 @@ export class EventMapComponent {
     if (events) {
       const markers = events.map(event => {
         const eventInputData = event.eventInputs[0].eventInputData;
-        const [lat, long] = eventInputData.snCheckLocation.split(',').map(value => parseFloat(value));
+        const lat = eventInputData.snCheckLocation.latitude;
+        const long = eventInputData.snCheckLocation.longitude;
         this.dataPoints.push([lat, long]);
 
         const eventOutputData = event.eventOutputs[0].eventOutputData;
