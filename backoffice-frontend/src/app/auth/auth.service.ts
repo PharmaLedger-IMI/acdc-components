@@ -4,6 +4,7 @@ import { MessageService } from '../message.service';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../acdc/user.model';
+import {JwtHelperService} from '@auth0/angular-jwt';
 
 @Injectable()
 export class AuthService {
@@ -11,11 +12,14 @@ export class AuthService {
   static readonly ACDC_USER : string = "acdc_user";
 
   private authLoginUrl = environment.restBaseUrl+"/auth/login";
+  private jwtStandaloneService: JwtHelperService;
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService
-  ) { }
+    private messageService: MessageService,
+  ) {
+    this.jwtStandaloneService = new JwtHelperService();
+  }
 
   /**
    * Performs the login. Inspired on https://blog.angular-university.io/angular-jwt-authentication/
@@ -63,8 +67,13 @@ export class AuthService {
     return this.isLoggedIn(); // && ...
   }
 
-  public isLoggedIn() : boolean {
-    return !!sessionStorage.getItem(AuthService.ACDC_USER);
+  public isLoggedIn(): boolean {
+    const session = sessionStorage.getItem(AuthService.ACDC_USER);
+    if (!!session) {
+      const token = JSON.parse(session).token;
+      return !this.jwtStandaloneService.isTokenExpired(token);
+    }
+    return false;
   }
 
   public isLoggedOut() : boolean {
