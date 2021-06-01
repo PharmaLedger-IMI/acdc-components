@@ -81,10 +81,10 @@ export class EventComponent implements OnInit {
     {label: 'Product Status', value: 'productStatus'},
   ];
 
-  columnsData: { [key: string]: { label: string, data: any } } = {
+  columnsData: { [key: string]: { label: string, data: any, cssClasses?: any } } = {
     eventId: {
       label: 'Event Id',
-      data: (event: Event) => event.eventId.slice(0, 8)
+      data: (event: Event) => event.eventId.slice(0, 8),
     },
     createdOn: {
       label: 'Created On',
@@ -112,7 +112,7 @@ export class EventComponent implements OnInit {
     },
     productStatus: {
       label: 'Product Status',
-      data: (event: Event) => event.eventOutputs[0].eventOutputData.productStatus
+      data: (event: Event) => event.eventOutputs[0].eventOutputData.productStatus,
     },
     expiryDate: {
       label: 'Expiry Date',
@@ -124,7 +124,19 @@ export class EventComponent implements OnInit {
     },
     snCheckResult: {
       label: 'Check Result',
-      data: (event: Event) => event.eventOutputs[0].eventOutputData.snCheckResult
+      data: (event: Event) => event.eventOutputs[0].eventOutputData.snCheckResult,
+      cssClasses: (event: Event) => {
+        const productStatus = event.eventOutputs[0].eventOutputData.snCheckResult;
+        let color: string;
+        if (productStatus === 'Authentic') {
+          color = 'text-success';
+        } else if (productStatus === 'Suspect') {
+          color = 'text-danger';
+        } else {
+          color = 'text-warning';
+        }
+        return `${color} font-bold`;
+      }
     }
   };
 

@@ -190,7 +190,7 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 {{ columnsData[checkColumnSelected].label }}
               </th>
-              <td class="table-event-data-cell" mat-cell *matCellDef="let element">
+              <td [ngClass]="columnsData[checkColumnSelected].cssClasses ? columnsData[checkColumnSelected].cssClasses(element) : ''" mat-cell *matCellDef="let element">
                 {{columnsData[checkColumnSelected].data(element)}}
               </td>
             </ng-container>
