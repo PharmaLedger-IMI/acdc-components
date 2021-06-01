@@ -38,8 +38,16 @@
                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                        [matChipInputAddOnBlur]="addOnBlur"
                        (matChipInputTokenEnd)="handleAddChip(filterInput, $event)"
+                       [matAutocomplete]="auto"
                 >
               </mat-chip-list>
+
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="handleAddChip(filterInput, $event)">
+                <mat-option *ngFor="let fruit of filterInput.autocompleteOptions" [value]="fruit">
+                  {{fruit}}
+                </mat-option>
+              </mat-autocomplete>
+
             </mat-form-field>
           </span>
           <!-- END Chips Input (arrays) -->

@@ -9,6 +9,7 @@ import {MatChipInputEvent} from '@angular/material/chips';
 import {ENTER} from '@angular/cdk/keycodes';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-event',
@@ -31,8 +32,16 @@ export class EventComponent implements OnInit {
     {label: 'Serial Number', name: 'serialNumber', elements: []},
     {label: 'Name Medicinal Product', name: 'nameMedicinalProduct', elements: []},
     {label: 'Location (lat, long)', name: 'snCheckLocation', elements: []},
-    {label: 'Check Result', name: 'snCheckResult', elements: []},
-    {label: 'Product Status', name: 'productStatus', elements: []},
+    {
+      label: 'Check Result', name: 'snCheckResult', elements: [], autocompleteOptions: [
+        'Authentic', 'Suspect', 'TimeOut', 'UserAbort', 'Unsure'
+      ]
+    },
+    {
+      label: 'Product Status', name: 'productStatus', elements: [], autocompleteOptions: [
+        'Released to market', 'Not released', 'Not registered', 'Reported stolen', 'Reported destroyed', 'Reported suspect'
+      ]
+    },
   ];
 
   /** Object for dynamically attributes/data */
@@ -219,14 +228,20 @@ export class EventComponent implements OnInit {
    * @param chipInputFilter - object metadata to identifier the chipInput
    * @param event - object input element from html DOM
    */
-  handleAddChip(chipInputFilter: any, event: MatChipInputEvent): void {
+  handleAddChip(chipInputFilter: any, event: MatChipInputEvent | MatAutocompleteSelectedEvent): void {
     console.log('chips.add -> chipInputFilter=', chipInputFilter);
     console.log('chips.add -> event=', event);
-    const value = (event.value || '').trim();
-    if (!!value && chipInputFilter.elements.lastIndexOf(value) < 0) {
+    let value: string;
+    if ((event instanceof MatAutocompleteSelectedEvent)) {
+      value = event.option.viewValue;
+    } else {
+      value = (event.value || '').trim();
+      event.input.value = '';
+    }
+
+    if (!!value && chipInputFilter.elements.indexOf(value) < 0) {
       chipInputFilter.elements.push(value);
     }
-    event.input.value = '';
     console.log('event.component.handleAddChip dataHandler=', this.dataHandler);
     console.log('event.component.handleAddChip chipsInputFilters=', this.chipsInputs);
   }
@@ -311,4 +326,5 @@ interface ChipInputFilter {
   label: string;
   name: string;
   elements: string[];
+  autocompleteOptions?: string[];
 }
