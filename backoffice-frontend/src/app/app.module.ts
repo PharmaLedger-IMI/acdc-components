@@ -34,6 +34,7 @@ import { TodoComponent } from './todo/todo.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     FlexLayoutModule,
     MatSortModule,
     MatCheckboxModule,
+    MatAutocompleteModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
