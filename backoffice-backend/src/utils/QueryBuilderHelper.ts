@@ -1,21 +1,22 @@
 export class QueryBuilderHelper {
+
     sqlOperators = {
         // Equal
         EQL(value: string): string {
-            return `= '${value.trim()}'`
+            return `= '${escapeQuote(value)}'`
         },
         // More Than or Equal
         MTE(value: string): string {
-            return `>= '${value.trim()}'`
+            return `>= '${escapeQuote(value)}'`
         },
         // Less Than or Equal
         LTE(value: string): string {
-            return `<= '${value.trim()}'`
+            return `<= '${escapeQuote(value)}'`
         },
         // In
         IN(values: string[]): string {
             values = Array.isArray(values) ? values : [values]
-            const commaList = values.map(value => `'${value.trim()}'`).join(',')
+            const commaList = values.map((value) => `'${escapeQuote(value)}'`).join(',')
             return `IN (${commaList})`
         }
     }
@@ -56,4 +57,8 @@ export enum Operators {
     MTE = 'MTE',
     LTE = 'LTE',
     IN = 'IN',
+}
+
+function escapeQuote(str: string): string {
+    return str.trim().replace(/'/g, "''");
 }
