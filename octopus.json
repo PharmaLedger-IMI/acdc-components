@@ -61,6 +61,19 @@
             ]
         },
         {
+            "name": "installing epi-utils",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd epi-utils && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd epi-utils && npm run build"
+                }
+            ]
+        },
+        {
             "name": "menu-wallet-prototype",
             "src": "http://github.com/privatesky/menu-wallet-prototype.git",
             "actions": [
@@ -92,7 +105,7 @@
         },
         {
             "name": "apihub-root/leaflet-wallet/loader",
-            "src": "http://github.com/privatesky/web-dossier-loader.git",
+            "src": "http://github.com/privatesky/trust-loader.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -115,7 +128,7 @@
         },
         {
             "name": "apihub-root/dsu-fabric-wallet/loader",
-            "src": "http://github.com/privatesky/web-dossier-loader.git",
+            "src": "http://github.com/privatesky/trust-loader.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -209,7 +222,7 @@
         },
         {
             "name": "apihub-root/dsu-explorer/loader",
-            "src": "https://github.com/PrivateSky/web-dossier-loader.git",
+            "src": "https://github.com/PrivateSky/trust-loader.git",
             "actions": [
                 {
                     "type": "smartClone",

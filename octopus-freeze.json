@@ -9,7 +9,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "934a0e528f916e8cc4cd4e5b422b73a3eb2b2f20"
+                    "commit": "d4feb3a3f53a1b37467604ee9915ba1d5fc8687c"
                 },
                 {
                     "type": "execute",
@@ -45,8 +45,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "branch": "release_important_fix",
-                    "commit": "518e0e6a62427052be09ce4a8be59503fd2a245b"
+                    "commit": "fc42265f76c3584c351e8ec8a411b974838d659c"
                 },
                 {
                     "type": "execute",
@@ -60,6 +59,19 @@
                 {
                     "type": "execute",
                     "cmd": "cd privatesky && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "installing epi-utils",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd epi-utils && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd epi-utils && npm run build"
                 }
             ]
         },
@@ -87,7 +99,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "3a99cce80291d675fde3da7d9e99579dbdb1f1da"
+                    "commit": "e27f42161d8b084948f13ebfa190708e564949c7"
                 },
                 {
                     "type": "execute",
@@ -97,7 +109,7 @@
         },
         {
             "name": "apihub-root/leaflet-wallet/loader",
-            "src": "http://github.com/privatesky/web-dossier-loader.git",
+            "src": "http://github.com/privatesky/trust-loader.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -121,7 +133,7 @@
         },
         {
             "name": "apihub-root/dsu-fabric-wallet/loader",
-            "src": "http://github.com/privatesky/web-dossier-loader.git",
+            "src": "http://github.com/privatesky/trust-loader.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -179,7 +191,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "82ea912284cbd8b19a8a2a8ab40d03103b983c7a"
+                    "commit": "8e8d13a44fadff7a2c31e2bc6fd2dd1db2b10bbe"
                 },
                 {
                     "type": "execute",
@@ -221,7 +233,7 @@
         },
         {
             "name": "apihub-root/dsu-explorer/loader",
-            "src": "https://github.com/PrivateSky/web-dossier-loader.git",
+            "src": "https://github.com/PrivateSky/trust-loader.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -260,6 +272,16 @@
             ]
         },
         {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm install"
+                }
+            ]
+        },
+        {
             "name": "gtin-dsu-wizard",
             "src": "https://github.com/PharmaLedger-IMI/gtin-dsu-wizard.git",
             "actions": [
@@ -283,7 +305,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "347d1aceaf1f06b09d0307f9b78049f313b783aa"
+                    "commit": "7dfa8dd6bd13239b698e0bd1a71e0aa353e16ba2"
                 },
                 {
                     "type": "execute",
@@ -299,7 +321,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "8dca0843e30741e4137bebfcc73911e0e9ae6756"
+                    "commit": "4c4654fab88439ea9a57b28b83eba798e46f205a"
                 },
                 {
                     "type": "execute",
@@ -348,6 +370,30 @@
             ]
         },
         {
+            "name": "ethadapter",
+            "src": "https://github.com/PharmaLedger-IMI/ethadapter",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false,
+                    "commit": "d312ffb4dc46e35ad2c37380025ba9df5d73f683"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd ethadapter && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd ethadapter/EthAdapter && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd ethadapter/SmartContracts && npm install"
+                }
+            ]
+        },
+        {
             "name": "dsu-fabric-ssapp",
             "src": "https://github.com/PharmaLedger-IMI/dsu-fabric-ssapp.git",
             "actions": [
@@ -355,7 +401,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "6eacc109840b64f677ff5405a42560a812dd7565"
+                    "commit": "dcc134fa499db9cbe7390d8e1bb9caae2262c5a8"
                 },
                 {
                     "type": "execute",
@@ -501,6 +547,38 @@
                 {
                     "type": "execute",
                     "cmd": "cd gtin-resolver && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "patch eLeaflet app",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/leaflet-patch",
+                    "target": "./leaflet-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/build/bundles/acdc.js",
+                    "target": "./leaflet-ssapp/code/scripts/bundles/acdc.js",
+                    "options": {
+                        "overwrite": true
+                    }
                 }
             ]
         },
@@ -653,8 +731,7 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false,
-                    "commit": "276c98b3987c6267523e379beb3f55fd40b5cc66"
+                    "collectLog": false
                 },
                 {
                     "type": "execute",
@@ -669,8 +746,7 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false,
-                    "commit": "8842e5fcb41888a781728ba58cb0a99d8dd31a9d"
+                    "collectLog": false
                 },
                 {
                     "type": "execute",

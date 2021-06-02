@@ -82,3 +82,46 @@ html {
 .web-wallet_button:hover {
     background-image: linear-gradient(150deg, #ACB6E5, #74ebd5);
 }
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+
+
+    .center-aligned-controls {
+        display: block;
+    }
+
+    .center-aligned-controls a {
+        margin: 4% 5%;
+        width: auto;
+    }
+
+    .center-aligned-controls p {
+        font-size: 55px;
+    }
+
+    .right-side {
+        margin-left: 0;
+    }
+
+    .scale-up:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 24px -2px rgba(0, 0, 0, 0.75);
+    }
+
+    .center-aligned-controls a img {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1522px) {
+    .right-side {
+        margin-left: 10%;
+    }
+}
+
+@media (min-width: 1323px) and (max-width: 1699.98px) {
+    .center-aligned-controls a {
+        width: 10%;
+    }
+}
