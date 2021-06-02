@@ -316,9 +316,9 @@ export class EventComponent implements OnInit {
     const day = d.getDate().toString().padStart(2, '0');
     const month = (d.getMonth() + 1).toString().padStart(2, '0');
     const year = d.getFullYear();
-    const h = d.getHours();
-    const m = d.getMinutes();
-    const s = d.getSeconds();
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
+    const s = d.getSeconds().toString().padStart(2, '0');
     return `${year}-${month}-${day} ${h}:${m}:${s}`;
   }
 }
