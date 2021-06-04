@@ -8,7 +8,7 @@ import {FormArray, FormBuilder, FormControl} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {ENTER} from '@angular/cdk/keycodes';
 import {MatTableDataSource} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
+import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 
 @Component({
@@ -53,6 +53,8 @@ export class EventComponent implements OnInit {
     createdOnEnd: '',
     expiryDateStart: '',
     expiryDateEnd: '',
+    sortProperty: 'createdOn',
+    sortDirection: 'desc',
     checkColumns: new FormArray([])
   };
 
@@ -127,15 +129,13 @@ export class EventComponent implements OnInit {
       data: (event: Event) => event.eventOutputs[0].eventOutputData.snCheckResult,
       cssClasses: (event: Event) => {
         const productStatus = event.eventOutputs[0].eventOutputData.snCheckResult;
-        let color: string;
+        const style = 'font-bold ';
         if (productStatus === 'Authentic') {
-          color = 'text-success';
+          return style + 'text-success';
         } else if (productStatus === 'Suspect') {
-          color = 'text-danger';
-        } else {
-          color = 'text-warning';
+          return style + 'text-danger';
         }
-        return `${color} font-bold`;
+        return style + 'text-warning';
       }
     }
   };
@@ -176,7 +176,7 @@ export class EventComponent implements OnInit {
       {name: 'limit', value: pageSize},
     ];
 
-    const acceptFilterForm = ['createdOnStart', 'createdOnEnd'];
+    const acceptFilterForm = ['createdOnStart', 'createdOnEnd', 'sortDirection', 'sortProperty'];
     for (const [name, value] of Object.entries(this.dataHandler)) {
       if (acceptFilterForm.includes(name) && !!value) {
         filters.push({
@@ -211,6 +211,8 @@ export class EventComponent implements OnInit {
           createdOnEnd: this.dataHandler.createdOnEnd,
           expiryDateStart: this.dataHandler.expiryDateStart,
           expiryDateEnd: this.dataHandler.expiryDateEnd,
+          sortDirection: this.dataHandler.sortDirection,
+          sortProperty: this.dataHandler.sortProperty
         };
 
         this.dataSource = new MatTableDataSource(resp.items);
@@ -308,6 +310,17 @@ export class EventComponent implements OnInit {
   }
 
   /**
+   * Handle the sort event columns in the event table
+   * @param event - sort object changed
+   */
+  handleSortData(event: Sort): void {
+    const {active, direction} = event;
+    this.dataHandler.sortDirection = direction;
+    this.dataHandler.sortProperty = active;
+    this.getEvents(this.dataHandler.pageSize, 0);
+  }
+
+  /**
    * Prettify a javascript date to human format
    * @param date in format: YYYY-MM-dd HH-mm-ss
    */
@@ -331,6 +344,8 @@ interface DataHandlerForm {
   createdOnEnd: string;
   expiryDateStart: string;
   expiryDateEnd: string;
+  sortProperty: string;
+  sortDirection: SortDirection;
   checkColumns?: any;
 }
 

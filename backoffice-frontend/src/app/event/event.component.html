@@ -150,7 +150,7 @@
 
       <!-- Event Table div -->
       <div class="table-rasponsive">
-        <table mat-table matSort [dataSource]="dataSource">
+        <table mat-table matSort [dataSource]="dataSource" (matSortChange)="handleSortData($event)" [matSortActive]="this.dataHandler.sortProperty" [matSortDirection]="this.dataHandler.sortDirection">
 
           <!-- Event Id Column -->
           <ng-container matColumnDef="eventId">
@@ -187,7 +187,7 @@
           <!-- Selected Columns by CheckBox - CUSTOM -->
           <div *ngFor="let checkColumnSelected of checksSelected">
             <ng-container [matColumnDef]="checkColumnSelected">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <th mat-header-cell *matHeaderCellDef>
                 {{ columnsData[checkColumnSelected].label }}
               </th>
               <td [ngClass]="columnsData[checkColumnSelected].cssClasses ? columnsData[checkColumnSelected].cssClasses(element) : ''" mat-cell *matCellDef="let element">
