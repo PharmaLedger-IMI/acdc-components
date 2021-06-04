@@ -60,7 +60,12 @@ export class AuthService {
   }
 
   public hasAdminProfile() : boolean {
-    return this.isLoggedIn() && this.getUsername()!.endsWith("@pdmfc.com"); // jpsl - so far, only PDM are admins...
+    if (this.isLoggedIn()) {
+      const pdmUser = this.getUsername()!.endsWith('@pdmfc.com'); // jpsl - so far, only PDM are admins...
+      const adminEmail = this.getUsername()! === 'admin@somecompany.com';
+      return pdmUser || adminEmail;
+    }
+    return false;
   }
 
   public hasAnyProfile() : boolean {
