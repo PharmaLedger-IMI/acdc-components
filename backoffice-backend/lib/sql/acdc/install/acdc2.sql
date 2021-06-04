@@ -384,6 +384,10 @@ COMMENT ON TABLE public.mah IS 'Ma - Mah - information for a Marketing Authoriza
 COMMENT ON COLUMN public.mah.mahid IS 'mahid - primary key';
 
 
+--
+-- Name: COLUMN mah.name; Type: COMMENT; Schema: public; Owner: acdc
+--
+
 COMMENT ON COLUMN public.mah.name IS 'name - company name';
 
 
@@ -614,6 +618,13 @@ ALTER TABLE ONLY public.acdcuser
 
 ALTER TABLE ONLY public.mahuser
     ADD CONSTRAINT unq_mahuser UNIQUE (mahid, userid);
+
+
+--
+-- Name: event_createdon_idx; Type: INDEX; Schema: public; Owner: acdc
+--
+
+CREATE INDEX event_createdon_idx ON public.event USING btree (((createdon)::date));
 
 
 --
