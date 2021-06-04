@@ -3,6 +3,7 @@ import {Event} from './event.entity';
 import {EventDto} from "./event.dto";
 import {EventSearchQuery} from "./eventsearch.validator";
 import {Operators, QueryBuilderHelper} from "../utils/QueryBuilderHelper";
+import {BadRequestException} from "@nestjs/common";
 
 @EntityRepository(Event)
 export class EventRepository extends Repository<Event> {
@@ -104,6 +105,29 @@ export class EventRepository extends Repository<Event> {
                 queryBuilder.andWhere(whereFilter(filterValue))
             }
         }
+
+        /** Order by */
+        const sortProperties = {
+            "createdOn": "event.createdOn",
+        };
+        const orderByProps = Array.isArray(eventSearchQuery.sortProperty) ? eventSearchQuery.sortProperty : [eventSearchQuery.sortProperty];
+        const orderByDirs = Array.isArray(eventSearchQuery.sortDirection) ? eventSearchQuery.sortDirection : [eventSearchQuery.sortDirection];
+        if (orderByProps.length != orderByDirs.length) {
+            throw new BadRequestException('sortProperty and sortDirection must have the sane number of values')
+        }
+        for (let i = 0; i < orderByProps.length; i++) {
+            const orderByProp = orderByProps[i];
+            const sortProp = sortProperties[orderByProp];
+            if (!sortProp) {
+                throw new BadRequestException('sortProperty value unsupported. See possible values.');
+            }
+            const orderByDir = orderByDirs[i];
+            // for undefined values
+            if(!!orderByDir)  {
+                queryBuilder.addOrderBy(sortProp, orderByDir)
+            }
+        }
+        queryBuilder.addOrderBy('event.eventId', 'DESC'); // one last sort property to force deterministic output
 
         const count = await queryBuilder.getCount()
         queryBuilder.take(eventSearchQuery.limit)

@@ -62,7 +62,7 @@ export class EventController {
     }
 
     @Get("search")
-    @ApiOperation({summary: "Search for events based on filters apply"})
+    @ApiOperation({summary: "Search for events based on a query"})
     @ApiOkResponse({
         description: "Query a list of events.",
         schema: {
@@ -119,6 +119,8 @@ export class EventController {
             }
         },
     })
+    @ApiQuery({required: false, type: String, isArray: true, name: 'sortProperty'})
+    @ApiQuery({required: false, type: String, isArray: true, name: 'sortDirection'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckResult'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckLocation'})
     @ApiQuery({required: false, type: String, isArray: true, name: 'productName'})

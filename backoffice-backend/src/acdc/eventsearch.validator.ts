@@ -1,6 +1,7 @@
 import {ArgumentMetadata, BadRequestException, Injectable, PipeTransform} from "@nestjs/common"
-import {IsDateString, IsInt, IsOptional, IsString, Min, validate} from "class-validator"
+import {IsDateString, IsEnum, IsInt, IsOptional, IsString, Matches, Min, validate} from "class-validator"
 import {plainToClass, Transform} from "class-transformer"
+import {ApiProperty} from "@nestjs/swagger";
 
 @Injectable()
 export class EventSearchValidator implements PipeTransform<EventSearchQuery> {
@@ -17,6 +18,16 @@ export class EventSearchValidator implements PipeTransform<EventSearchQuery> {
     }
 }
 
+enum EventInputSortProperty {
+    CREATEDON = 'createdOn',
+}
+
+enum EventInputSortDirection {
+    asc = 'ASC',
+    ASC = 'ASC',
+    desc = 'DESC',
+    DESC = 'DESC',
+}
 
 export class EventSearchQuery {
     @IsOptional()
@@ -78,4 +89,13 @@ export class EventSearchQuery {
     @Min(0)
     @Transform(({value}) => parseInt(value))
     readonly page: number = 0
+
+    @IsOptional()
+    @IsEnum(EventInputSortProperty, {each: true})
+    readonly sortProperty: EventInputSortProperty;
+
+    @IsOptional()
+    @Transform(({value}) => value.toUpperCase())
+    @IsEnum(EventInputSortDirection, {each: true})
+    readonly sortDirection: EventInputSortDirection;
 }
