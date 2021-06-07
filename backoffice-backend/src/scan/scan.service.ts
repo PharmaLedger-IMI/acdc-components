@@ -5,6 +5,7 @@ import {EventOuputDataDto} from "../acdc/eventoutput.dto"
 import {EventInputRepository} from "../acdc/eventinput.repository"
 import {EventOutputRepository} from "../acdc/eventoutput.repository"
 import {InjectRepository} from "@nestjs/typeorm"
+import {Event} from "src/acdc/event.entity"
 import {Mah} from "src/acdc/mah.entity"
 
 
@@ -29,13 +30,14 @@ export class ScanService {
             eventOutputData: eventOutputData
         })
 
-        await this.eventRepository.add({
+        const event = Event.create({
             mahId: eventOutputData.mahId,
             createdOn: new Date(),
             eventData: {},
             eventInputs: [eventInput],
             eventOutputs: [eventOutput]
         })
+        await this.eventRepository.add(event)
 
         return eventOutputData
     }

@@ -1,6 +1,5 @@
 import {createQueryBuilder, EntityRepository, Repository} from 'typeorm';
 import {Event} from './event.entity';
-import {EventDto} from "./event.dto";
 import {EventSearchQuery} from "./eventsearch.validator";
 import {Operators, QueryBuilderHelper} from "../utils/QueryBuilderHelper";
 import {BadRequestException} from "@nestjs/common";
@@ -11,7 +10,7 @@ export class EventRepository extends Repository<Event> {
         super()
     }
 
-    async add(eventDto: EventDto): Promise<Event> {
+    async add(eventDto: Event): Promise<Event> {
         return await super.save(eventDto)
     }
 
