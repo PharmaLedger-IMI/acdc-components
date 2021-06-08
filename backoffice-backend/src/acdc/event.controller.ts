@@ -37,59 +37,18 @@ export class EventController {
     @Get("search")
     @ApiOperation({summary: "Search for events based on a query"})
     @ApiOkResponse({
-        description: "Query a list of events.",
         schema: {
-            type: "object",
-            properties: {
-                metadata: {
-                    type: "object",
+            allOf: [
+                {$ref: getSchemaPath(PaginatedDto)},
+                {
                     properties: {
-                        itemsCount: {type: "number"},
-                        itemsPerPage: {type: "number"},
-                        currentPage: {type: "number"},
-                        totalPages: {type: "number"}
-                    }
+                        results: {
+                            type: 'array',
+                            items: {$ref: getSchemaPath(Event)},
+                        },
+                    },
                 },
-                query: {
-                    type: "object",
-                    properties: {
-                        page: {type: "number"},
-                        limit: {type: "number"},
-                    }
-                },
-                items: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            eventId: {type: 'string'},
-                            mahId: {type: 'string'},
-                            createdOn: {type: "string", format: "date-time"},
-                            eventData: {type: "object"},
-                            eventInputs: {
-                                type: "array", items: {
-                                    type: "object",
-                                    properties: {
-                                        eventInputId: {type: "string"},
-                                        eventId: {type: "string"},
-                                        eventInputData: {type: "object"}
-                                    }
-                                }
-                            },
-                            eventOutputs: {
-                                type: "array", items: {
-                                    type: "object",
-                                    properties: {
-                                        eventOutputId: {type: "string"},
-                                        eventId: {type: "string"},
-                                        eventOutputData: {type: "object"}
-                                    }
-                                }
-                            },
-                        }
-                    }
-                }
-            }
+            ],
         },
     })
     async search(@Query(EventQueryValidator) eventQuery: EventQuery): Promise<PaginatedDto<EventQuery, Event>> {
