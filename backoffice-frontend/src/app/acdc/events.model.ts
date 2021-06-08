@@ -1,11 +1,11 @@
 import { Event } from './event.model';
 
 export interface Events {
-  meta: {
+  metadata: {
     itemsCount: number,
     itemsPerPage: number,
     currentPage: number,
     totalPages: number
   };
-  items: Event[];
+  results: Event[];
 }

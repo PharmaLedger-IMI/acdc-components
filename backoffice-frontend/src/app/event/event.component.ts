@@ -204,9 +204,9 @@ export class EventComponent implements OnInit {
         console.log('event.component.getEvents displayedColumns =', this.displayedColumns);
 
         this.dataHandler = {
-          pageIndex: resp.meta.currentPage,
+          pageIndex: resp.metadata.currentPage,
           pageSize,
-          itemsCount: resp.meta.itemsCount,
+          itemsCount: resp.metadata.itemsCount,
           createdOnStart: this.dataHandler.createdOnStart,
           createdOnEnd: this.dataHandler.createdOnEnd,
           expiryDateStart: this.dataHandler.expiryDateStart,
@@ -215,7 +215,7 @@ export class EventComponent implements OnInit {
           sortProperty: this.dataHandler.sortProperty
         };
 
-        this.dataSource = new MatTableDataSource(resp.items);
+        this.dataSource = new MatTableDataSource(resp.results);
         this.dataSource.sortingDataAccessor = (event, property) => {
           return this.columnsData[property].data(event);
         };

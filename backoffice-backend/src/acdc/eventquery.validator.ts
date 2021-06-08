@@ -147,7 +147,7 @@ export class EventQuery {
         required: false,
         type: Number,
         isArray: false,
-        description: "Number of items per page. Defaults to 10."
+        description: "Number of results per page. Defaults to 10."
     })
     @IsOptional()
     @IsInt()
