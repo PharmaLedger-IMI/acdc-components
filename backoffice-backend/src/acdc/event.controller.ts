@@ -102,36 +102,7 @@ export class EventController {
     @Get(":id")
     @ApiOperation({summary: "Get one Event"})
     @ApiOkResponse({
-        description: "Return a list of all events/scans processed.",
-        schema: {
-            type: "object",
-            properties: {
-                eventId: {type: 'string'},
-                mahId: {type: 'string'},
-                createdOn: {type: "string", format: "date-time"},
-                eventData: {type: "object"},
-                eventInputs: {
-                    type: "array", items: {
-                        type: "object",
-                        properties: {
-                            eventInputId: {type: "string"},
-                            eventId: {type: "string"},
-                            eventInputData: {type: "object"}
-                        }
-                    }
-                },
-                eventOutputs: {
-                    type: "array", items: {
-                        type: "object",
-                        properties: {
-                            eventOutputId: {type: "string"},
-                            eventId: {type: "string"},
-                            eventOutputData: {type: "object"}
-                        }
-                    }
-                },
-            }
-        },
+        type: Event
     })
     async findOne(@Param("id") id: string): Promise<Event> {
         console.log("event.findOne... id=", id);
