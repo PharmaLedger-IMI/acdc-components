@@ -5,6 +5,7 @@ import {Connection} from "typeorm";
 import {EventRepository} from "./event.repository";
 import {AuthGuard} from "@nestjs/passport";
 import {EventQuery, EventQueryValidator} from "./eventsearch.validator";
+import {PaginatedDto} from "../paginated.dto";
 
 @ApiTags("Event")
 @UseGuards(AuthGuard('jwt'))
@@ -119,33 +120,11 @@ export class EventController {
             }
         },
     })
-    @ApiQuery({required: false, type: String, isArray: true, name: 'sortProperty'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'sortDirection'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckResult'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'snCheckLocation'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'productName'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'serialNumber'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'batch'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'productCode'})
-    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-12-31', name: 'createdOnEnd'})
-    @ApiQuery({required: false, type: Date, isArray: false, example: '2021-01-01', name: 'createdOnStart'})
-    @ApiQuery({required: false, type: String, isArray: true, name: 'eventId'})
-    @ApiQuery({required: false, type: Number, isArray: false, name: 'limit'})
-    @ApiQuery({required: false, type: Number, isArray: false, name: 'page'})
-    async search(@Query(EventQueryValidator) eventQuery: EventQuery): Promise<object> {
+    async search(@Query(EventQueryValidator) eventQuery: EventQuery): Promise<PaginatedDto<EventQuery, Event>> {
         console.log("event.controller.search... query=", eventQuery);
-        const {eventCollection, count, query} = await this.eventRepository.search(eventQuery);
-        console.log("event.Search events[0] =", eventCollection[0]);
-        return {
-            meta: {
-                itemsCount: count,
-                itemsPerPage: eventQuery.limit,
-                currentPage: eventQuery.page,
-                totalPages: Math.ceil(count / eventQuery.limit),
-            },
-            query,
-            items: eventCollection
-        }
+        const page = await this.eventRepository.search(eventQuery);
+        console.log("event.Search events[0] =", page[0]);
+        return page
     }
 
     @Get(":id")

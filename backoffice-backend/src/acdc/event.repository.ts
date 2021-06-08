@@ -3,6 +3,7 @@ import {Event} from './event.entity';
 import {EventQuery} from "./eventsearch.validator";
 import {Operators, QueryBuilderHelper} from "../utils/QueryBuilderHelper";
 import {BadRequestException} from "@nestjs/common";
+import {PaginatedDto} from "../paginated.dto";
 
 @EntityRepository(Event)
 export class EventRepository extends Repository<Event> {
@@ -27,10 +28,10 @@ export class EventRepository extends Repository<Event> {
 
     /**
      * Performs a SQL query applying the filters according to the @param
-     * @param eventSearchQuery
+     * @param eventQuery
      */
-    async search(eventSearchQuery: EventQuery): Promise<{ count: number; query: EventQuery; eventCollection: any; }> {
-        console.log('event.repository.search query=', eventSearchQuery)
+    async search(eventQuery: EventQuery): Promise<PaginatedDto<EventQuery, Event>> {
+        console.log('event.repository.search query=', eventQuery)
 
         const queryBuilderHelper = new QueryBuilderHelper()
 
@@ -98,7 +99,7 @@ export class EventRepository extends Repository<Event> {
             .innerJoinAndSelect('event.eventInputs', 'eventinput')
             .innerJoinAndSelect('event.eventOutputs', 'eventoutput')
 
-        for (let [filterName, filterValue] of Object.entries(eventSearchQuery)) {
+        for (let [filterName, filterValue] of Object.entries(eventQuery)) {
             const whereFilter = whereFunctions[filterName]
             if (!!whereFilter) {
                 queryBuilder.andWhere(whereFilter(filterValue))
@@ -109,8 +110,8 @@ export class EventRepository extends Repository<Event> {
         const sortProperties = {
             "createdOn": "event.createdOn",
         };
-        const orderByProps = Array.isArray(eventSearchQuery.sortProperty) ? eventSearchQuery.sortProperty : [eventSearchQuery.sortProperty];
-        const orderByDirs = Array.isArray(eventSearchQuery.sortDirection) ? eventSearchQuery.sortDirection : [eventSearchQuery.sortDirection];
+        const orderByProps = Array.isArray(eventQuery.sortProperty) ? eventQuery.sortProperty : [eventQuery.sortProperty];
+        const orderByDirs = Array.isArray(eventQuery.sortDirection) ? eventQuery.sortDirection : [eventQuery.sortDirection];
         if (orderByProps.length != orderByDirs.length) {
             throw new BadRequestException('sortProperty and sortDirection must have the sane number of values')
         }
@@ -122,18 +123,25 @@ export class EventRepository extends Repository<Event> {
             }
             const orderByDir = orderByDirs[i];
             // for undefined values
-            if(!!orderByDir)  {
+            if (!!orderByDir) {
                 queryBuilder.addOrderBy(sortProp, orderByDir)
             }
         }
         queryBuilder.addOrderBy('event.eventId', 'DESC'); // one last sort property to force deterministic output
 
         const count = await queryBuilder.getCount()
-        queryBuilder.take(eventSearchQuery.limit)
-        queryBuilder.skip(eventSearchQuery.page * eventSearchQuery.limit)
+        queryBuilder.take(eventQuery.limit)
+        queryBuilder.skip(eventQuery.page * eventQuery.limit)
 
         const eventCollection = await queryBuilder.getMany()
 
-        return {count, eventCollection, query: eventSearchQuery}
+        const metadata = {
+            itemsCount: count,
+            itemsPerPage: eventQuery.limit,
+            currentPage: eventQuery.page,
+            totalPages: Math.ceil(count / eventQuery.limit),
+        }
+
+        return {metadata, query: eventQuery, results: eventCollection}
     }
 }
