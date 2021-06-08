@@ -20,12 +20,17 @@ export class EventQueryValidator implements PipeTransform<EventQuery> {
 
 enum EventQuerySortProperty {
     CREATEDON = 'createdOn',
+    PRODUCTCODE = 'productCode',
+    BATCH = 'batch',
+    EXPIRYDATE = 'expiryDate',
+    SERIALNUMBER = 'serialNumber',
+    NAMEMEDICINALPRODUCT = 'nameMedicinalProduct',
+    SNCHECKRESULT = 'snCheckResult',
+    PRODUCTSTATUS = 'productStatus'
 }
 
 enum EventQuerySortDirection {
-    asc = 'ASC',
     ASC = 'ASC',
-    desc = 'DESC',
     DESC = 'DESC',
 }
 
@@ -172,20 +177,22 @@ export class EventQuery {
         name: 'sortProperty',
         required: false,
         isArray: true,
-        description: "Sort property name. Possible values are createdOn."
+        description: `Sort property name. Possible values are ${Object.values(EventQuerySortProperty).join(', ')}. Defaults to createdOn DESC.`,
     })
     @IsOptional()
     @IsEnum(EventQuerySortProperty, {each: true})
-    readonly sortProperty: EventQuerySortProperty;
+    readonly sortProperty: EventQuerySortProperty = EventQuerySortProperty.CREATEDON;
 
     @ApiProperty({
         name: 'sortDirection',
         required: false,
         isArray: true,
-        description: "Sort property order. Use ASC or DESC. Defaults to ASC."
+        description: "Sort property order. Use ASC or DESC."
     })
     @IsOptional()
-    @Transform(({value}) => value.toUpperCase())
+    @Transform(({value}) => {
+        return Array.isArray(value) ? value.map(v => v.toUpperCase()) : value.toUpperCase()
+    })
     @IsEnum(EventQuerySortDirection, {each: true})
-    readonly sortDirection: EventQuerySortDirection;
+    readonly sortDirection: EventQuerySortDirection = EventQuerySortDirection.DESC;
 }

@@ -187,7 +187,7 @@
           <!-- Selected Columns by CheckBox - CUSTOM -->
           <div *ngFor="let checkColumnSelected of checksSelected">
             <ng-container [matColumnDef]="checkColumnSelected">
-              <th mat-header-cell *matHeaderCellDef>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 {{ columnsData[checkColumnSelected].label }}
               </th>
               <td [ngClass]="columnsData[checkColumnSelected].cssClasses ? columnsData[checkColumnSelected].cssClasses(element) : ''" mat-cell *matCellDef="let element">

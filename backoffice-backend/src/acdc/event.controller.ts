@@ -54,7 +54,7 @@ export class EventController {
     async search(@Query(EventQueryValidator) eventQuery: EventQuery): Promise<PaginatedDto<EventQuery, Event>> {
         console.log("event.controller.search... query=", eventQuery);
         const page = await this.eventRepository.search(eventQuery);
-        console.log("event.Search events[0] =", page[0]);
+        console.log("event.controller.search events[0] =", page.results[0]);
         return page
     }
 

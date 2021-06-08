@@ -98,6 +98,13 @@ export class EventRepository extends Repository<Event> {
         const queryBuilder = await createQueryBuilder(Event, 'event')
             .innerJoinAndSelect('event.eventInputs', 'eventinput')
             .innerJoinAndSelect('event.eventOutputs', 'eventoutput')
+            .addSelect("eventinput.eventinputdata::jsonb->>'productCode'", 'productcode')
+            .addSelect("eventinput.eventinputdata::jsonb->>'batch'", 'batch')
+            .addSelect("eventinput.eventinputdata::jsonb->>'expiryDate'", 'expirydate')
+            .addSelect("eventinput.eventinputdata::jsonb->>'serialNumber'", 'serialnumber')
+            .addSelect("eventoutput.eventoutputdata::jsonb->>'nameMedicinalProduct'", 'namemedicinalproduct')
+            .addSelect("eventoutput.eventoutputdata::jsonb->>'snCheckResult'", 'sncheckresult')
+            .addSelect("eventoutput.eventoutputdata::jsonb->>'productStatus'", 'productstatus')
 
         for (let [filterName, filterValue] of Object.entries(eventQuery)) {
             const whereFilter = whereFunctions[filterName]
@@ -108,7 +115,14 @@ export class EventRepository extends Repository<Event> {
 
         /** Order by */
         const sortProperties = {
-            "createdOn": "event.createdOn",
+            'createdOn': 'event.createdOn',
+            'productCode': 'productcode',
+            'batch': 'batch',
+            'expiryDate': 'expirydate',
+            'serialNumber': 'serialnumber',
+            'nameMedicinalProduct': 'namemedicinalproduct',
+            'snCheckResult': 'sncheckresult',
+            'productStatus': 'productstatus'
         };
         const orderByProps = Array.isArray(eventQuery.sortProperty) ? eventQuery.sortProperty : [eventQuery.sortProperty];
         const orderByDirs = Array.isArray(eventQuery.sortDirection) ? eventQuery.sortDirection : [eventQuery.sortDirection];
