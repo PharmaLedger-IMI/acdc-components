@@ -1,4 +1,4 @@
 #!/bin/bash
 
-UCNAME="fgt"
+UCNAME="acdc-workspace"
 docker rm $UCNAME
