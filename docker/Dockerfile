@@ -2,6 +2,10 @@ FROM node:12.16.0
 
 RUN npm install -g node-gyp
 
+RUN useradd -ms /bin/bash pharmaledger
+USER pharmaledger
+WORKDIR /home/pharmaledger
+
 ENV TARGET_FOLDER_NAME="acdc-workspace"
 RUN git clone https://github.com/PharmaLedger-IMI/acdc-workspace.git $TARGET_FOLDER_NAME
 
