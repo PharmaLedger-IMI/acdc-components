@@ -1,6 +1,6 @@
 import {createQueryBuilder, EntityRepository, Repository} from 'typeorm';
 import {Event} from './event.entity';
-import {EventSearchQuery} from "./eventsearch.validator";
+import {EventQuery} from "./eventsearch.validator";
 import {Operators, QueryBuilderHelper} from "../utils/QueryBuilderHelper";
 import {BadRequestException} from "@nestjs/common";
 
@@ -29,7 +29,7 @@ export class EventRepository extends Repository<Event> {
      * Performs a SQL query applying the filters according to the @param
      * @param eventSearchQuery
      */
-    async search(eventSearchQuery: EventSearchQuery): Promise<{ count: number; query: EventSearchQuery; eventCollection: any; }> {
+    async search(eventSearchQuery: EventQuery): Promise<{ count: number; query: EventQuery; eventCollection: any; }> {
         console.log('event.repository.search query=', eventSearchQuery)
 
         const queryBuilderHelper = new QueryBuilderHelper()

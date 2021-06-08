@@ -4,7 +4,7 @@ import {Event} from "./event.entity"
 import {Connection} from "typeorm";
 import {EventRepository} from "./event.repository";
 import {AuthGuard} from "@nestjs/passport";
-import {EventSearchQuery, EventSearchValidator} from "./eventsearch.validator";
+import {EventQuery, EventQueryValidator} from "./eventsearch.validator";
 
 @ApiTags("Event")
 @UseGuards(AuthGuard('jwt'))
@@ -132,16 +132,16 @@ export class EventController {
     @ApiQuery({required: false, type: String, isArray: true, name: 'eventId'})
     @ApiQuery({required: false, type: Number, isArray: false, name: 'limit'})
     @ApiQuery({required: false, type: Number, isArray: false, name: 'page'})
-    async search(@Query(EventSearchValidator) eventSearchQuery: EventSearchQuery): Promise<object> {
-        console.log("event.controller.search... query=", eventSearchQuery);
-        const {eventCollection, count, query} = await this.eventRepository.search(eventSearchQuery);
+    async search(@Query(EventQueryValidator) eventQuery: EventQuery): Promise<object> {
+        console.log("event.controller.search... query=", eventQuery);
+        const {eventCollection, count, query} = await this.eventRepository.search(eventQuery);
         console.log("event.Search events[0] =", eventCollection[0]);
         return {
             meta: {
                 itemsCount: count,
-                itemsPerPage: eventSearchQuery.limit,
-                currentPage: eventSearchQuery.page,
-                totalPages: Math.ceil(count / eventSearchQuery.limit),
+                itemsPerPage: eventQuery.limit,
+                currentPage: eventQuery.page,
+                totalPages: Math.ceil(count / eventQuery.limit),
             },
             query,
             items: eventCollection

@@ -4,8 +4,8 @@ import {plainToClass, Transform} from "class-transformer"
 import {ApiProperty} from "@nestjs/swagger";
 
 @Injectable()
-export class EventSearchValidator implements PipeTransform<EventSearchQuery> {
-    async transform(value: object, metadata: ArgumentMetadata): Promise<EventSearchQuery> {
+export class EventQueryValidator implements PipeTransform<EventQuery> {
+    async transform(value: object, metadata: ArgumentMetadata): Promise<EventQuery> {
         console.log('eventinput.validator.transform raw=', value)
         const search = plainToClass(metadata.metatype, value)
         const errors = await validate(search, {skipMissingProperties: false, whitelist: true, transform: true})
@@ -18,18 +18,18 @@ export class EventSearchValidator implements PipeTransform<EventSearchQuery> {
     }
 }
 
-enum EventInputSortProperty {
+enum EventQuerySortProperty {
     CREATEDON = 'createdOn',
 }
 
-enum EventInputSortDirection {
+enum EventQuerySortDirection {
     asc = 'ASC',
     ASC = 'ASC',
     desc = 'DESC',
     DESC = 'DESC',
 }
 
-export class EventSearchQuery {
+export class EventQuery {
     @IsOptional()
     @IsString({each: true})
     readonly eventId: string
@@ -91,11 +91,11 @@ export class EventSearchQuery {
     readonly page: number = 0
 
     @IsOptional()
-    @IsEnum(EventInputSortProperty, {each: true})
-    readonly sortProperty: EventInputSortProperty;
+    @IsEnum(EventQuerySortProperty, {each: true})
+    readonly sortProperty: EventQuerySortProperty;
 
     @IsOptional()
     @Transform(({value}) => value.toUpperCase())
-    @IsEnum(EventInputSortDirection, {each: true})
-    readonly sortDirection: EventInputSortDirection;
+    @IsEnum(EventQuerySortDirection, {each: true})
+    readonly sortDirection: EventQuerySortDirection;
 }
