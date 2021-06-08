@@ -1,5 +1,5 @@
 import {Controller, Get, Param, Query, UseGuards} from "@nestjs/common";
-import {ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath} from "@nestjs/swagger";
 import {Event} from "./event.entity"
 import {Connection} from "typeorm";
 import {EventRepository} from "./event.repository";
@@ -7,6 +7,7 @@ import {AuthGuard} from "@nestjs/passport";
 import {EventQuery, EventQueryValidator} from "./eventsearch.validator";
 import {PaginatedDto} from "../paginated.dto";
 
+@ApiExtraModels(Event, PaginatedDto)
 @ApiTags("Event")
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth()
@@ -24,39 +25,10 @@ export class EventController {
         description: "Query a list of events.",
         schema: {
             type: "array",
-            items: {
-                type: "object",
-                properties: {
-                    eventId: {type: 'string'},
-                    mahId: {type: 'string'},
-                    createdOn: {type: "string", format: "date-time"},
-                    eventData: {type: "object"},
-                    eventInputs: {
-                        type: "array", items: {
-                            type: "object",
-                            properties: {
-                                eventInputId: {type: "string"},
-                                eventId: {type: "string"},
-                                eventInputData: {type: "object"}
-                            }
-                        }
-                    },
-                    eventOutputs: {
-                        type: "array", items: {
-                            type: "object",
-                            properties: {
-                                eventOutputId: {type: "string"},
-                                eventId: {type: "string"},
-                                eventOutputData: {type: "object"}
-                            }
-                        }
-                    },
-                }
-            }
-
-        },
+            items: {$ref: getSchemaPath(Event)}
+        }
     })
-    async findAll() {
+    async findAll(): Promise<Event[]> {
         const eventCollection = await this.eventRepository.findAll();
         console.log("event.findAll, eventCollection =", eventCollection);
         return eventCollection

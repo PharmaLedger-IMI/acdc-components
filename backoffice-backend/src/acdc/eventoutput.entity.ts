@@ -6,15 +6,16 @@ import {EventOuputDataDto} from "./eventoutput.dto";
 @Entity("eventoutput")
 export class EventOutput extends BaseEntity {
 
+    @ApiProperty()
     @PrimaryGeneratedColumn("uuid", {name: "eventoutputid"})
     eventOutputId: string
 
-    @Column({name: "eventid"})
     @ApiProperty()
+    @Column({name: "eventid"})
     eventId: string
 
-    @Column({name: "eventoutputdata", type: "json"})
     @ApiProperty()
+    @Column({name: "eventoutputdata", type: "json"})
     eventOutputData: object
 
     @ManyToOne(() => Event, event => event.eventOutputs)
