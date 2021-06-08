@@ -1,6 +1,6 @@
 import {createQueryBuilder, EntityRepository, Repository} from 'typeorm';
 import {Event} from './event.entity';
-import {EventQuery} from "./eventsearch.validator";
+import {EventQuery} from "./eventquery.validator";
 import {Operators, QueryBuilderHelper} from "../utils/QueryBuilderHelper";
 import {BadRequestException} from "@nestjs/common";
 import {PaginatedDto} from "../paginated.dto";

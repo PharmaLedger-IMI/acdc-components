@@ -4,7 +4,7 @@ import {Event} from "./event.entity"
 import {Connection} from "typeorm";
 import {EventRepository} from "./event.repository";
 import {AuthGuard} from "@nestjs/passport";
-import {EventQuery, EventQueryValidator} from "./eventsearch.validator";
+import {EventQuery, EventQueryValidator} from "./eventquery.validator";
 import {PaginatedDto} from "../paginated.dto";
 
 @ApiExtraModels(Event, PaginatedDto)
