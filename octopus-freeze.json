@@ -712,15 +712,6 @@
                     "cmd": "cd apihub-root/leaflet-wallet/loader && npm run build"
                 }
             ]
-        },
-        {
-            "name": "build Use case",
-            "actions": [
-                {
-                    "type": "execute",
-                    "cmd": "npm run build-use-case"
-                }
-            ]
         }
     ],
     "install-mobile": [
