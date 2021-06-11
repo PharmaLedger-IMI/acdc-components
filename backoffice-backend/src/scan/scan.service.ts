@@ -73,12 +73,12 @@ export class ScanService {
         response.snCheckResult = ScanService.randomChoice(["Authentic", "Suspect", "TimeOut", "UserAbort", "Unsure"]);
 
         const {nameMedicinalProduct, productStatus} = ScanService.getMedicinalProductInfo(eventInputData)
-        response.nameMedicinalProduct = nameMedicinalProduct
-        response.productStatus = productStatus
+        response.nameMedicinalProduct = nameMedicinalProduct || 'Undefined'
+        response.productStatus = productStatus || 'Undefined'
 
-        if(!nameMedicinalProduct || !productStatus) {
-            throw new BadRequestException('productCode or Batch invalid');
-        }
+        // if(!nameMedicinalProduct || !productStatus) {
+        //     throw new BadRequestException('productCode or Batch invalid');
+        // }
 
         let mahCollection = await Mah.find({});
         if (mahCollection.length > 0) {
