@@ -46,7 +46,7 @@ As your regular user, setup the acdc database tables and data:
 cd PROJECT-ROOT/lib/sql/acdc/install
 psql --host=localhost acdc acdc
 drop owned by acdc; -- not needed on initial creation
-\i acdc.sql
+\i acdc2.sql
 \q
 ```
 
@@ -60,7 +60,7 @@ This project works in "database first" mode. This means that, for any change/add
 ### Before Production Release
 
 No need for database migrations.
-Just edit the PROJECT-ROOT/lib/sql/acdc/install/acdc.sql file, and re-create the database as needed.
+Just edit the PROJECT-ROOT/lib/sql/acdc/install/acdc2.sql file, and re-create the database as needed.
 (Please attempt to keep existing user's data. Communicate with the users when there are questions about what to keep/discard between releases).
 
 ### After Production Release
@@ -69,15 +69,15 @@ For each incremental change there is an associated database migration. See doc/M
 
 ### Data Model Editor
 
-This is no "official data model editor". The PROJECT-ROOT/lib/sql/acdc/install/acdc.sql file is the data-model and initial data.
+This is no "official data model editor". The PROJECT-ROOT/lib/sql/acdc/install/acdc2.sql file is the data-model and initial data.
 
 You may use a tool such as the "Community Edition" of
 https://dbschema.com/
-to change the database, and then generate an updated acdc.sql file
+to change the database, and then generate an updated acdc2.sql file
 with the command
 
 ```bash
-pg_dump --host=localhost -U acdc > PROJECT-ROOT/lib/sql/acdc/install/acdc.sql
+pg_dump --host=localhost -U acdc > PROJECT-ROOT/lib/sql/acdc/install/acdc2.sql
 ```
 
 Please communicate with your team the update of the data model, and take care
@@ -123,7 +123,7 @@ For internal discussion:
 │   └── sql
 │       └── acdc
 │           └── install
-│               ├── acdc.sql  (acdc DB schema and initial data)
+│               ├── acdc2.sql  (acdc DB schema and initial data)
 │               └── setup.sql   (create pgsql user and db named acdc)
 ├── nest-cli.json (NestJS project config)
 ├── node_modules  (created by npm install - ignored in GIT)

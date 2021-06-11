@@ -32,4 +32,14 @@ jpsl@PDM-00781:/export/home/jpsl/develop/PharmaLedger$ scp -rp acdc-workspace/ap
 
 pharmaledger@acdc-dev-pl:~$ sudo cp -r external-volume/* /var/lib/docker/volumes/external-volume/_data/
 
+# allow all users in the docker to rw from the external-volume
+# pharmaledger@acdc-dev-pl:~$ sudo chmod -R +rw /var/lib/docker/volumes/external-volume/_data
+
+```
+
+## Manually reseting the docker volume external-volume contents
+```
+docker exec -it acdc-workspace /bin/bash
+root@acdc-workspace:/# npm run clean
+root@acdc-workspace:/# npm run build-all
 ```

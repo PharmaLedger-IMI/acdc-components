@@ -9,7 +9,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "d4feb3a3f53a1b37467604ee9915ba1d5fc8687c"
+                    "commit": "605a753f15e53ef6befabd6e79ba626987d4794e"
                 },
                 {
                     "type": "execute",
@@ -45,7 +45,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "fc42265f76c3584c351e8ec8a411b974838d659c"
+                    "commit": "518e0e6a62427052be09ce4a8be59503fd2a245b"
                 },
                 {
                     "type": "execute",
@@ -99,7 +99,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "e27f42161d8b084948f13ebfa190708e564949c7"
+                    "commit": "bfb0e1b7dceb103b8c3c1f69f755d7cbd31b0097"
                 },
                 {
                     "type": "execute",
@@ -159,7 +159,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "5c5b7b299f02126f6f06966000fa22dd45185c5e"
+                    "commit": "674ed57c7f98c5f90193c343eaa547bfd883e036"
                 },
                 {
                     "type": "execute",
@@ -401,7 +401,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "dcc134fa499db9cbe7390d8e1bb9caae2262c5a8"
+                    "commit": "705d183dce3ea7b0ebc33d6e30d62c5f56676af3"
                 },
                 {
                     "type": "execute",
@@ -710,15 +710,6 @@
                 {
                     "type": "execute",
                     "cmd": "cd apihub-root/leaflet-wallet/loader && npm run build"
-                }
-            ]
-        },
-        {
-            "name": "build Use case",
-            "actions": [
-                {
-                    "type": "execute",
-                    "cmd": "npm run build-use-case"
                 }
             ]
         }
