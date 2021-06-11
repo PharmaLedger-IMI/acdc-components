@@ -3,26 +3,31 @@ import {IsDateString, IsNumber, IsObject, IsOptional, IsString, ValidateNested} 
 import {Transform, Type} from "class-transformer";
 
 export class Location {
+    @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
     @Transform(({value}) => parseFloat(value))
     readonly latitude: number;
 
+    @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
     @Transform(({value}) => parseFloat(value))
     readonly longitude: number;
 
+    @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
     @Transform(({value}) => parseFloat(value))
     readonly altitude: number;
 
+    @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
     @Transform(({value}) => parseFloat(value))
     readonly accuracy: number;
 
+    @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
     @Transform(({value}) => parseFloat(value))
@@ -50,7 +55,7 @@ export class EventInputDataDto {
     @IsDateString()
     readonly snCheckDateTime: Date
 
-    @ApiPropertyOptional({description: "Location in latitude and longitude in format 'lat, long'"})
+    @ApiPropertyOptional({description: "Location in geolocation attributes."})
     @IsObject()
     @ValidateNested({always: true})
     @Type(() => Location)
