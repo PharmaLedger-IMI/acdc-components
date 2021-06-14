@@ -1,6 +1,6 @@
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger"
 import {IsDateString, IsNumber, IsObject, IsOptional, IsString, ValidateNested} from "class-validator";
-import {Transform, Type} from "class-transformer";
+import {Exclude, Transform, Type} from "class-transformer";
 
 export class Location {
     @ApiPropertyOptional()
@@ -18,20 +18,20 @@ export class Location {
     @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
-    @Transform(({value}) => parseFloat(value))
-    readonly altitude: number;
+    @Transform(({value}) => !!value ? parseFloat(value) : value)
+    readonly altitude?: number;
 
     @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
-    @Transform(({value}) => parseFloat(value))
-    readonly accuracy: number;
+    @Transform(({value}) => !!value ? parseFloat(value) : value)
+    readonly accuracy?: number;
 
     @ApiPropertyOptional()
     @IsNumber()
     @IsOptional()
-    @Transform(({value}) => parseFloat(value))
-    readonly altitudeAccuracy: number;
+    @Transform(({value}) => !!value ? parseFloat(value) : value)
+    readonly altitudeAccuracy?: number;
 }
 
 export class EventInputDataDto {
@@ -59,7 +59,8 @@ export class EventInputDataDto {
     @IsObject()
     @ValidateNested({always: true})
     @Type(() => Location)
-    readonly snCheckLocation: Location;
+    @IsOptional()
+    readonly snCheckLocation?: Location;
 }
 
 export class EventInputDto {
