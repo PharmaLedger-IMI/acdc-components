@@ -102,8 +102,8 @@ export class EventMapComponent {
     const markersLayer = L.layerGroup(markers);
     const markersClustersLayer = L.markerClusterGroup({
       chunkedLoading: true,
-      disableClusteringAtZoom: 11,
-      spiderfyOnMaxZoom: false
+      disableClusteringAtZoom: 18,
+      spiderfyOnMaxZoom: true
     });
     markersClustersLayer.addLayer(markersLayer);
 
