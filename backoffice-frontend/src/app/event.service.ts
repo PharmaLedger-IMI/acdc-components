@@ -22,6 +22,16 @@ export class EventService {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
 
+  /** Perform API Request and get a list of all events */
+  getAllEvents(): Observable<Events> {
+    const url = this.eventUrl;
+
+    return this.http.get<Events>(url).pipe(
+      tap(_ => this.log(`fetched Events`)),
+      catchError(this.handleError<Events>('getEvents'))
+    );
+  }
+
   /**
    * Perform API Request and get a list of events
    * @param filters -> filters to apply in the Http request according to the API documentation for the "Event Search" route

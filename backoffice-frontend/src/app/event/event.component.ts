@@ -320,6 +320,26 @@ export class EventComponent implements OnInit {
     this.getEvents(this.dataHandler.pageSize, 0);
   }
 
+  handleDownloadScans(): void {
+    this.eventService.getAllEvents().subscribe((res: any) => {
+      const fileName = this.datePrettify(new Date());
+      this.downloadByHtmlElement(`${fileName}-acdc-scans`, JSON.stringify(res));
+    });
+  }
+
+  /** Create html tag to emit download event */
+  private downloadByHtmlElement(fileName: string, content: string): void {
+    const htmlElement = document.createElement('a');
+    const fileType = 'text/plain';
+    htmlElement.setAttribute(
+      'href',
+      `data:${fileType};charset=utf-8,${encodeURIComponent(content)}`
+    );
+    htmlElement.setAttribute('download', fileName);
+    const event = new MouseEvent('click');
+    htmlElement.dispatchEvent(event);
+  }
+
   /**
    * Prettify a javascript date to human format
    * @param date in format: YYYY-MM-dd HH-mm-ss

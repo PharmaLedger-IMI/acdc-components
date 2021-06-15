@@ -1,3 +1,9 @@
+<div class="text-danger m-b-10" fxLayout="row" fxLayoutAlign="end center">
+  <button mat-mini-fab color="primary" (click)="handleDownloadScans()">
+    <mat-icon>cloud_download</mat-icon>
+  </button>
+</div>
+
 <!-- Filter Expansion Panel -->
 <mat-accordion>
   <mat-expansion-panel hideToggle
@@ -150,7 +156,12 @@
 
       <!-- Event Table div -->
       <div class="table-rasponsive">
-        <table mat-table matSort [dataSource]="dataSource" (matSortChange)="handleSortData($event)" [matSortActive]="this.dataHandler.sortProperty" [matSortDirection]="this.dataHandler.sortDirection">
+        <table mat-table matSort
+               [dataSource]="dataSource"
+               (matSortChange)="handleSortData($event)"
+               [matSortActive]="this.dataHandler.sortProperty"
+               [matSortDirection]="this.dataHandler.sortDirection"
+        >
 
           <!-- Event Id Column -->
           <ng-container matColumnDef="eventId">
@@ -190,7 +201,10 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 {{ columnsData[checkColumnSelected].label }}
               </th>
-              <td [ngClass]="columnsData[checkColumnSelected].cssClasses ? columnsData[checkColumnSelected].cssClasses(element) : ''" mat-cell *matCellDef="let element">
+              <td
+                [ngClass]="columnsData[checkColumnSelected].cssClasses ? columnsData[checkColumnSelected].cssClasses(element) : ''"
+                mat-cell *matCellDef="let element"
+              >
                 {{columnsData[checkColumnSelected].data(element)}}
               </td>
             </ng-container>
