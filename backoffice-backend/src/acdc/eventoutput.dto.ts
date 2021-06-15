@@ -2,13 +2,13 @@ import {ApiProperty} from "@nestjs/swagger";
 
 export class EventOuputDataDto {
     @ApiProperty({description: "Authentication status"})
-    snCheckResult: string
+    snCheckResult: string = 'Unsure'
 
     @ApiProperty({required: true, description: "Name of the medicinal product"})
-    nameMedicinalProduct: string
+    nameMedicinalProduct: string = 'Undefined'
 
     @ApiProperty({required: true, description: "Status of the product"})
-    productStatus: string
+    productStatus: string = 'Undefined'
 
     @ApiProperty({required: false, description: "Marketing Authorization Holder identifier"})
     mahId: string | undefined
