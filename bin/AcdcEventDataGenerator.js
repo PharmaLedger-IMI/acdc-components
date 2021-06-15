@@ -3,33 +3,6 @@ const fetch = require('node-fetch')
 class AcdcEventDataGenerator {
     url = ""
 
-    // nameMedicinalProduct it's just for reference with backend, not used in EventInput
-    products = [
-        {productCode: '01201419000158', nameMedicinalProduct: 'Cosentyx 150mg/ml x2'},
-        {productCode: '29653329154760', nameMedicinalProduct: 'Ritalin LA HGC 40mg 1x30'},
-        {productCode: '30652009514715', nameMedicinalProduct: 'Aspirin 500mg 1x25'},
-        {productCode: '49408945163108', nameMedicinalProduct: 'Keytruda 25mg/ml'},
-    ]
-
-    productStatus = [
-        'Released to market', 'Released to market', 'Released to market', 'Released to market', 'Released to market',
-        'Not released', 'Not released', 'Not released',
-        'Not registered', 'Not registered',
-        'Reported stolen',
-        'Reported destroyed',
-        'Reported suspect',
-    ]
-
-    // batch Prefix: for backend return ProductStatus for dummy scan response
-    batchPrefix = {
-        'Released to market': 'RMKT',
-        'Not released': 'NREG',
-        'Not registered': 'NREL',
-        'Reported stolen': 'RSTO',
-        'Reported destroyed': 'RDES',
-        'Reported suspect': 'RSUS',
-    }
-
     // Countries that will be generated geolocation
     countries = [
         {code: "FR", lat: 46.227638, long: 2.213749},
@@ -63,12 +36,13 @@ class AcdcEventDataGenerator {
         return Math.floor(Math.random() * (max - min + 1)) + min
     }
 
-    // Format data to YYMMDD
+    // Format date to YYMMDD
     dateFormatYYMMDD(date) {
         const d = new Date(date);
         const day = d.getDate().toString().padStart(2, '0');
         const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const year = d.getFullYear().toString().substr(-2);;
+        const year = d.getFullYear().toString().substr(-2);
+        ;
         return `${year}${month}${day}`;
     }
 
@@ -76,7 +50,7 @@ class AcdcEventDataGenerator {
     buildRandomDate(untilDaysBefore = 1, callback = null) {
         const dateOffset = (24 * 60 * 60 * 1000) * ((Math.random() * untilDaysBefore) | 0);
         let randomDate = new Date(new Date() - dateOffset)
-        if(!!callback) {
+        if (!!callback) {
             randomDate = callback(randomDate)
         }
         return randomDate
@@ -92,19 +66,43 @@ class AcdcEventDataGenerator {
         }
     }
 
+    products = {
+        '02113100000011': {
+            batch: 'MAY1701',
+            serialNumber: ['43023992515022', '43023992515000', '43023992515099', 'WRONG']
+        },
+        '01133111111118': {
+            batch: 'MAY1702',
+            serialNumber: ['33023992515022', '33023992515000', '33023992515099', 'WRONG']
+        },
+        '01183111111137': {
+            batch: 'MAY1703',
+            serialNumber: ['33023992515022', '33023992515000', '33023992515099', 'WRONG']
+        },
+    }
+
     // Build batches for each product
     buildShipments(products, batchQtyMax = 1) {
         const shipments = []
-        products.forEach(product => {
-            const batchQty = this.randomInterval(1, batchQtyMax)
+        Object.keys(products).forEach(productCode => {
+            const product = products[productCode]
+            let batch = product.batch
+            const batchQty = this.randomInterval(product.serialNumber.length, product.serialNumber.length + batchQtyMax)
+            // 1/4 of BatchQty will be noise (invalid batch/serial number)
+            const noiseBatch = Math.ceil(batchQty / 4)
             for (let i = 0; i < batchQty; i++) {
-                const productCode = product.productCode
-                const expiryDate = this.buildRandomDate(90, this.dateFormatYYMMDD)
+                let serialNumber = this.randomChoice(product.serialNumber)
+                const expiryDate = '220430'
 
-                const productStatus = this.randomChoice(this.productStatus)
-                const batch = `${this.batchPrefix[productStatus]}${productCode.substr(0, 3)}${this.randomInterval(10000, 99999)}`
-                const serialNumber = productCode + batch
-
+                // Generate some noise data -> Invalid Batch/SerialNumber
+                if (noiseBatch < i) {
+                    const random = this.randomInterval()
+                    if (random <= 5) {
+                        batch = 'Invalid'
+                    } else if (random > 5) {
+                        serialNumber = 'Wrong'
+                    }
+                }
                 const shipment = {productCode, batch, serialNumber, expiryDate}
                 shipments.push(shipment)
             }
@@ -122,7 +120,6 @@ class AcdcEventDataGenerator {
             snCheckLocation,
             did: 'AcdcEventDataGenerator',
             batchDsuStatus: true,
-            productDsuStatus: false,
         }
     }
 
