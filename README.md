@@ -86,7 +86,42 @@ Password: Test1234567890#
    
 Now you will act as a Holder thus will be able to add Products (and leaflets for it) and create Batches of products.
 
+#### Add Products to Enterprise Wallet for ACDC Scan Response
+    # Product 1
+    Product Name: Cosentyx
+    Product Code (GTIN/NTIN): 02113100000011
+    BatchID: MAY1701
+    Expiry Date: 2022-04-30
+    Serial Number: {
+        valid: 43023992515022
+        recalled: 43023992515000
+        decommissioned: 43023992515099
+    }
+    MAH: Novartis
 
+    # Product 2
+    Product Name: Keytruda
+    Product Code (GTIN/NTIN): 01133111111118
+    BatchID: MAY1702
+    Expiry Date: 2022-04-30
+    Serial Number: {
+        valid: 33023992515022
+        recalled: 33023992515000
+        decommissioned: 33023992515099
+    }
+    MAH: MSD
+
+    # Product 3
+    Product Name: Fluarix
+    Product Code (GTIN/NTIN): 01183111111137
+    BatchID: MAY1703
+    Expiry Date: 2022-04-30
+    Serial Number: {
+        valid: 33023992515022
+        recalled: 33023992515000
+        decommissioned: 33023992515099
+    }
+    MAH: GSK
 
 ### EPI Client
 This is the part a normal user will see. The part that will
