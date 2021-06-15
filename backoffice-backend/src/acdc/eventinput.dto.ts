@@ -1,5 +1,5 @@
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger"
-import {IsDateString, IsNumber, IsObject, IsOptional, IsString, ValidateNested} from "class-validator";
+import {IsBoolean, IsDateString, IsNumber, IsObject, IsOptional, IsString, ValidateNested} from "class-validator";
 import {Exclude, Transform, Type} from "class-transformer";
 
 export class Location {
@@ -61,6 +61,25 @@ export class EventInputDataDto {
     @Type(() => Location)
     @IsOptional()
     readonly snCheckLocation?: Location;
+
+    @ApiPropertyOptional({description: "Decentralized Identity (needs user authorization)."})
+    @IsString()
+    @IsOptional()
+    @Exclude() // temporarily excluded for insertion into db
+    readonly did: string
+
+    @ApiPropertyOptional({description: "If GTIN + batch DSU exists should be true, false otherwise."})
+    @IsBoolean()
+    @IsOptional()
+    readonly batchDsuStatus: boolean
+
+    @ApiPropertyOptional({
+        default: false,
+        description: "If GTIN DSU exists should be true, false if it does not. Undefined when not tested"
+    })
+    @IsBoolean()
+    @IsOptional()
+    readonly productDsuStatus: undefined | boolean = undefined
 }
 
 export class EventInputDto {
