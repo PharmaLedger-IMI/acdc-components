@@ -35,6 +35,7 @@ import { LoggedInGuard } from './auth/logged-in.guard';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatSortModule,
     MatCheckboxModule,
     MatAutocompleteModule,
+    MatTooltipModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

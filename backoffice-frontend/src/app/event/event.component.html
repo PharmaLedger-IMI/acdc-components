@@ -1,5 +1,9 @@
 <div class="text-danger m-b-10" fxLayout="row" fxLayoutAlign="end center">
-  <button mat-mini-fab color="primary" (click)="handleDownloadScans()">
+  <button mat-mini-fab
+          matTooltip="Export event scans"
+          matTooltipPosition="left"
+          color="primary"
+          (click)="handleDownloadScans()">
     <mat-icon>cloud_download</mat-icon>
   </button>
 </div>
