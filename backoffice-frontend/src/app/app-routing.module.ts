@@ -18,7 +18,8 @@ const routes: Routes = [
   {path: 'event/:id', component: EventDetailComponent, canActivate: [LoggedInGuard]},
   {path: 'login', component: LoginComponent},
   {path: 'rule', component: TodoComponent, canActivate: [LoggedInGuard]},
-  {path: '', redirectTo: '/login', pathMatch: "full"},
+  {path: 'home', redirectTo: '/event'},
+  {path: '', redirectTo: '/login', pathMatch: 'full'},
   {path: '**', component: PageNotFoundComponent}
 ];
 
