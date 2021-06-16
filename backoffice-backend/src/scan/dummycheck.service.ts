@@ -30,6 +30,7 @@ export class DummyCheckService {
         '02113100000011': {
             nameMedicinalProduct: 'Cosentyx',
             batch: 'MAY1701',
+            mahId: '0c1aec99-a17f-495d-adfc-008888baef6c',
             serialNumber: {
                 '43023992515022': this.serialNumber.valid,
                 '43023992515000': this.serialNumber.recalled,
@@ -40,6 +41,7 @@ export class DummyCheckService {
         '01133111111118': {
             nameMedicinalProduct: 'Keytruda',
             batch: 'MAY1702',
+            mahId: '27e79e87-940a-475b-9d46-c266d3550d82',
             serialNumber: {
                 '33023992515022': this.serialNumber.valid,
                 '33023992515000': this.serialNumber.recalled,
@@ -50,6 +52,7 @@ export class DummyCheckService {
         '01183111111137': {
             nameMedicinalProduct: 'Fluarix',
             batch: 'MAY1703',
+            mahId: 'e076cc6c-5bfd-4785-a06d-e79e057f80cf',
             serialNumber: {
                 '33023992515022': this.serialNumber.valid,
                 '33023992515000': this.serialNumber.recalled,
@@ -81,12 +84,9 @@ export class DummyCheckService {
             return response
         }
 
-        let mahCollection = await Mah.find({});
-        if (mahCollection.length > 0) {
-            let mah = mahCollection[0];
-            response.mahId = mah.mahId;
-            response.mahName = mah.name;
-        }
+        let mah = await Mah.findOne(product.mahId);
+        response.mahId = mah.mahId;
+        response.mahName = mah.name;
 
         response.nameMedicinalProduct = product.nameMedicinalProduct
         const serialNumber = product.serialNumber[eventInputData.serialNumber]
@@ -132,5 +132,6 @@ interface SerialNumber {
 interface Product {
     nameMedicinalProduct: string;
     batch: string;
+    mahId: string;
     serialNumber: { [key: string]: SerialNumber }
 }
