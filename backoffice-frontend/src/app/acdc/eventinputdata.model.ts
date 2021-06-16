@@ -11,4 +11,7 @@ export interface EventInputData {
     accuracy?: number,
     altitudeAccuracy?: number
   };
+  did?: string;
+  batchDsuStatus: boolean;
+  productDsuStatus?: boolean;
 }

@@ -94,7 +94,11 @@ export class EventComponent implements OnInit {
     },
     eventInputData: {
       label: 'Event Inputs[0]',
-      data: (event: Event) => event.eventInputs[0].eventInputData
+      data: (event: Event) => {
+        const eventInputData = event.eventInputs[0].eventInputData;
+        delete eventInputData.did;
+        return eventInputData;
+      }
     },
     eventOutputData: {
       label: 'Event Outputs[0]',

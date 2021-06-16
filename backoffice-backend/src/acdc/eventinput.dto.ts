@@ -65,7 +65,6 @@ export class EventInputDataDto {
     @ApiPropertyOptional({description: "Decentralized Identity (needs user authorization)."})
     @IsString()
     @IsOptional()
-    @Exclude() // temporarily excluded for insertion into db
     readonly did: string
 
     @ApiPropertyOptional({description: "If GTIN + batch DSU exists should be true, false otherwise."})
