@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.6
--- Dumped by pg_dump version 12.6
+-- Dumped from database version 12.7
+-- Dumped by pg_dump version 12.7
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -364,7 +364,7 @@ COMMENT ON COLUMN public.locale.description IS 'description - a desription of th
 
 CREATE TABLE public.mah (
     mahid uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    name TEXT NOT NULL
+    name text NOT NULL
 );
 
 
@@ -512,6 +512,8 @@ en_GB	en_GBx
 
 COPY public.mah (mahid, name) FROM stdin;
 0c1aec99-a17f-495d-adfc-008888baef6c	Novartis AG
+27e79e87-940a-475b-9d46-c266d3550d82	MSD
+e076cc6c-5bfd-4785-a06d-e79e057f80cf	GSK
 \.
 
 
@@ -522,6 +524,10 @@ COPY public.mah (mahid, name) FROM stdin;
 COPY public.mahuser (mahuserid, mahid, userid) FROM stdin;
 adc6e4b3-df5e-4426-8b97-45b6fcad5eb4	0c1aec99-a17f-495d-adfc-008888baef6c	744b02da-ee30-46dd-b894-35218029e87e
 3aaba9fb-8af7-4b62-9b08-bf1d27214af7	0c1aec99-a17f-495d-adfc-008888baef6c	06127849-9b1c-41fa-8461-4fac6eeb1d97
+482b5721-8358-4357-b8e0-0127fe5192fa	27e79e87-940a-475b-9d46-c266d3550d82	06127849-9b1c-41fa-8461-4fac6eeb1d97
+081b018a-a7e5-42de-bf82-22e6b4920123	27e79e87-940a-475b-9d46-c266d3550d82	744b02da-ee30-46dd-b894-35218029e87e
+24aa6f5d-bcea-40f0-88ea-d0913f326453	e076cc6c-5bfd-4785-a06d-e79e057f80cf	744b02da-ee30-46dd-b894-35218029e87e
+58a49081-2938-4a75-9598-58e8f97a58fa	e076cc6c-5bfd-4785-a06d-e79e057f80cf	06127849-9b1c-41fa-8461-4fac6eeb1d97
 \.
 
 
