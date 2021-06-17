@@ -7,7 +7,10 @@ html {
 .center-aligned-controls {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    vertical-align:middle;
 }
 
 .vertical-align {
@@ -17,7 +20,7 @@ html {
     margin: 10px;
     padding: 20px 70px;
     width: 150px;
-    height: 200px;
+    min-height: 200px;
     border-radius: 10px;
     text-decoration: none;
     display: block;
@@ -39,7 +42,6 @@ html {
 
 .right-side {
     margin-left: 20px;
-    width: 120px;
     display: block;
     text-align: center;
 }
