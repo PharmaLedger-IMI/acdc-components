@@ -12,29 +12,34 @@ import 'leaflet.markercluster';
 export class EventMapComponent {
 
   private map: any;
-  private dataPoints: any = [];
+  private dataPoints: any = []; // used to center the map
 
   /** CORE: Receive an input from event-map component and render a map */
   @Input() set dataReceiver(events: Event[] | undefined) {
     console.log('event-map.component.dataReceiver=', events);
     if (events) {
-      const markers = events.map(event => {
+      const markers: L.Marker[] = [];
+      events.forEach(event => {
         const eventInputData = event.eventInputs[0].eventInputData;
-        const lat = eventInputData.snCheckLocation.latitude;
-        const long = eventInputData.snCheckLocation.longitude;
-        this.dataPoints.push([lat, long]);
+        const snCheckLocation = eventInputData.snCheckLocation;
 
-        const eventOutputData = event.eventOutputs[0].eventOutputData;
-        const checkResult = eventOutputData.snCheckResult;
+        if (!!snCheckLocation && ('latitude' in snCheckLocation && 'longitude' in snCheckLocation)) {
+          const lat = snCheckLocation.latitude;
+          const long = snCheckLocation.longitude;
 
-        const icon = this.buildIcon(checkResult);
-        const popup = this.buildPopup(event.eventId, [
-          eventInputData.productCode,
-          eventOutputData.nameMedicinalProduct,
-          checkResult
-        ]);
+          this.dataPoints.push([lat, long]);
 
-        return this.buildMarker([lat, long], icon, popup);
+          const eventOutputData = event.eventOutputs[0].eventOutputData;
+          const checkResult = eventOutputData.snCheckResult;
+
+          const icon = this.buildIcon(checkResult);
+          const popup = this.buildPopup(event.eventId, [
+            eventInputData.productCode,
+            eventOutputData.nameMedicinalProduct,
+            checkResult
+          ]);
+          markers.push(this.buildMarker([lat, long], icon, popup));
+        }
       });
 
       if (typeof this.map !== 'undefined') {
