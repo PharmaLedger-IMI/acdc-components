@@ -1,19 +1,6 @@
-.event-detail {
-  margin: 20px 20px;
-}
-
-.event-detail p {
+.box-header {
   font-weight: bold;
-}
-
-.event-detail h4 {
-  margin-bottom: -20px;
-  color: #3e68ad;
-}
-
-.event-detail h6 {
-  margin-bottom: -2px;
-  color: #6c757d;
+  margin: 20px 0 5px;
 }
 
 .box {
@@ -38,12 +25,11 @@
   border-color: #52E052;
 }
 
-.row {
-  display: flex;
-  flex-direction: row;
+pre {
+  overflow-x: auto;
+  word-wrap: break-word;
 }
 
-.column {
-  width: 50%;
+h3 {
+  text-align: center;
 }
-

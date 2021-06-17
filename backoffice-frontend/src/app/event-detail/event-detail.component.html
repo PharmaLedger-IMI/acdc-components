@@ -1,29 +1,30 @@
-<div class="event-detail" *ngIf="event">
-  <div class="row">
-    <!-- Column of Event Detail -->
-    <div class="column">
-      <!-- Code box for eventMetadata -->
-      <div class="box box-event">
-        <p>Event:</p>
-        <pre>{{eventMetadata | json}}</pre>
-      </div>
-      <!-- Code box for event input -->
-      <div class="box box-input">
-        <p>Event Input:</p>
-        <pre>{{eventInputs | json}}</pre>
-      </div>
-      <!-- Code box for event output -->
-      <div class="box box-output">
-        <p>Event Output:</p>
-        <pre>{{eventOutputs | json}}</pre>
-      </div>
+<div class="content" fxLayout="row wrap" fxLayout.xs="column" fxFlexFill *ngIf="event">
+  <div fxFlex="50" fxFlex.lt-lg="100">
+    <!-- Code box for eventMetadata -->
+    <div class="box box-event">
+      <div class="box-header">Event:</div>
+      <pre>{{eventMetadata | json}}</pre>
     </div>
-    <!-- End column of Event -->
+    <!-- Code box for event input -->
+    <div class="box box-input">
+      <div class="box-header">Event Input:</div>
+      <pre style="text-wrap: normal">{{eventInputs | json}}</pre>
+    </div>
+    <!-- Code box for event output -->
+    <div class="box box-output">
+      <div class="box-header">Event Output:</div>
+      <pre>{{eventOutputs | json}}</pre>
+    </div>
+  </div>
 
-    <!-- Column of Map -->
-    <div class="column">
+  <div fxFlex="50" fxFlex.lt-lg="100">
+    <div *ngIf="!!event.eventInputs[0].eventInputData.snCheckLocation; else disableMap">
       <app-event-map [dataReceiver]="[event]"></app-event-map>
     </div>
-    <!-- End column of Map -->
+    <ng-template #disableMap>
+      <h3>
+        Map location not available.
+      </h3>
+    </ng-template>
   </div>
 </div>
