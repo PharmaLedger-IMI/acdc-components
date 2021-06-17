@@ -15,6 +15,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,8 +37,6 @@ import { TodoComponent } from './todo/todo.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCheckboxModule,
     MatAutocompleteModule,
     MatTooltipModule,
+    MatProgressBarModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
