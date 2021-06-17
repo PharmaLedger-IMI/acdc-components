@@ -454,7 +454,7 @@ COPY public.acdcuser (userid, email, passhash) FROM stdin;
 --
 
 COPY public.appresource (id, key, locale, value, help) FROM stdin;
-1	acdc.version	\N	0.3.0	Schema version
+1	acdc.version	\N	0.5.9	Schema version
 \.
 
 

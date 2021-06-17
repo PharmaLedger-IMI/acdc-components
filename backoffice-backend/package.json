@@ -1,6 +1,6 @@
 {
     "name": "acdc-backoffice-backend",
-    "version": "0.5.8",
+    "version": "0.5.9",
     "private": true,
     "description": "REST services + database for Anti-Counterfeiting Data Collaboration",
     "author": {
