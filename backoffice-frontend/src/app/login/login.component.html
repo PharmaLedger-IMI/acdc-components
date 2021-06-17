@@ -19,6 +19,9 @@
                 class="form-control" />
         </label>
     </div>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
   <div class="m-t-15">
     <button mat-raised-button color="primary" type="submit">Login</button>
   </div>

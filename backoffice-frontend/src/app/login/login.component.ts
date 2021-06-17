@@ -22,7 +22,8 @@ export class LoginComponent implements OnInit {
   });
 
   errorMessage = "";
-  
+  loading = false;
+
   constructor(
     private appComponent: AppComponent,
     private formBuilder: FormBuilder,
@@ -41,7 +42,9 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/event']); // TODO navigate to proper profile entry page
   }
 
-  login() {
+  async login() {
+    this.loading = true;
+    this.errorMessage = "";
     let self = this;
     if (!this.loginForm.value.username) {
       self.log("Username cannot be empty!");
@@ -51,6 +54,7 @@ export class LoginComponent implements OnInit {
     let auPassword = this.loginForm.value.password;
     this.loginForm.value.password = '';
     this.messageService.add("Logging in \"" + auUsername + "\"");
+    await new Promise(wait => setTimeout(wait, 980));
     this.authService.login(auUsername, auPassword,
       function (err, res) {
         if (err) {
@@ -66,6 +70,7 @@ export class LoginComponent implements OnInit {
         }
       }
     );
+    this.loading = false;
   }
 
   get username() {
