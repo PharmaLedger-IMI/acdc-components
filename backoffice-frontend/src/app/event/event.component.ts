@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, NgZone, OnInit, ViewChild} from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 
 import {Event} from '../acdc/event.model';
@@ -10,6 +10,7 @@ import {ENTER} from '@angular/cdk/keycodes';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-event',
@@ -17,9 +18,14 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
   styleUrls: ['./event.component.css']
 })
 export class EventComponent implements OnInit {
-  constructor(private appComponent: AppComponent, private eventService: EventService, private formBuilder: FormBuilder) {
+  constructor(
+    private appComponent: AppComponent,
+    private eventService: EventService,
+    private formBuilder: FormBuilder,
+    private ngZone: NgZone) {
   }
 
+  isLoading = true;
   dataSource: MatTableDataSource<Event> = new MatTableDataSource();
   @ViewChild(MatSort) sort: MatSort = new MatSort();
   filterPanelOpenState = false;
@@ -174,7 +180,7 @@ export class EventComponent implements OnInit {
    * @param pageSize Number of records in each page
    */
   getEvents(pageSize: number, pageIndex: number): void {
-
+    this.isLoading = true;
     const filters: any[] = [
       {name: 'page', value: pageIndex},
       {name: 'limit', value: pageSize},
@@ -224,6 +230,10 @@ export class EventComponent implements OnInit {
           return this.columnsData[property].data(event);
         };
         this.dataSource.sort = this.sort;
+
+        this.ngZone.onStable.pipe(first()).subscribe(() => {
+          this.isLoading = false;
+        });
       });
   }
 
