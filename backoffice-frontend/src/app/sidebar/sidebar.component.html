@@ -1,4 +1,4 @@
-<mat-nav-list appAccordion class="m-t-15">
+<mat-nav-list class="m-t-15">
   <span *ngFor="let sidebarItem of sidebarItems">
     <span *ngIf="sidebarItem.display">
 
@@ -10,7 +10,7 @@
 
       <ng-template #link>
         <mat-list-item routerLinkActive="selected">
-          <a appAccordionToggle [routerLink]="['/', sidebarItem.route]" (click)="sidebarItem.onClick ? sidebarItem.onClick() : ''">
+          <a [routerLink]="['/', sidebarItem.route]" (click)="sidebarItem.onClick ? sidebarItem.onClick() : ''">
             <mat-icon>{{ sidebarItem.icon }}</mat-icon>
             <span>{{ sidebarItem.label }}</span>
             <span fxFlex></span>

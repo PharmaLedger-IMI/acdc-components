@@ -1,7 +1,7 @@
 <div class="main-container">
   <!-- Toolbar -->
   <mat-toolbar color="primary" class="topbar">
-    <button mat-icon-button (click)="snav.toggle()" value="sidebarclosed">
+    <button mat-icon-button (click)="snav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
     {{title}}
@@ -22,13 +22,15 @@
   <!-- END Toolbar -->
 
 
-  <mat-sidenav-container>
+  <mat-sidenav-container [autosize]="true">
     <!-- Toggle sidebar -->
-    <mat-sidenav #snav id="snav"
+    <mat-sidenav #snav
+                 id="snav"
                  [mode]="mediaQuery.matches ? 'side' : 'over'"
-                 fixedTopGap="0"
                  [opened]="mediaQuery.matches"
                  [disableClose]="mediaQuery.matches"
+                 [autoFocus]="true"
+                 [fixedTopGap]=0
     >
       <!-- Sidebar -->
       <app-sidebar></app-sidebar>
