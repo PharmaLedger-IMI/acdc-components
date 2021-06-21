@@ -10,5 +10,9 @@
 </div>
 <div><span>help: </span>{{arc.help}}</div>
 </div>
-<button (click)="save()">save</button>
-<button (click)="goBack()">go back</button>
+
+<div class="m-t-10" fxLayout="row" fxLayoutGap="10px">
+  <button mat-raised-button color="primary" (click)="save()">save</button>
+  <button mat-raised-button color="primary" (click)="goBack()">go back</button>
+</div>
+
