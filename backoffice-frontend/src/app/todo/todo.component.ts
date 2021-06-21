@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {AppComponent} from "../app.component";
 
 @Component({
   selector: 'app-todo',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TodoComponent implements OnInit {
 
-  constructor() { }
+  constructor(private appComponent: AppComponent) { }
 
   ngOnInit(): void {
+    this.appComponent.setNavMenuHighlight('data', 'For future development');
   }
 
 }

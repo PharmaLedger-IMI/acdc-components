@@ -32,7 +32,7 @@ export class SidebarComponent {
           label: 'Alerts',
           display: authService.hasAnyProfile(),
         },
-        {label: 'Dashboard', route: 'alerts', icon: 'timeline', display: authService.hasAnyProfile()},
+        {label: 'Dashboard', route: 'alert', icon: 'timeline', display: authService.hasAnyProfile()},
         {
           title: true,
           label: 'Administration',

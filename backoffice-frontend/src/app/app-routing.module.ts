@@ -16,6 +16,7 @@ const routes: Routes = [
   {path: 'appresource/:id', component: AppResourceDetailComponent, canActivate: [LoggedInGuard]},
   {path: 'event', component: EventComponent, canActivate: [LoggedInGuard]},
   {path: 'event/:id', component: EventDetailComponent, canActivate: [LoggedInGuard]},
+  {path: 'locales', component: TodoComponent, canActivate: [LoggedInGuard]},
   {path: 'login', component: LoginComponent},
   {path: 'rule', component: TodoComponent, canActivate: [LoggedInGuard]},
   {path: 'home', redirectTo: '/event'},
