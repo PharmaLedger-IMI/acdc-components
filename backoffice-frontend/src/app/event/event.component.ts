@@ -341,6 +341,13 @@ export class EventComponent implements OnInit {
     });
   }
 
+  handleChangeTab(event: any): void {
+    this.isLoading = true;
+    this.ngZone.onStable.pipe(first()).subscribe(() => {
+      this.isLoading = false;
+    });
+  }
+
   /** Create html tag to emit download event */
   private downloadByHtmlElement(fileName: string, content: string): void {
     const htmlElement = document.createElement('a');
