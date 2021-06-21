@@ -1,24 +1,50 @@
-<div>
-  <label>key:
-    <input #arcKey />
-  </label>
-  <label>value:
-    <input #arcValue />
-  </label>
-  <label>help:
-    <input #arcHelp />
-  </label>
-  <!-- (click) passes input value to add() and then clears the input -->
-  <button (click)="add(arcKey.value, arcValue.value, arcHelp.value); arcKey.value=''; arcValue.value=''; arcHelp.value=''">
-    add
-  </button>
+<div fxLayout="row wrap" fxLayoutGap="10px" fxLayout.xs="column">
+  <div fxLayout="column">
+    <mat-form-field>
+      <mat-label>Key</mat-label>
+      <label>
+        <input matInput #arcKey>
+      </label>
+    </mat-form-field>
+  </div>
+  <div fxLayout="column">
+    <mat-form-field>
+      <mat-label>Value</mat-label>
+      <label>
+        <input matInput #arcValue>
+      </label>
+    </mat-form-field>
+  </div>
+  <div fxLayout="column">
+    <mat-form-field>
+      <mat-label>Help</mat-label>
+      <label>
+        <input matInput #arcHelp>
+      </label>
+    </mat-form-field>
+  </div>
+  <div fxLayout="column">
+    <button mat-raised-button
+            class="add"
+            color="primary"
+            (click)="add(arcKey.value, arcValue.value, arcHelp.value); arcKey.value=''; arcValue.value=''; arcHelp.value=''"
+    >
+      add
+    </button>
+  </div>
 </div>
+
 <ul class="appresource">
-  <li *ngFor="let arc of arcCollection">
-    <a routerLink="/appresource/{{arc.id}}">
-      <span class="badge">{{arc.id}}</span> {{arc.key}} {{arc.locale?.code || 'null'}}  {{arc.value}}
-    </a>
-    <button class="delete" title="delete AppResource"
-    (click)="delete(arc)">x</button>
-</li>
+  <li class="m-b-15" *ngFor="let arc of arcCollection">
+    <div fxFlex>
+      <a routerLink="/appresource/{{arc.id}}" fxFlex="fill">
+        <span class="badge">{{arc.id}}</span>
+        {{arc.key}}
+        {{arc.locale?.code || 'null'}}
+        {{arc.value}}
+      </a>
+    </div>
+    <button class="delete" title="delete AppResource" (click)="delete(arc)">x</button>
+  </li>
 </ul>
+
