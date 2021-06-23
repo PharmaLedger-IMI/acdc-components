@@ -47,7 +47,9 @@ root@acdc-workspace:/# npm run build-all
 
 # How to backup the simulated blockchain under external-volume and update just the leaflet-ssapp
 
-WARNING: IT DOES NOT WORK!
+**WARNING: IT SEEMS NOT WORK!**
+
+users from previous MAH Enterprise Wallet no longer work.
 
 
 1 - Before deploying new code...
