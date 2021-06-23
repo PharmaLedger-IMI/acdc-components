@@ -43,3 +43,50 @@ docker exec -it acdc-workspace /bin/bash
 root@acdc-workspace:/# npm run clean
 root@acdc-workspace:/# npm run build-all
 ```
+
+
+# How to backup the simulated blockchain under external-volume and update just the leaflet-ssapp
+
+WARNING: IT DOES NOT WORK!
+
+
+1 - Before deploying new code...
+
+```
+pharmaledger@acdc-dev-pl:~$ docker exec -it acdc-workspace /bin/bash
+root@acdc-workspace:/# cd acdc-workspace/
+root@acdc-workspace:/acdc-workspace# node bin/seedsBackupTool.js backup
+pharmaledger@acdc-dev-pl:~$ docker cp acdc-workspace:/acdc-workspace/apihub-root/seedsBackup .
+```
+
+a file seedsBackup is left in pharmaledger@acdc-dev-pl:~/seedsBackup
+
+
+2 - deploying
+
+```
+./docker/build.sh ; ./docker/deployDev.sh
+```
+
+Wait 1+ minute for the build... (see build log)
+
+3 - Edit the seedBackup file to eliminate the file for the app you want to update
+
+In this example, removed all seeds related to leaflet-ssapp from a file named seedBackup.edited (a clone of the previous seedBackup):
+```
+...
+"apihub-root/leaflet-wallet/apps-patch/leaflet-ssapp/seed":"BBudGH6ySHG6GUHN8ogNrTWbxkcz3vUcppaM2pPmnL7jkp7AruuXpnPWp1pVDmfucsnydwJnDngmV1THRy7m84AzT",
+"apihub-root/leaflet-wallet/wallet-patch/seed":"BBudGH6ySHG6GUHN8ogNrTWbxkcz3vUcppaM2pPmnL7jkp7AruuXpnPWp1pVDmfucsnydwJnDngmV1THRy7m84AzT",
+...
+"leaflet-ssapp/seed":"BBudGH6ySHG6GUHN8ogNrTWbxkcz3vUcppaM2pPmnL7jkp7AruuXpnPWp1pVDmfucsnydwJnDngmV1THRy7m84AzT"
+...
+```
+
+4 - Restore backup
+
+```
+pharmaledger@acdc-dev-pl:~$ docker cp seedsBackup.edited acdc-workspace:/acdc-workspace/apihub-root/seedsBackup
+pharmaledger@acdc-dev-pl:~$ docker exec -it acdc-workspace /bin/bash
+root@acdc-workspace:/# cd acdc-workspace/
+root@acdc-workspace:/acdc-workspace# node bin/seedsBackupTool.js
+```
