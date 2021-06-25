@@ -54,6 +54,11 @@ users from previous MAH Enterprise Wallet no longer work.
 
 1 - Before deploying new code...
 
+Taking note of MAH login with devsuperuser wallet: 
+```
+ Loading wallet 65FmT6jYpmQXhAkCPpZszbiD7gZheDbkuNxYAF3to7hTSggeVXpdBFkpLFuZQgfkFoFSWDb12Zp5nn3oHE8R2kDZthG3Z1Ld
+```
+
 ```
 pharmaledger@acdc-dev-pl:~$ docker exec -it acdc-workspace /bin/bash
 root@acdc-workspace:/# cd acdc-workspace/
@@ -91,4 +96,9 @@ pharmaledger@acdc-dev-pl:~$ docker cp seedsBackup.edited acdc-workspace:/acdc-wo
 pharmaledger@acdc-dev-pl:~$ docker exec -it acdc-workspace /bin/bash
 root@acdc-workspace:/# cd acdc-workspace/
 root@acdc-workspace:/acdc-workspace# node bin/seedsBackupTool.js
+```
+
+After deploy
+```
+Loading wallet 65FmT6jYpmQXhAkCPpZszbiD7gZheDbkuNxYAF3to7hTSggeVXpdBFkpLFuZQgfkFoFSWDb12Zp5nn3oHE8R2kDZthG3Z1Ld
 ```
