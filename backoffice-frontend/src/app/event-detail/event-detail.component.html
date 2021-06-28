@@ -19,7 +19,7 @@
 
   <div fxFlex="50" fxFlex.lt-lg="100">
     <div *ngIf="!!event.eventInputs[0].eventInputData.snCheckLocation; else disableMap">
-      <app-event-map [dataReceiver]="[event]"></app-event-map>
+      <app-event-map [eventMapOptions]="eventMapOptions" [dataReceiver]="[event]"></app-event-map>
     </div>
     <ng-template #disableMap>
       <h3>

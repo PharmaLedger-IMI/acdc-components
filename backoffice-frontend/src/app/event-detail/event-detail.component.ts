@@ -7,6 +7,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Location} from '@angular/common';
 import {EventInput} from '../acdc/eventinput.model';
 import {EventOutput} from '../acdc/eventoutput.model';
+import {EventMapOptions} from "../event-map/event-map.component";
 
 @Component({
   selector: 'app-event',
@@ -19,6 +20,7 @@ export class EventDetailComponent implements OnInit {
   eventMetadata?: object;
   eventInputs?: EventInput[];
   eventOutputs?: EventOutput[];
+  eventMapOptions = new EventMapOptions(true);
 
   constructor(
     private appComponent: AppComponent,

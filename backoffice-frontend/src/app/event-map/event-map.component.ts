@@ -4,6 +4,14 @@ import * as L from 'leaflet';
 import {Icon, LatLngTuple, Map, Marker} from 'leaflet';
 import 'leaflet.markercluster';
 
+export class EventMapOptions {
+  enableCircles: boolean;
+
+  constructor(enableCircles = false) {
+    this.enableCircles = enableCircles;
+  }
+}
+
 @Component({
   selector: 'app-event-map',
   templateUrl: './event-map.component.html',
@@ -13,12 +21,18 @@ export class EventMapComponent {
 
   private map: any;
   private dataPoints: any = []; // used to center the map
+  private mapOptions: EventMapOptions = new EventMapOptions();
 
   /** CORE: Receive an input from event-map component and render a map */
+  @Input() set eventMapOptions(eventMapOptions: EventMapOptions) {
+    this.mapOptions = eventMapOptions;
+  }
+
   @Input() set dataReceiver(events: Event[] | undefined) {
     console.log('event-map.component.dataReceiver=', events);
     if (events) {
       const markers: L.Marker[] = [];
+      const circles: L.Circle[] = [];
       events.forEach(event => {
         const eventInputData = event.eventInputs[0].eventInputData;
         const snCheckLocation = eventInputData.snCheckLocation;
@@ -39,6 +53,14 @@ export class EventMapComponent {
             checkResult
           ]);
           markers.push(this.buildMarker([lat, long], icon, popup));
+          if (this.mapOptions.enableCircles) {
+            circles.push(L.circle([lat, long], {
+              color: 'red',
+              fillColor: '#f03',
+              fillOpacity: 0.15,
+              radius: snCheckLocation.accuracy || 50
+            }));
+          }
         }
       });
 
@@ -46,7 +68,13 @@ export class EventMapComponent {
         this.resetMap(this.map);
       }
 
-      this.map = this.buildMap(markers);
+      this.map = this.buildMap();
+      const markersLayer = this.buildMarkersLayer(markers);
+      const circleLayer = L.layerGroup(circles);
+
+      markersLayer.addTo(this.map);
+      circleLayer.addTo(this.map);
+
       this.map.fitBounds(this.dataPoints);
       this.map.setMaxBounds([[-90, -180], [90, 180]]);
       this.map.on('click', (ev: any) => {
@@ -93,17 +121,10 @@ export class EventMapComponent {
   }
 
   /**
-   * Receive a Marker collection to return a map compiled
+   * Build a data points markers and clustering feature
    * @param markers data points collection
    */
-  buildMap(markers: Marker[]): Map {
-    const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      minZoom: 3,
-      maxZoom: 18,
-      // noWrap: true,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-
+  buildMarkersLayer(markers: Marker[]): any {
     const markersLayer = L.layerGroup(markers);
     const markersClustersLayer = L.markerClusterGroup({
       chunkedLoading: true,
@@ -111,11 +132,24 @@ export class EventMapComponent {
       spiderfyOnMaxZoom: true
     });
     markersClustersLayer.addLayer(markersLayer);
+    return markersClustersLayer;
+  }
+
+  /**
+   * Build map base layer
+   */
+  buildMap(): Map {
+    const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      minZoom: 3,
+      maxZoom: 18,
+      // noWrap: true,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
 
     return L.map('map', {
       center: [0, 0],
       zoom: 5,
-      layers: [baseLayer, markersClustersLayer]
+      layers: [baseLayer]
     });
   }
 
