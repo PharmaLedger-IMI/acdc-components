@@ -152,7 +152,10 @@ class ReportingService {
                 altitude: pos.coords.altitude,
                 accuracy: pos.coords.accuracy,
                 altitudeAccuracy: pos.coords.altitudeAccuracy
-            }), handleError);
+            }),
+            handleError,
+            {enableHighAccuracy: true, maximumAge:30000, timeout:5000}
+        );
     }
 
     /**
