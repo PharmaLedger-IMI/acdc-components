@@ -17,7 +17,7 @@ const parseRequestBody = function(req, callback){
         try {
             req.body = data.length ? JSON.parse(data) : {};
         } catch (e) {
-            callback(e);
+            return callback(e);
         }
         callback(undefined, req.body);
     });
