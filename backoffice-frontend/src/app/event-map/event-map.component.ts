@@ -55,8 +55,8 @@ export class EventMapComponent {
           markers.push(this.buildMarker([lat, long], icon, popup));
           if (this.mapOptions.enableCircles) {
             circles.push(L.circle([lat, long], {
-              color: 'red',
-              fillColor: '#f03',
+              color: '#7e1fd2',
+              fillColor: '#7b0cf9',
               fillOpacity: 0.15,
               radius: snCheckLocation.accuracy || 50
             }));
@@ -91,7 +91,15 @@ export class EventMapComponent {
   buildIcon(checkResult: string): Icon<any> {
     const typeIcons = checkResult as keyof typeof CustomIcon;
     const iconUrl = CustomIcon[typeIcons] || CustomIcon.Other;
-    return new L.Icon({iconUrl, shadowUrl: CustomIcon.Shadow});
+    // Icon anchor options: the coordinates of the "tip" of the icon (relative to its top left corner).
+    // Centered by default if size is specified.
+    return new L.Icon({
+      iconUrl,
+      shadowUrl: CustomIcon.Shadow,
+      iconAnchor: [12, 41],
+      shadowAnchor: [12, 41],
+      popupAnchor: [0, -41]
+    });
   }
 
   /**
