@@ -213,7 +213,7 @@ class ReportingService {
                 self._getPosition((err, position) => {
                     if (err){
                         console.log(err);
-                        return callback(undefined, event);
+                        return callback(undefined, undefined);
                     }
                     callback(undefined, position);
                 });
