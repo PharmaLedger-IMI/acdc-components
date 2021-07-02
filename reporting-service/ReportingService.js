@@ -132,6 +132,16 @@ class ReportingService {
         if (!navigator.geolocation)
             return callback(`Geolocation feature unexisting or disabled`);
 
+        const successCallback = function (pos) {
+            callback(undefined, {
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+                altitude: pos.coords.altitude,
+                accuracy: pos.coords.accuracy,
+                altitudeAccuracy: pos.coords.altitudeAccuracy
+            })
+        }
+
         const handleError = function(error){
             switch(error.code) {
                 case error.PERMISSION_DENIED:
@@ -139,20 +149,19 @@ class ReportingService {
                 case error.POSITION_UNAVAILABLE:
                     return callback("Location information is unavailable.");
                 case error.TIMEOUT:
-                    return callback("The request to get user location timed out.");
+                    // enableHighAccuracy = true can be slow and time out, so let's try to disable it
+                    navigator.geolocation.getCurrentPosition((pos) =>
+                            successCallback(pos),
+                        () => callback("The request to get user location timed out."),
+                        {enableHighAccuracy: false, maximumAge:10000, timeout:5000});
+                    return;
                 default:
                     return callback("An unknown error occurred.");
             }
         }
 
         navigator.geolocation.getCurrentPosition((pos) =>
-            callback(undefined, {
-                latitude: pos.coords.latitude,
-                longitude: pos.coords.longitude,
-                altitude: pos.coords.altitude,
-                accuracy: pos.coords.accuracy,
-                altitudeAccuracy: pos.coords.altitudeAccuracy
-            }),
+                successCallback(pos),
             handleError,
             {enableHighAccuracy: true, maximumAge:30000, timeout:5000}
         );
