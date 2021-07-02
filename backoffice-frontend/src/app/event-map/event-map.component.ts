@@ -4,6 +4,7 @@ import * as L from 'leaflet';
 import {Icon, LatLngTuple, Map, Marker} from 'leaflet';
 import 'leaflet.markercluster';
 
+
 export class EventMapOptions {
   enableCircles: boolean;
 
@@ -121,11 +122,40 @@ export class EventMapComponent {
    * @param popup - marker popup
    */
   buildMarker(latLong: LatLngTuple, icon: Icon, popup: L.Popup): Marker {
-    return L.marker(latLong, {icon})
-      .bindPopup(popup)
-      .on('click', (ev: any) => {
-        console.log('# marker', ev);
+    const domPopup = document.getElementsByClassName('leaflet-popup');
+    let popupHover = false;
+
+    const addListener = (): void => {
+      if (domPopup.length > 0) {
+        const target = domPopup[0];
+        target.addEventListener('mouseover', () => {
+          popupHover = true;
+        }, false);
+
+        target.addEventListener('mouseleave', () => {
+          popupHover = false;
+          marker.closePopup();
+        }, false);
+      }
+    };
+
+
+    const marker = L.marker(latLong, {icon});
+    marker.bindPopup(popup, {offset: L.point(0, 20)});
+    marker.on('mouseover', (event) => {
+      marker.openPopup();
+      addListener();
+    });
+
+    marker.on('mouseout', (event) => {
+      new Promise(r => setTimeout(r, 250)).then(() => {
+        if (!popupHover) {
+          marker.closePopup();
+        }
       });
+    });
+
+    return marker;
   }
 
   /**
