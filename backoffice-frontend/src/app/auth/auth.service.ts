@@ -52,11 +52,11 @@ export class AuthService {
     user.userid = authResult.userid;
     user.email = authResult.email;
     user.token = authResult.token;
-    sessionStorage.setItem(AuthService.ACDC_USER, JSON.stringify(user));
+    localStorage.setItem(AuthService.ACDC_USER, JSON.stringify(user));
   }
 
   public logout() {
-    sessionStorage.clear();
+    localStorage.clear();
   }
 
   public hasAdminProfile() : boolean {
@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   public isLoggedIn(): boolean {
-    const session = sessionStorage.getItem(AuthService.ACDC_USER);
+    const session = localStorage.getItem(AuthService.ACDC_USER);
     if (!!session) {
       const token = JSON.parse(session).token;
       return !this.jwtStandaloneService.isTokenExpired(token);
@@ -91,7 +91,7 @@ export class AuthService {
 
   public getUser() : User | undefined {
     if (this.isLoggedIn()) {
-      return JSON.parse(sessionStorage.getItem(AuthService.ACDC_USER)!);
+      return JSON.parse(localStorage.getItem(AuthService.ACDC_USER)!);
     } else {
       return undefined;
     }
