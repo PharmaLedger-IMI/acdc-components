@@ -7,7 +7,7 @@ a:hover {
 }
 
 .container {
-  margin: 20px;
+  margin: 15px;
 }
 
 .row-center {
@@ -43,3 +43,23 @@ mat-form-field {
 ::ng-deep .mat-sort-header-arrow {
   color: white;
 }
+
+table {
+  width: 100%;
+}
+
+td {
+  min-width: 120px;
+}
+
+.scroll-container {
+  position: relative;
+}
+
+.table-container {
+  position: relative;
+  min-height: 380px;
+  max-height: 700px;
+  overflow: scroll;
+}
+
