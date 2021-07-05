@@ -37,6 +37,7 @@ import { TodoComponent } from './todo/todo.component';
 import { LoggedInGuard } from './auth/logged-in.guard';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import {LocalStorageService} from "./localstorage.service";
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     AuthService,
-    LoggedInGuard
+    LoggedInGuard,
+    LocalStorageService
   ],
 
   bootstrap: [AppComponent]
