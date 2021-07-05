@@ -5,18 +5,17 @@ import { Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../acdc/user.model';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import {LocalStorageService} from '../localstorage.service';
 
 @Injectable()
 export class AuthService {
-
-  static readonly ACDC_USER : string = "acdc_user";
-
   private authLoginUrl = environment.restBaseUrl+"/auth/login";
   private jwtStandaloneService: JwtHelperService;
 
   constructor(
     private http: HttpClient,
     private messageService: MessageService,
+    private localStorageService: LocalStorageService
   ) {
     this.jwtStandaloneService = new JwtHelperService();
   }
@@ -52,11 +51,12 @@ export class AuthService {
     user.userid = authResult.userid;
     user.email = authResult.email;
     user.token = authResult.token;
-    localStorage.setItem(AuthService.ACDC_USER, JSON.stringify(user));
+    this.localStorageService.set(LocalStorageService.ACDC_USER, user);
   }
 
   public logout() {
-    localStorage.clear();
+    this.localStorageService.remove(LocalStorageService.ACDC_USER);
+    // localStorage.clear();
   }
 
   public hasAdminProfile() : boolean {
@@ -73,9 +73,9 @@ export class AuthService {
   }
 
   public isLoggedIn(): boolean {
-    const session = localStorage.getItem(AuthService.ACDC_USER);
+    const session = this.localStorageService.get(LocalStorageService.ACDC_USER);
     if (!!session) {
-      const token = JSON.parse(session).token;
+      const token = session.token;
       return !this.jwtStandaloneService.isTokenExpired(token);
     }
     return false;
@@ -91,7 +91,7 @@ export class AuthService {
 
   public getUser() : User | undefined {
     if (this.isLoggedIn()) {
-      return JSON.parse(localStorage.getItem(AuthService.ACDC_USER)!);
+      return this.localStorageService.get(LocalStorageService.ACDC_USER);
     } else {
       return undefined;
     }
