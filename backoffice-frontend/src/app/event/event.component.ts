@@ -65,7 +65,7 @@ export class EventComponent implements OnInit {
   };
 
   /** MaterialTable Config */
-  pageSizeOptions = [5, 10, 25, 50, 100];
+  pageSizeOptions = [5, 10, 25, 50, 100, 500, 1000];
   showFirstLastButtons = true;
   defaultColumns: string[] = ['eventId', 'createdOn', 'eventInputData', 'eventOutputData'];
   displayedColumns: string[] = this.defaultColumns;
