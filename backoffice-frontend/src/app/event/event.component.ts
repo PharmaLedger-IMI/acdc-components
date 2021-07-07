@@ -4,13 +4,14 @@ import {PageEvent} from '@angular/material/paginator';
 import {Event} from '../acdc/event.model';
 import {AppComponent} from '../app.component';
 import {EventService} from '../event.service';
-import {FormArray, FormBuilder, FormControl} from '@angular/forms';
+import {FormArray, FormBuilder} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {ENTER} from '@angular/cdk/keycodes';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {first} from 'rxjs/operators';
+import {LocalStorageService} from '../localstorage.service';
 
 @Component({
   selector: 'app-event',
@@ -22,13 +23,12 @@ export class EventComponent implements OnInit {
     private appComponent: AppComponent,
     private eventService: EventService,
     private formBuilder: FormBuilder,
-    private ngZone: NgZone) {
+    private ngZone: NgZone,
+    private localStorageService: LocalStorageService) {
   }
 
-  isLoading = true;
   dataSource: MatTableDataSource<Event> = new MatTableDataSource();
   @ViewChild(MatSort) sort: MatSort = new MatSort();
-  filterPanelOpenState = false;
 
   /** chipsInputFilters are inputs that accept multiple values as input, used in filter form */
   chipsInputs: ChipInputFilter[] = [
@@ -50,129 +50,155 @@ export class EventComponent implements OnInit {
     },
   ];
 
-  /** Object for dynamically attributes/data */
-  pageAttributesToHandle: DataHandlerForm = {
-    pageIndex: 0,
-    pageSize: 5,
-    itemsCount: 10,
-    createdOnStart: '',
-    createdOnEnd: '',
-    expiryDateStart: '',
-    expiryDateEnd: '',
-    sortProperty: 'createdOn',
-    sortDirection: 'desc',
-    checkColumns: new FormArray([])
-  };
-
-  /** MaterialTable Config */
-  pageSizeOptions = [5, 10, 25, 50, 100, 500, 1000];
-  showFirstLastButtons = true;
-  defaultColumns: string[] = ['eventId', 'createdOn', 'eventInputData', 'eventOutputData'];
-  displayedColumns: string[] = this.defaultColumns;
-
-  /** CheckInputs - columns to be show on Table */
-  checksSelected: string[] = [];
-
-  checkInputsDefault = [
-    {label: 'Created On', value: 'createdOn'},
-    {label: 'Event Input Data', value: 'eventInputData'},
-    {label: 'Event Output Data', value: 'eventOutputData'},
-  ];
-
-  checkInputsCustom = [
-    {label: 'Product Code', value: 'productCode'},
-    {label: 'Batch', value: 'batch'},
-    {label: 'Name Medicinal Product', value: 'nameMedicinalProduct'},
-    {label: 'Expiry Date', value: 'expiryDate'},
-    {label: 'Serial Number', value: 'serialNumber'},
-    {label: 'Check Result', value: 'snCheckResult'},
-    {label: 'Product Status', value: 'productStatus'},
-  ];
-
-  columnsData: { [key: string]: { label: string, data: any, cssClasses?: any } } = {
-    eventId: {
-      label: 'Event Id',
-      data: (event: Event) => event.eventId.slice(0, 8),
-    },
-    createdOn: {
-      label: 'Created On',
-      data: (event: Event) => this.datePrettify(event.createdOn)
-    },
-    eventInputData: {
-      label: 'Event Inputs[0]',
-      data: (event: Event) => {
-        const eventInputData = event.eventInputs[0].eventInputData;
-        delete eventInputData.did;
-        return eventInputData;
-      }
-    },
-    eventOutputData: {
-      label: 'Event Outputs[0]',
-      data: (event: Event) => event.eventOutputs[0].eventOutputData
-    },
-    productCode: {
-      label: 'Product Code',
-      data: (event: Event) => event.eventInputs[0].eventInputData.productCode
-    },
-    batch: {
-      label: 'Batch',
-      data: (event: Event) => event.eventInputs[0].eventInputData.batch
-    },
-    nameMedicinalProduct: {
-      label: 'Name Medicinal Product',
-      data: (event: Event) => event.eventOutputs[0].eventOutputData.nameMedicinalProduct
-    },
-    productStatus: {
-      label: 'Product Status',
-      data: (event: Event) => event.eventOutputs[0].eventOutputData.productStatus,
-    },
-    expiryDate: {
-      label: 'Expiry Date',
-      data: (event: Event) => event.eventInputs[0].eventInputData.expiryDate
-    },
-    serialNumber: {
-      label: 'Serial Number',
-      data: (event: Event) => event.eventInputs[0].eventInputData.serialNumber
-    },
-    snCheckResult: {
-      label: 'Check Result',
-      data: (event: Event) => event.eventOutputs[0].eventOutputData.snCheckResult,
-      cssClasses: (event: Event) => {
-        const productStatus = event.eventOutputs[0].eventOutputData.snCheckResult;
-        const style = 'font-bold ';
-        if (productStatus === 'Authentic') {
-          return style + 'text-success';
-        } else if (productStatus === 'Suspect') {
-          return style + 'text-danger';
+  public viewer: Viewer = {
+    customColumnSelector: [],
+    pageSizeOptions: [5, 10, 25, 50, 100, 500, 1000],
+    showFirstLastButtons: true,
+    availableDefaultColumns: [
+      {label: 'Created On', value: 'createdOn'},
+      {label: 'Event Input Data', value: 'eventInputData'},
+      {label: 'Event Output Data', value: 'eventOutputData'},
+    ],
+    availableCustomColumns: [
+      {label: 'Product Code', value: 'productCode'},
+      {label: 'Batch', value: 'batch'},
+      {label: 'Name Medicinal Product', value: 'nameMedicinalProduct'},
+      {label: 'Expiry Date', value: 'expiryDate'},
+      {label: 'Serial Number', value: 'serialNumber'},
+      {label: 'Check Result', value: 'snCheckResult'},
+      {label: 'Product Status', value: 'productStatus'},
+    ],
+    tableDataRetriever: {
+      eventId: {
+        label: 'Event Id',
+        data: (event: Event) => event.eventId.slice(0, 8).toUpperCase(),
+      },
+      createdOn: {
+        label: 'Created On',
+        data: (event: Event) => this.datePrettify(event.createdOn)
+      },
+      eventInputData: {
+        label: 'Event Inputs[0]',
+        data: (event: Event) => {
+          const eventInputData = event.eventInputs[0].eventInputData;
+          delete eventInputData.did;
+          return eventInputData;
         }
-        return style + 'text-warning';
+      },
+      eventOutputData: {
+        label: 'Event Outputs[0]',
+        data: (event: Event) => event.eventOutputs[0].eventOutputData
+      },
+      productCode: {
+        label: 'Product Code',
+        data: (event: Event) => event.eventInputs[0].eventInputData.productCode
+      },
+      batch: {
+        label: 'Batch',
+        data: (event: Event) => event.eventInputs[0].eventInputData.batch
+      },
+      nameMedicinalProduct: {
+        label: 'Name Medicinal Product',
+        data: (event: Event) => event.eventOutputs[0].eventOutputData.nameMedicinalProduct
+      },
+      productStatus: {
+        label: 'Product Status',
+        data: (event: Event) => event.eventOutputs[0].eventOutputData.productStatus,
+      },
+      expiryDate: {
+        label: 'Expiry Date',
+        data: (event: Event) => event.eventInputs[0].eventInputData.expiryDate
+      },
+      serialNumber: {
+        label: 'Serial Number',
+        data: (event: Event) => event.eventInputs[0].eventInputData.serialNumber
+      },
+      snCheckResult: {
+        label: 'Check Result',
+        data: (event: Event) => event.eventOutputs[0].eventOutputData.snCheckResult,
+        cssClasses: (event: Event) => {
+          const productStatus = event.eventOutputs[0].eventOutputData.snCheckResult;
+          const style = 'font-bold ';
+          if (productStatus === 'Authentic') {
+            return style + 'text-success';
+          } else if (productStatus === 'Suspect') {
+            return style + 'text-danger';
+          }
+          return style + 'text-warning';
+        }
       }
+    },
+    chipsConfig: {
+      visible: true,
+      selectable: true,
+      removable: true,
+      addOnBlur: true,
+      separatorKeysCodes: [ENTER],
     }
   };
 
-  /** Data handler capture any changes in dynamically attributes */
-  dataHandlerForm = this.formBuilder.group(this.pageAttributesToHandle);
-
-  get dataHandler(): DataHandlerForm {
-    return this.dataHandlerForm.value;
+  get tableDataRetriever(): TableDataRetriever {
+    return this.viewer.tableDataRetriever;
   }
 
-  set dataHandler(value: DataHandlerForm) {
-    console.log('set data handler:', value);
-    this.dataHandlerForm.patchValue(value);
+  public handler: Handler = {
+    displayedColumns: [],
+    filterPanelOpen: false,
+    isLoadingResults: true,
+
+    tableManager: {
+      pageIndex: 0,
+      pageSize: 5,
+      itemsCount: 10,
+      createdOnStart: '',
+      createdOnEnd: '',
+      sortProperty: 'createdOn',
+      sortDirection: 'desc',
+      multipleInputFilters: this.formBuilder.array(this.chipsInputs),
+      defaultColumnsSelected: this.formBuilder.array(['eventId', 'createdOn', 'eventInputData', 'eventOutputData']),
+      customColumnsSelected: this.formBuilder.array(['productCode', 'batch'])
+    }
+  };
+
+  tableManagerForm = this.formBuilder.group(this.handler.tableManager);
+
+  get tableManager(): TableManager {
+    return this.tableManagerForm.value;
   }
 
-  /** Chips Input Config */
-  visible = true;
-  selectable = true;
-  removable = true;
-  addOnBlur = true;
-  readonly separatorKeysCodes: number[] = [ENTER];
+  set tableManager(value: TableManager) {
+    console.log('set data handler @valueReceived', value);
+    this.tableManagerForm.patchValue(value, {emitEvent: false});
+    this.localStorageService.set(LocalStorageService.EVENT_PAGE, this.tableManagerForm.value);
+    console.log('get data handler @cache =', this.localStorage);
+  }
 
-  /** Init function */
+  get multipleInputFilters(): FormArray {
+    return this.tableManagerForm.get('multipleInputFilters') as FormArray;
+  }
+
+  get defaultColumnsSelected(): FormArray {
+    return this.tableManagerForm.get('defaultColumnsSelected') as FormArray;
+  }
+
+  get customColumnsSelected(): FormArray {
+    return this.tableManagerForm.get('customColumnsSelected') as FormArray;
+  }
+
+  get localStorage(): any {
+    return this.localStorageService.get(LocalStorageService.EVENT_PAGE) || {};
+  }
+
   ngOnInit(): void {
     this.appComponent.setNavMenuHighlight('data', 'event', 'List of Event (Scans performed by users)');
-    this.getEvents(this.dataHandler.pageSize, this.dataHandler.pageIndex);
+
+    caches.has(LocalStorageService.EVENT_PAGE).then(() => {
+      console.log('event.component.ngOnInit @tableManager =', this.tableManager);
+      this.tableManager = this.localStorage;
+      console.log('event.component.ngOnInit @tableManager.cache', this.tableManager);
+    }).finally(() => {
+      this.getEvents(this.tableManager.pageSize, this.tableManager.pageIndex);
+    });
   }
 
   /** Perform API Request and made EventTableData interface
@@ -180,14 +206,14 @@ export class EventComponent implements OnInit {
    * @param pageSize Number of records in each page
    */
   getEvents(pageSize: number, pageIndex: number): void {
-    this.isLoading = true;
+    this.handler.isLoadingResults = true;
     const filters: any[] = [
       {name: 'page', value: pageIndex},
       {name: 'limit', value: pageSize},
     ];
 
     const acceptFilterForm = ['createdOnStart', 'createdOnEnd', 'sortDirection', 'sortProperty'];
-    for (const [name, value] of Object.entries(this.dataHandler)) {
+    for (const [name, value] of Object.entries(this.tableManager)) {
       if (acceptFilterForm.includes(name) && !!value) {
         filters.push({
           name,
@@ -196,46 +222,55 @@ export class EventComponent implements OnInit {
       }
     }
 
-    this.chipsInputs.forEach(filter => {
-      if (filter.elements.length > 0) {
+    this.multipleInputFilters.controls.forEach(chipInput => {
+      const input = chipInput.value;
+      if (input.elements.length > 0) {
         filters.push({
-          name: filter.name,
-          value: filter.elements
+          name: input.name,
+          value: input.elements
         });
       }
     });
 
     console.log('event.component.getEvents filters=', filters);
-    this.eventService.getEvents(filters)
-      .subscribe((resp) => {
+    this.eventService.getEvents(filters).subscribe((resp) => {
 
-        this.checksSelected = this.dataHandlerForm.get('checkColumns')?.value;
-        this.displayedColumns = this.defaultColumns.concat(this.checksSelected);
-        console.log('event.component.getEvents displayedColumns =', this.displayedColumns);
+      const defaultColumnsSelected = Array.from(this.tableManager.defaultColumnsSelected);
+      const customColumnsSelected = Array.from(this.tableManager.customColumnsSelected);
+      this.handler.displayedColumns = defaultColumnsSelected.concat(customColumnsSelected) as string[];
+      console.log('event.component.getEvents displayedColumns =', this.handler.displayedColumns);
 
-        this.dataHandler = {
-          pageIndex: resp.metadata.currentPage,
-          pageSize,
-          itemsCount: resp.metadata.itemsCount,
-          createdOnStart: this.dataHandler.createdOnStart,
-          createdOnEnd: this.dataHandler.createdOnEnd,
-          expiryDateStart: this.dataHandler.expiryDateStart,
-          expiryDateEnd: this.dataHandler.expiryDateEnd,
-          sortDirection: this.dataHandler.sortDirection,
-          sortProperty: this.dataHandler.sortProperty
-        };
+      this.tableManager = {
+        pageIndex: resp.metadata.currentPage,
+        pageSize,
+        itemsCount: resp.metadata.itemsCount,
+        sortDirection: this.tableManager.sortDirection,
+        sortProperty: this.tableManager.sortProperty,
+        defaultColumnsSelected: this.tableManager.defaultColumnsSelected,
+        customColumnsSelected: this.tableManager.customColumnsSelected
+      };
 
-        this.dataSource = new MatTableDataSource(resp.results);
-        this.dataSource.sortingDataAccessor = (event, property) => {
-          return this.columnsData[property].data(event);
-        };
-        this.dataSource.sort = this.sort;
+      this.dataSource = new MatTableDataSource(resp.results);
+      this.dataSource.sortingDataAccessor = (event, property) => {
+        return this.tableDataRetriever[property].data(event);
+      };
+      this.dataSource.sort = this.sort;
 
-        this.ngZone.onStable.pipe(first()).subscribe(() => {
-          this.isLoading = false;
-        });
+      this.ngZone.onStable.pipe(first()).subscribe(() => {
+        this.handler.isLoadingResults = false;
       });
+
+    });
   }
+
+  checked(str: string): boolean {
+    const displayedColumns = !!this.handler.displayedColumns ? this.handler.displayedColumns : [];
+    if (!!str) {
+      return displayedColumns.includes(str);
+    }
+    return false;
+  }
+
 
   /** Listen actions in pagination component and do an action
    * @param pageEvent event metadata capture
@@ -245,11 +280,11 @@ export class EventComponent implements OnInit {
     this.getEvents(pageEvent.pageSize, pageEvent.pageIndex);
   }
 
-  /** Listen filterForm/dataHandler, when form data is submitted, data is retrieved from the form by property "value" */
+  /** Listen filterForm/tableManager, when form data is submitted, data is retrieved from the form by property "value" */
   handleFilter(): void {
-    console.warn('event.component.handleFilter formSubmitted=', this.dataHandler);
-    this.filterPanelOpenState = false;
-    this.getEvents(this.dataHandler.pageSize, 0);
+    console.warn('event.component.handleFilter formSubmitted=', this.tableManager);
+    this.handler.filterPanelOpen = false;
+    this.getEvents(this.tableManager.pageSize, 0);
   }
 
   /** Handle add user inputs in chip inputs
@@ -267,10 +302,9 @@ export class EventComponent implements OnInit {
       event.input.value = '';
     }
 
-    if (!!value && chipInputFilter.elements.indexOf(value) < 0) {
-      chipInputFilter.elements.push(value);
+    if (!!value && chipInputFilter.value.elements.indexOf(value) < 0) {
+      chipInputFilter.value.elements.push(value);
     }
-    console.log('event.component.handleAddChip dataHandler=', this.dataHandler);
     console.log('event.component.handleAddChip chipsInputFilters=', this.chipsInputs);
   }
 
@@ -281,46 +315,54 @@ export class EventComponent implements OnInit {
   handleRemoveChip(chipInputFilter: any, element: any): void {
     console.log('chips.remove -> chipInputFilter=', chipInputFilter);
     console.log('chips.remove -> element=', element);
-    chipInputFilter.elements = chipInputFilter.elements.filter((r: any) => r !== element);
-    console.log('event.component.handleRemoveChip dataHandler=', this.dataHandler);
-    console.log('event.component.handleRemoveChip chipsInputFilters=', this.chipsInputs);
+    chipInputFilter.value.elements = chipInputFilter.value.elements.filter((r: any) => r !== element);
+    console.log('event.component.handleRemoveChip chipsInputFilters=', this.tableManager.multipleInputFilters);
   }
 
   /** Handle the change of checkboxes in the selection of CUSTOM columns
    * @param event - object with checkBox status and input element from html DOM
    */
-  handleCheckChange(event: any): void {
+  handleCustomColumnSelector(event: any): void {
     const {checked, source} = event;
     const value = source.value;
-    console.log('event.component.handleCheckChange change =', value, ' checked =', checked);
-    const checkColumnsForm: FormArray = this.dataHandlerForm.get('checkColumns') as FormArray;
-
+    const columnsSelected = this.customColumnsSelected;
+    console.log(
+      'event.component.handleCustomColumnSelector',
+      '@column =', value,
+      '@checked =', checked,
+      '@actualValues =', columnsSelected
+    );
     if (checked) {
-      checkColumnsForm.push(new FormControl(value));
+      columnsSelected.push(this.formBuilder.control(value));
     } else {
-      const checkColumnsFormValues = this.dataHandlerForm.get('checkColumns')?.value;
-      const index = checkColumnsFormValues.indexOf(value);
-      checkColumnsForm.removeAt(index);
+      const columnsSelectedValues = columnsSelected.value;
+      const index = columnsSelectedValues.indexOf(value);
+      columnsSelected.removeAt(index);
     }
-    console.log('event.component.handleCheckChange dataHandler =', this.dataHandlerForm.get('checkColumns')?.value);
+    console.log('event.component.handleCustomColumnSelector @columnSelected=', this.customColumnsSelected.value);
   }
 
   /** Handle the change of checkboxes in the selection of DEFAULT columns
    * * @param event - object with checkBox status and input element from html DOM
    */
-  handleCheckChangeDefault(event: any): void {
+  handleDefaultColumnSelector(event: any): void {
     const {checked, source} = event;
     const value = source.value;
-    console.log('event.component.handleCheckChange change =', value, ' checked =', checked);
-    const defaultColumns = this.defaultColumns;
-
+    const columnsSelected = this.defaultColumnsSelected;
+    console.log(
+      'event.component.handleCustomColumnSelector',
+      '@column =', value,
+      '@checked =', checked,
+      '@actualValues =', columnsSelected
+    );
     if (checked) {
-      defaultColumns.push(value);
+      columnsSelected.push(this.formBuilder.control(value));
     } else {
-      const index = defaultColumns.indexOf(value);
-      defaultColumns.splice(index, 1);
+      const columnsSelectedValues = columnsSelected.value;
+      const index = columnsSelectedValues.indexOf(value);
+      columnsSelected.removeAt(index);
     }
-    console.log('event.component.handleCheckChangeDefault checkForm =', defaultColumns);
+    console.log('event.component.handleDefaultColumnSelector @columnSelected =', this.defaultColumnsSelected.value);
   }
 
   /**
@@ -329,9 +371,9 @@ export class EventComponent implements OnInit {
    */
   handleSortData(event: Sort): void {
     const {active, direction} = event;
-    this.dataHandler.sortDirection = direction;
-    this.dataHandler.sortProperty = active;
-    this.getEvents(this.dataHandler.pageSize, 0);
+    this.tableManager.sortDirection = direction;
+    this.tableManager.sortProperty = active;
+    this.getEvents(this.tableManager.pageSize, 0);
   }
 
   handleDownloadScans(): void {
@@ -342,9 +384,9 @@ export class EventComponent implements OnInit {
   }
 
   handleChangeTab(event: any): void {
-    this.isLoading = true;
+    this.handler.isLoadingResults = true;
     this.ngZone.onStable.pipe(first()).subscribe(() => {
-      this.isLoading = false;
+      this.handler.isLoadingResults = false;
     });
   }
 
@@ -377,17 +419,35 @@ export class EventComponent implements OnInit {
   }
 }
 
-interface DataHandlerForm {
-  pageIndex: number;
-  pageSize: number;
-  itemsCount: number;
-  createdOnStart: string;
-  createdOnEnd: string;
-  expiryDateStart: string;
-  expiryDateEnd: string;
-  sortProperty: string;
-  sortDirection: SortDirection;
-  checkColumns?: any;
+interface CustomInput {
+  label: string;
+  value: string;
+}
+
+interface TableDataRetriever {
+  [key: string]: {
+    label: string,
+    data: any,
+    cssClasses?: any
+  };
+}
+
+interface ChipConfig {
+  visible: boolean;
+  selectable: boolean;
+  removable: boolean;
+  addOnBlur: boolean;
+  readonly separatorKeysCodes: number[];
+}
+
+interface Viewer {
+  customColumnSelector: string[];
+  pageSizeOptions: number[];
+  showFirstLastButtons: boolean;
+  availableDefaultColumns: CustomInput[];
+  availableCustomColumns: CustomInput[];
+  tableDataRetriever: TableDataRetriever;
+  chipsConfig: ChipConfig;
 }
 
 interface ChipInputFilter {
@@ -396,3 +456,25 @@ interface ChipInputFilter {
   elements: string[];
   autocompleteOptions?: string[];
 }
+
+interface TableManager {
+  pageIndex: number;
+  pageSize: number;
+  itemsCount: number;
+  createdOnStart?: string;
+  createdOnEnd?: string;
+  sortProperty: string;
+  sortDirection: SortDirection;
+  multipleInputFilters?: any;
+  // displayedColumns: FormArray;
+  defaultColumnsSelected: any;
+  customColumnsSelected: any;
+}
+
+interface Handler {
+  displayedColumns: string[];
+  filterPanelOpen: boolean;
+  isLoadingResults: boolean;
+  tableManager: TableManager;
+}
+

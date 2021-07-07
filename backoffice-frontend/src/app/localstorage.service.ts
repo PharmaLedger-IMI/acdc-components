@@ -5,11 +5,11 @@ import {Injectable} from '@angular/core';
 })
 export class LocalStorageService {
   static readonly ACDC_USER: string = 'acdc_user';
+  static readonly EVENT_PAGE: string = 'table_handler';
   private readonly localStorage: Storage;
 
   constructor() {
     this.localStorage = localStorage;
-    console.log(this.localStorage);
   }
 
   set(key: string, value: any): void {

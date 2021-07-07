@@ -9,12 +9,12 @@
 </div>
 
 <!-- Filter Expansion Panel -->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+<mat-progress-bar *ngIf="handler.isLoadingResults" mode="indeterminate"></mat-progress-bar>
 <mat-accordion>
   <mat-expansion-panel hideToggle
-                       (opened)="filterPanelOpenState = true"
-                       (closed)="filterPanelOpenState = false"
-                       [expanded]="filterPanelOpenState"
+                       (opened)="handler.filterPanelOpen = true"
+                       (closed)="handler.filterPanelOpen = false"
+                       [expanded]="handler.filterPanelOpen"
   >
     <!-- Filter Expansion Panel (HEADER) -->
     <mat-expansion-panel-header>
@@ -27,34 +27,34 @@
 
 
     <!-- Filter form -->
-    <form [formGroup]="dataHandlerForm" (ngSubmit)="handleFilter()">
+    <form [formGroup]="tableManagerForm" (ngSubmit)="handleFilter()">
       <div class="content" fxLayout="row" fxLayout.xs="column" fxFlexFill>
 
         <!-- 1st Column Filter -->
         <div fxFlex="40" fxFlex.xs="55">
           <!-- Chips Input (arrays) -->
-          <span *ngFor="let filterInput of chipsInputs">
+          <span *ngFor="let filterInput of multipleInputFilters.controls">
             <mat-form-field>
               <mat-chip-list #chipList>
-                <mat-chip *ngFor="let element of filterInput.elements"
-                          [selectable]="selectable"
-                          [removable]="true"
+                <mat-chip *ngFor="let element of filterInput.value.elements"
+                          [selectable]="viewer.chipsConfig.selectable"
+                          [removable]="viewer.chipsConfig.removable"
                           (removed)="handleRemoveChip(filterInput, element)"
                 >
                   {{element}}
                   <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
-                <input [placeholder]="filterInput.label"
+                <input [placeholder]="filterInput.value.label"
                        [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       [matChipInputAddOnBlur]="addOnBlur"
+                       [matChipInputSeparatorKeyCodes]="viewer.chipsConfig.separatorKeysCodes"
+                       [matChipInputAddOnBlur]="viewer.chipsConfig.addOnBlur"
                        (matChipInputTokenEnd)="handleAddChip(filterInput, $event)"
                        [matAutocomplete]="auto"
                 >
               </mat-chip-list>
 
               <mat-autocomplete #auto="matAutocomplete" (optionSelected)="handleAddChip(filterInput, $event)">
-                <mat-option *ngFor="let fruit of filterInput.autocompleteOptions" [value]="fruit">
+                <mat-option *ngFor="let fruit of filterInput.value.autocompleteOptions" [value]="fruit">
                   {{fruit}}
                 </mat-option>
               </mat-autocomplete>
@@ -99,9 +99,10 @@
             <!-- Select table columns DEFAULT -->
             <div fxLayout="column">
               <strong>Default Columns: </strong>
-              <div *ngFor="let checkBox of checkInputsDefault; let i=index">
-                <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChangeDefault($event)"
-                              [checked]="true">
+              <div *ngFor="let checkBox of viewer.availableDefaultColumns; let i=index">
+                <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleDefaultColumnSelector($event)"
+                              [checked]="checked(checkBox.value)"
+                >
                   {{checkBox.label}}
                 </mat-checkbox>
               </div>
@@ -110,8 +111,12 @@
             <!-- Select table columns CUSTOM -->
             <div fxLayout="column">
               <strong>Custom columns: </strong>
-              <div fxLayout="row" *ngFor="let checkBox of checkInputsCustom; let i=index">
-                <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleCheckChange($event)">
+              <div fxLayout="row" *ngFor="let checkBox of viewer.availableCustomColumns; let i=index">
+                <mat-checkbox [value]="checkBox.value"
+                              color="primary"
+                              (change)="handleCustomColumnSelector($event)"
+                              [checked]="checked(checkBox.value)"
+                >
                   <div class="text-wrap">
                     {{checkBox.label}}
                   </div>
@@ -148,79 +153,80 @@
 
       <!-- Pagination div -->
       <div class="container">
-        <mat-paginator
-          (page)="handlePageEvent($event)"
-          [length]="dataHandler.itemsCount"
-          [pageSize]="dataHandler.pageSize"
-          [showFirstLastButtons]="showFirstLastButtons"
-          [pageSizeOptions]="pageSizeOptions"
-          [pageIndex]="dataHandler.pageIndex">
+        <mat-paginator [pageSizeOptions]="viewer.pageSizeOptions"
+                       [showFirstLastButtons]="viewer.showFirstLastButtons"
+                       [length]="tableManager.itemsCount"
+                       [pageSize]="tableManager.pageSize"
+                       [pageIndex]="tableManager.pageIndex"
+                       (page)="handlePageEvent($event)"
+        >
         </mat-paginator>
       </div>
       <!-- END Pagination div -->
 
       <!-- Event Table div -->
       <div class="scroll-container">
-        <div class="table-loading-shade" *ngIf="isLoading"></div>
+        <div class="table-loading-shade" *ngIf="handler.isLoadingResults"></div>
 
         <div class="table-rasponsive table-container">
-        <!-- <div class="table-rasponsive"> </div> -->
+          <!-- <div class="table-rasponsive"> </div> -->
           <table mat-table matSort
                  [dataSource]="dataSource"
                  (matSortChange)="handleSortData($event)"
-                 [matSortActive]="this.dataHandler.sortProperty"
-                 [matSortDirection]="this.dataHandler.sortDirection"
+                 [matSortActive]="this.tableManager.sortProperty"
+                 [matSortDirection]="this.tableManager.sortDirection"
           >
 
             <!-- Event Id Column -->
             <ng-container matColumnDef="eventId" sticky>
-              <th mat-header-cell *matHeaderCellDef>{{columnsData['eventId'].label}}</th>
+              <th mat-header-cell *matHeaderCellDef>{{tableDataRetriever['eventId'].label}}</th>
               <td mat-cell *matCellDef="let element">
                 <a routerLink="/event/{{element.eventId}}">
-                  {{columnsData['eventId'].data(element)}}
+                  {{tableDataRetriever['eventId'].data(element)}}
                 </a>
               </td>
             </ng-container>
 
             <!-- Created On Column -->
             <ng-container matColumnDef="createdOn">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{columnsData['createdOn'].label}}</th>
-              <td mat-cell *matCellDef="let element"> {{columnsData['createdOn'].data(element)}} </td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{tableDataRetriever['createdOn'].label}}</th>
+              <td mat-cell *matCellDef="let element"> {{tableDataRetriever['createdOn'].data(element)}} </td>
             </ng-container>
 
             <!-- EventInput Column -->
             <ng-container matColumnDef="eventInputData">
-              <th mat-header-cell *matHeaderCellDef>{{columnsData['eventInputData'].label}}</th>
+              <th mat-header-cell *matHeaderCellDef>{{tableDataRetriever['eventInputData'].label}}</th>
               <td class="table-event-data-cell input" mat-cell *matCellDef="let element">
-                <pre>{{columnsData['eventInputData'].data(element) | json}}</pre>
+                <pre>{{tableDataRetriever['eventInputData'].data(element) | json}}</pre>
               </td>
             </ng-container>
 
             <!-- EventOutput Column -->
             <ng-container matColumnDef="eventOutputData">
-              <th mat-header-cell *matHeaderCellDef>{{columnsData['eventOutputData'].label}}</th>
+              <th mat-header-cell *matHeaderCellDef>{{tableDataRetriever['eventOutputData'].label}}</th>
               <td class="table-event-data-cell output" mat-cell *matCellDef="let element">
-                <pre>{{columnsData['eventOutputData'].data(element) | json}}</pre>
+                <pre>{{tableDataRetriever['eventOutputData'].data(element) | json}}</pre>
               </td>
             </ng-container>
 
             <!-- Selected Columns by CheckBox - CUSTOM -->
-            <div fxLayout="row" fxLayoutGap="25px" class="center" *ngFor="let checkColumnSelected of checksSelected">
-              <ng-container [matColumnDef]="checkColumnSelected">
+            <div fxLayout="row" fxLayoutGap="25px" class="center"
+                 *ngFor="let checkColumnSelected of viewer.availableCustomColumns">
+              <ng-container [matColumnDef]="checkColumnSelected.value">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ columnsData[checkColumnSelected].label }}
+                  {{ tableDataRetriever[checkColumnSelected.value].label }}
                 </th>
                 <td
-                  [ngClass]="columnsData[checkColumnSelected].cssClasses ? columnsData[checkColumnSelected].cssClasses(element) : ''"
+                  [ngClass]="tableDataRetriever[checkColumnSelected.value].cssClasses ? tableDataRetriever[checkColumnSelected.value].cssClasses(element) : ''"
                   mat-cell *matCellDef="let element"
                 >
-                  {{columnsData[checkColumnSelected].data(element)}}
+                  {{tableDataRetriever[checkColumnSelected.value].data(element)}}
                 </td>
               </ng-container>
             </div>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-header-row *matHeaderRowDef="handler.displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: handler.displayedColumns;"></tr>
           </table>
 
         </div>

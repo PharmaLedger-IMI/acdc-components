@@ -55,8 +55,7 @@ export class AuthService {
   }
 
   public logout() {
-    this.localStorageService.remove(LocalStorageService.ACDC_USER);
-    // localStorage.clear();
+    this.localStorageService.clear();
   }
 
   public hasAdminProfile() : boolean {
