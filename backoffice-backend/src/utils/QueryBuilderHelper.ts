@@ -18,6 +18,11 @@ export class QueryBuilderHelper {
             values = Array.isArray(values) ? values : [values]
             const commaList = values.map((value) => `'${escapeQuote(value)}'`).join(',')
             return `IN (${commaList})`
+        },
+        // ILike
+        ILIKE(value: string): string {
+            const escapeValue = escapeQuote(value);
+            return `ILIKE '%${escapeValue}%'`
         }
     }
 
@@ -29,6 +34,16 @@ export class QueryBuilderHelper {
     jsonWhereStatement(dbColumn: string, jsonProperty: string, operator: Operators, values: string[] | string): string {
         const operation = this.sqlOperators[Operators[`${operator}`]]
         return `${dbColumn} ->> '${jsonProperty}' ${operation(values)}`
+    }
+
+    jsonWhereOrStatement(dbColumn: string, jsonProperty: string, operator: Operators, values: string[] | string): string {
+        const operation = this.sqlOperators[Operators[`${operator}`]]
+        values = Array.isArray(values) ? values : [values]
+        const where = values.map((value, index) => {
+            const stmt = operation(value)
+            return `${dbColumn} ->> '${jsonProperty}' ${stmt}`
+        }).join(' OR ')
+        return `(${where})`;
     }
 
     deepJsonWhereStatement(dbColumn: string, jsonPropertyTree: string[], operator: Operators, values: string[] | string): string {
@@ -57,6 +72,7 @@ export enum Operators {
     MTE = 'MTE',
     LTE = 'LTE',
     IN = 'IN',
+    ILIKE = 'ILIKE',
 }
 
 function escapeQuote(str: string): string {

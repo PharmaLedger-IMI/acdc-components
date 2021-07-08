@@ -48,19 +48,19 @@ export class EventRepository extends Repository<Event> {
                 return queryBuilderHelper.commonWhereStatement('event.createdOn::date', Operators.LTE, date)
             },
             productCode(productsCode: string[] | string): string {
-                return queryBuilderHelper.jsonWhereStatement('eventinput.eventinputdata', 'productCode', Operators.IN, productsCode)
+                return queryBuilderHelper.jsonWhereOrStatement('eventinput.eventinputdata', 'productCode', Operators.ILIKE, productsCode)
             },
             batch(batches: string[] | string): string {
-                return queryBuilderHelper.jsonWhereStatement('eventinput.eventinputdata', 'batch', Operators.IN, batches)
+                return queryBuilderHelper.jsonWhereOrStatement('eventinput.eventinputdata', 'batch', Operators.ILIKE, batches)
             },
             serialNumber(serialNumbers: string[] | string): string {
-                return queryBuilderHelper.jsonWhereStatement('eventinput.eventinputdata', 'serialNumber', Operators.IN, serialNumbers)
+                return queryBuilderHelper.jsonWhereOrStatement('eventinput.eventinputdata', 'serialNumber', Operators.ILIKE, serialNumbers)
             },
             nameMedicinalProduct(nameMedicinalProducts: string[] | string): string {
-                return queryBuilderHelper.jsonWhereStatement(
+                return queryBuilderHelper.jsonWhereOrStatement(
                     'eventoutput.eventoutputdata',
                     'nameMedicinalProduct',
-                    Operators.IN,
+                    Operators.ILIKE,
                     nameMedicinalProducts
                 )
             },
