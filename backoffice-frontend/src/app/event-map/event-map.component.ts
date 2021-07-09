@@ -21,7 +21,6 @@ export class EventMapOptions {
 export class EventMapComponent {
 
   private map: any;
-  private dataPoints: any = []; // used to center the map
   private mapOptions: EventMapOptions = new EventMapOptions();
 
   /** CORE: Receive an input from event-map component and render a map */
@@ -32,7 +31,7 @@ export class EventMapComponent {
   @Input() set dataReceiver(events: Event[] | undefined) {
     console.log('event-map.component.dataReceiver=', events);
     if (events) {
-      const markers: L.Marker[] = [];
+      const markers = L.featureGroup();
       const circles: L.Circle[] = [];
       events.forEach(event => {
         const eventInputData = event.eventInputs[0].eventInputData;
@@ -41,8 +40,6 @@ export class EventMapComponent {
         if (!!snCheckLocation && ('latitude' in snCheckLocation && 'longitude' in snCheckLocation)) {
           const lat = snCheckLocation.latitude;
           const long = snCheckLocation.longitude;
-
-          this.dataPoints.push([lat, long]);
 
           const eventOutputData = event.eventOutputs[0].eventOutputData;
           const checkResult = eventOutputData.snCheckResult;
@@ -53,7 +50,9 @@ export class EventMapComponent {
             eventOutputData.nameMedicinalProduct,
             checkResult
           ]);
-          markers.push(this.buildMarker([lat, long], icon, popup));
+          const marker = this.buildMarker([lat, long], icon, popup);
+          marker.addTo(markers);
+          // markers.push(this.buildMarker([lat, long], icon, popup));
           if (this.mapOptions.enableCircles) {
             circles.push(L.circle([lat, long], {
               color: '#7e1fd2',
@@ -76,7 +75,11 @@ export class EventMapComponent {
       markersLayer.addTo(this.map);
       circleLayer.addTo(this.map);
 
-      this.map.fitBounds(this.dataPoints);
+      try {
+        this.map.fitBounds(markers.getBounds());
+      } catch (e) {
+      }
+
       this.map.setMaxBounds([[-90, -180], [90, 180]]);
       this.map.on('click', (ev: any) => {
         console.log('# map', ev);
@@ -162,14 +165,14 @@ export class EventMapComponent {
    * Build a data points markers and clustering feature
    * @param markers data points collection
    */
-  buildMarkersLayer(markers: Marker[]): any {
-    const markersLayer = L.layerGroup(markers);
+  buildMarkersLayer(markers: L.FeatureGroup): any {
+    // const markersLayer = L.featureGroup(markers);
     const markersClustersLayer = L.markerClusterGroup({
       chunkedLoading: true,
       disableClusteringAtZoom: 18,
       spiderfyOnMaxZoom: true
     });
-    markersClustersLayer.addLayer(markersLayer);
+    markersClustersLayer.addLayer(markers);
     return markersClustersLayer;
   }
 
