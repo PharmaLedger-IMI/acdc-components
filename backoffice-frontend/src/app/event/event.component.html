@@ -144,8 +144,12 @@
 
 
 <!-- Tabs -->
-<mat-tab-group mat-align-tabs="center" dynamicHeight animationDuration="0ms" (focusChange)="handleChangeTab($event)">
-
+<mat-tab-group mat-align-tabs="center"
+               dynamicHeight
+               animationDuration="0ms"
+               [selectedIndex]="handler.selectedTabIndex"
+               (focusChange)="handleChangeTab($event)"
+>
 
   <!-- Table tab -->
   <mat-tab label="Event Log">

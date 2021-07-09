@@ -145,7 +145,7 @@ export class EventComponent implements OnInit {
     displayedColumns: [],
     filterPanelOpen: false,
     isLoadingResults: true,
-
+    selectedTabIndex: 0,
     tableManager: {
       pageIndex: 0,
       pageSize: 5,
@@ -156,7 +156,7 @@ export class EventComponent implements OnInit {
       sortDirection: 'desc',
       multipleInputFilters: this.formBuilder.array(this.chipsInputs),
       defaultColumnsSelected: this.formBuilder.array(['eventId', 'createdOn', 'eventInputData', 'eventOutputData']),
-      customColumnsSelected: this.formBuilder.array(['productCode', 'batch'])
+      customColumnsSelected: this.formBuilder.array(['productCode', 'batch']),
     }
   };
 
@@ -189,15 +189,22 @@ export class EventComponent implements OnInit {
     return this.localStorageService.get(LocalStorageService.EVENT_PAGE) || {};
   }
 
+  set _selectedTabIndex(index: number) {
+    this.handler.selectedTabIndex = index;
+    this.localStorageService.set('selected_tab', index);
+  }
+
   ngOnInit(): void {
     this.appComponent.setNavMenuHighlight('data', 'event', 'List of Event (Scans performed by users)');
-
     caches.has(LocalStorageService.EVENT_PAGE).then(() => {
       console.log('event.component.ngOnInit @tableManager =', this.tableManager);
       this.tableManager = this.localStorage;
       console.log('event.component.ngOnInit @tableManager.cache', this.tableManager);
     }).finally(() => {
       this.getEvents(this.tableManager.pageSize, this.tableManager.pageIndex);
+      if (!!this.dataSource) {
+        this._selectedTabIndex = this.localStorageService.get('selected_tab') || 0;
+      }
     });
   }
 
@@ -384,6 +391,9 @@ export class EventComponent implements OnInit {
   }
 
   handleChangeTab(event: any): void {
+    this._selectedTabIndex = event.index;
+    console.log('##', this.handler.selectedTabIndex);
+    console.log('##', event);
     this.handler.isLoadingResults = true;
     this.ngZone.onStable.pipe(first()).subscribe(() => {
       this.handler.isLoadingResults = false;
@@ -475,6 +485,7 @@ interface Handler {
   displayedColumns: string[];
   filterPanelOpen: boolean;
   isLoadingResults: boolean;
+  selectedTabIndex?: number;
   tableManager: TableManager;
 }
 
