@@ -99,11 +99,13 @@
             <!-- Select table columns DEFAULT -->
             <div fxLayout="column">
               <strong>Default Columns: </strong>
-              <div *ngFor="let checkBox of viewer.availableDefaultColumns; let i=index">
-                <mat-checkbox [value]="checkBox.value" color="primary" (change)="handleDefaultColumnSelector($event)"
-                              [checked]="checked(checkBox.value)"
+              <div *ngFor="let checkBox of tableManagerDefaultColumns.controls; let i=index">
+                <mat-checkbox [value]="checkBox.value.key"
+                              color="primary"
+                              (change)="handleDefaultColumnSelector($event, checkBox)"
+                              [checked]="checkBox.value.visible"
                 >
-                  {{checkBox.label}}
+                  {{checkBox.value.label}}
                 </mat-checkbox>
               </div>
             </div>
@@ -111,14 +113,14 @@
             <!-- Select table columns CUSTOM -->
             <div fxLayout="column">
               <strong>Custom columns: </strong>
-              <div fxLayout="row" *ngFor="let checkBox of viewer.availableCustomColumns; let i=index">
-                <mat-checkbox [value]="checkBox.value"
+              <div fxLayout="row" *ngFor="let checkBox of tableManagerCustomColumns.controls; let i=index">
+                <mat-checkbox [value]="checkBox.value.key"
                               color="primary"
-                              (change)="handleCustomColumnSelector($event)"
-                              [checked]="checked(checkBox.value)"
+                              (change)="handleCustomColumnSelector($event, checkBox)"
+                              [checked]="checkBox.value.visible"
                 >
                   <div class="text-wrap">
-                    {{checkBox.label}}
+                    {{checkBox.value.label}}
                   </div>
                 </mat-checkbox>
               </div>
@@ -215,16 +217,16 @@
 
             <!-- Selected Columns by CheckBox - CUSTOM -->
             <div fxLayout="row" fxLayoutGap="25px" class="center"
-                 *ngFor="let checkColumnSelected of viewer.availableCustomColumns">
-              <ng-container [matColumnDef]="checkColumnSelected.value">
+                 *ngFor="let checkColumnSelected of this.tableManagerCustomColumns.controls">
+              <ng-container [matColumnDef]="checkColumnSelected.value.key">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ tableDataRetriever[checkColumnSelected.value].label }}
+                  {{ tableDataRetriever[checkColumnSelected.value.key].label }}
                 </th>
                 <td
-                  [ngClass]="tableDataRetriever[checkColumnSelected.value].cssClasses ? tableDataRetriever[checkColumnSelected.value].cssClasses(element) : ''"
+                  [ngClass]="tableDataRetriever[checkColumnSelected.value.key].cssClasses ? tableDataRetriever[checkColumnSelected.value.key].cssClasses(element) : ''"
                   mat-cell *matCellDef="let element"
                 >
-                  {{tableDataRetriever[checkColumnSelected.value].data(element)}}
+                  {{tableDataRetriever[checkColumnSelected.value.key].data(element)}}
                 </td>
               </ng-container>
             </div>

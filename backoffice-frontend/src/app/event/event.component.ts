@@ -50,24 +50,26 @@ export class EventComponent implements OnInit {
     },
   ];
 
+  tableDefaultColumns: ChekBox[] = [
+    {label: 'Created On', key: 'createdOn', visible: true},
+    {label: 'Event Input Data', key: 'eventInputData', visible: true},
+    {label: 'Event Output Data', key: 'eventOutputData', visible: true},
+  ];
+
+  tableCustomColumns: ChekBox[] = [
+    {label: 'Product Code', key: 'productCode', visible: false},
+    {label: 'Batch', key: 'batch', visible: false},
+    {label: 'Name Medicinal Product', key: 'nameMedicinalProduct', visible: false},
+    {label: 'Expiry Date', key: 'expiryDate', visible: false},
+    {label: 'Serial Number', key: 'serialNumber', visible: false},
+    {label: 'Check Result', key: 'snCheckResult', visible: false},
+    {label: 'Product Status', key: 'productStatus', visible: false},
+  ];
+
   public viewer: Viewer = {
     customColumnSelector: [],
     pageSizeOptions: [5, 10, 25, 50, 100, 500, 1000],
     showFirstLastButtons: true,
-    availableDefaultColumns: [
-      {label: 'Created On', value: 'createdOn'},
-      {label: 'Event Input Data', value: 'eventInputData'},
-      {label: 'Event Output Data', value: 'eventOutputData'},
-    ],
-    availableCustomColumns: [
-      {label: 'Product Code', value: 'productCode'},
-      {label: 'Batch', value: 'batch'},
-      {label: 'Name Medicinal Product', value: 'nameMedicinalProduct'},
-      {label: 'Expiry Date', value: 'expiryDate'},
-      {label: 'Serial Number', value: 'serialNumber'},
-      {label: 'Check Result', value: 'snCheckResult'},
-      {label: 'Product Status', value: 'productStatus'},
-    ],
     tableDataRetriever: {
       eventId: {
         label: 'Event Id',
@@ -155,8 +157,8 @@ export class EventComponent implements OnInit {
       sortProperty: 'createdOn',
       sortDirection: 'desc',
       multipleInputFilters: this.formBuilder.array(this.chipsInputs),
-      defaultColumnsSelected: this.formBuilder.array(['eventId', 'createdOn', 'eventInputData', 'eventOutputData']),
-      customColumnsSelected: this.formBuilder.array(['productCode', 'batch']),
+      defaultColumns: this.formBuilder.array(this.tableDefaultColumns),
+      customColumns: this.formBuilder.array(this.tableCustomColumns)
     }
   };
 
@@ -177,19 +179,19 @@ export class EventComponent implements OnInit {
     return this.tableManagerForm.get('multipleInputFilters') as FormArray;
   }
 
-  get defaultColumnsSelected(): FormArray {
-    return this.tableManagerForm.get('defaultColumnsSelected') as FormArray;
+  get tableManagerDefaultColumns(): FormArray {
+    return this.tableManagerForm.get('defaultColumns') as FormArray;
   }
 
-  get customColumnsSelected(): FormArray {
-    return this.tableManagerForm.get('customColumnsSelected') as FormArray;
+  get tableManagerCustomColumns(): FormArray {
+    return this.tableManagerForm.get('customColumns') as FormArray;
   }
 
   get localStorage(): any {
     return this.localStorageService.get(LocalStorageService.EVENT_PAGE) || {};
   }
 
-  set _selectedTabIndex(index: number) {
+  set selectedTabIndex(index: number) {
     this.handler.selectedTabIndex = index;
     this.localStorageService.set('selected_tab', index);
   }
@@ -203,7 +205,7 @@ export class EventComponent implements OnInit {
     }).finally(() => {
       this.getEvents(this.tableManager.pageSize, this.tableManager.pageIndex);
       if (!!this.dataSource) {
-        this._selectedTabIndex = this.localStorageService.get('selected_tab') || 0;
+        this.selectedTabIndex = this.localStorageService.get('selected_tab') || 0;
       }
     });
   }
@@ -239,12 +241,18 @@ export class EventComponent implements OnInit {
       }
     });
 
+    const colsToDisplay = ['eventId'];
+    const cols = this.tableManagerDefaultColumns.value.concat(this.tableManagerCustomColumns.value);
+    cols.forEach((column: ChekBox) => {
+      if (column.visible) {
+        colsToDisplay.push(column.key);
+      }
+    });
+
     console.log('event.component.getEvents filters=', filters);
     this.eventService.getEvents(filters).subscribe((resp) => {
 
-      const defaultColumnsSelected = Array.from(this.tableManager.defaultColumnsSelected);
-      const customColumnsSelected = Array.from(this.tableManager.customColumnsSelected);
-      this.handler.displayedColumns = defaultColumnsSelected.concat(customColumnsSelected) as string[];
+      this.handler.displayedColumns = colsToDisplay;
       console.log('event.component.getEvents displayedColumns =', this.handler.displayedColumns);
 
       this.tableManager = {
@@ -252,9 +260,7 @@ export class EventComponent implements OnInit {
         pageSize,
         itemsCount: resp.metadata.itemsCount,
         sortDirection: this.tableManager.sortDirection,
-        sortProperty: this.tableManager.sortProperty,
-        defaultColumnsSelected: this.tableManager.defaultColumnsSelected,
-        customColumnsSelected: this.tableManager.customColumnsSelected
+        sortProperty: this.tableManager.sortProperty
       };
 
       this.dataSource = new MatTableDataSource(resp.results);
@@ -269,15 +275,6 @@ export class EventComponent implements OnInit {
 
     });
   }
-
-  checked(str: string): boolean {
-    const displayedColumns = !!this.handler.displayedColumns ? this.handler.displayedColumns : [];
-    if (!!str) {
-      return displayedColumns.includes(str);
-    }
-    return false;
-  }
-
 
   /** Listen actions in pagination component and do an action
    * @param pageEvent event metadata capture
@@ -328,48 +325,32 @@ export class EventComponent implements OnInit {
 
   /** Handle the change of checkboxes in the selection of CUSTOM columns
    * @param event - object with checkBox status and input element from html DOM
+   * @param checkBox -
    */
-  handleCustomColumnSelector(event: any): void {
-    const {checked, source} = event;
-    const value = source.value;
-    const columnsSelected = this.customColumnsSelected;
+  handleCustomColumnSelector(event: any, checkBox: any): void {
+    const {checked} = event;
+    checkBox.value.visible = checked;
     console.log(
       'event.component.handleCustomColumnSelector',
-      '@column =', value,
-      '@checked =', checked,
-      '@actualValues =', columnsSelected
+      '@column =', checkBox.value.key,
+      '@visible =', checkBox.value.visible,
+      '@values =', this.tableManagerCustomColumns.value
     );
-    if (checked) {
-      columnsSelected.push(this.formBuilder.control(value));
-    } else {
-      const columnsSelectedValues = columnsSelected.value;
-      const index = columnsSelectedValues.indexOf(value);
-      columnsSelected.removeAt(index);
-    }
-    console.log('event.component.handleCustomColumnSelector @columnSelected=', this.customColumnsSelected.value);
   }
 
   /** Handle the change of checkboxes in the selection of DEFAULT columns
    * * @param event - object with checkBox status and input element from html DOM
+   * @param checkBox -
    */
-  handleDefaultColumnSelector(event: any): void {
-    const {checked, source} = event;
-    const value = source.value;
-    const columnsSelected = this.defaultColumnsSelected;
+  handleDefaultColumnSelector(event: any, checkBox: any): void {
+    const {checked} = event;
+    checkBox.value.visible = checked;
     console.log(
-      'event.component.handleCustomColumnSelector',
-      '@column =', value,
-      '@checked =', checked,
-      '@actualValues =', columnsSelected
+      'event.component.handleDefaultColumnSelector',
+      '@column =', checkBox.value.key,
+      '@visible =', checkBox.value.visible,
+      '@values =', this.tableManagerDefaultColumns.value
     );
-    if (checked) {
-      columnsSelected.push(this.formBuilder.control(value));
-    } else {
-      const columnsSelectedValues = columnsSelected.value;
-      const index = columnsSelectedValues.indexOf(value);
-      columnsSelected.removeAt(index);
-    }
-    console.log('event.component.handleDefaultColumnSelector @columnSelected =', this.defaultColumnsSelected.value);
   }
 
   /**
@@ -391,7 +372,7 @@ export class EventComponent implements OnInit {
   }
 
   handleChangeTab(event: any): void {
-    this._selectedTabIndex = event.index;
+    this.selectedTabIndex = event.index;
     console.log('##', this.handler.selectedTabIndex);
     console.log('##', event);
     this.handler.isLoadingResults = true;
@@ -454,8 +435,6 @@ interface Viewer {
   customColumnSelector: string[];
   pageSizeOptions: number[];
   showFirstLastButtons: boolean;
-  availableDefaultColumns: CustomInput[];
-  availableCustomColumns: CustomInput[];
   tableDataRetriever: TableDataRetriever;
   chipsConfig: ChipConfig;
 }
@@ -467,6 +446,12 @@ interface ChipInputFilter {
   autocompleteOptions?: string[];
 }
 
+interface ChekBox {
+  label: string;
+  key: string;
+  visible: boolean;
+}
+
 interface TableManager {
   pageIndex: number;
   pageSize: number;
@@ -476,9 +461,8 @@ interface TableManager {
   sortProperty: string;
   sortDirection: SortDirection;
   multipleInputFilters?: any;
-  // displayedColumns: FormArray;
-  defaultColumnsSelected: any;
-  customColumnsSelected: any;
+  defaultColumns?: any;
+  customColumns?: any;
 }
 
 interface Handler {
