@@ -93,13 +93,13 @@
         },
         {
             "name": "leaflet-ssapp",
-            "src": "https://github.com/PharmaLedger-IMI/leaflet-ssapp.git",
+            "src": "https://github.com/smotaPDM/leaflet-ssapp.git",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "bfb0e1b7dceb103b8c3c1f69f755d7cbd31b0097"
+                    "commit": "d88bc938131f35b5d37b9cab4f43d2cae57589be"
                 },
                 {
                     "type": "execute",
@@ -732,12 +732,28 @@
         },
         {
             "name": "mobile/scan-app/ios",
-            "src": "https://github.com/PrivateSky/ios-edge-agent",
+            "src": "https://github.com/smotaPDM/ios-edge-agent.git",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "echo \"Continue with ipa builds\""
+                }
+            ]
+        },
+        {
+            "name": "mobile/scan-app/ios/pharmaledger-camera",
+            "src": "https://github.com/PharmaLedger-IMI/pharmaledger-camera.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false,
+                    "commit": "04d0c8049cfe17a61c70f32981ea1780b497b47a"
                 },
                 {
                     "type": "execute",
@@ -808,52 +824,6 @@
                 {
                     "type": "remove",
                     "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project"
-                },
-                {
-                    "type": "copy",
-                    "src": "bin/MobileServerLauncher.js",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/MobileServerLauncher.js"
-                },
-                {
-                    "type": "copy",
-                    "src": "privatesky/psknode/bundles/pskWebServer.js",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/pskWebServer.js"
-                },
-                {
-                    "type": "copy",
-                    "src": "privatesky/psknode/bundles/nodeBoot.js",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/nodeBoot.js"
-                },
-                {
-                    "type": "copy",
-                    "src": "apihub-root/internal-volume",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/apihub-root/internal-volume"
-                },
-                {
-                    "type": "copy",
-                    "src": "apihub-root/external-volume",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/apihub-root/external-volume"
-                },
-                {
-                    "type": "copy",
-                    "src": "apihub-root/leaflet-wallet",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/apihub-root/app"
-                },
-                {
-                    "type": "remove",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/apihub-root/app/loader/node_modules"
-                },
-                {
-                    "type": "remove",
-                    "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project/apihub-root/app/loader/.git"
-                },
-                {
-                    "type": "copy",
-                    "src": "mobile/config/scan-app/android",
-                    "target": "mobile/scan-app/android",
-                    "options": {
-                        "overwrite": true
-                    }
                 }
             ]
         },
