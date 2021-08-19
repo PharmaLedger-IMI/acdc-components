@@ -867,6 +867,22 @@
                     {
                         "overwrite": true
                     }
+                },
+                {
+                    "type": "copy",
+                    "src": "mobile/scan-app/ios/pharmaledger-camera/WkCamera/WkCamera/www/three.min.js",
+                    "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/apihub-root/three.min.js",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "mobile/scan-app/ios/pharmaledger-camera/WkCamera/WkCamera/www/OrbitControls.js",
+                    "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/apihub-root/OrbitControls.js",
+                    "options": {
+                        "overwrite": true
+                    }
                 }
             ]
         }
