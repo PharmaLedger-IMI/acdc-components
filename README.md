@@ -204,6 +204,13 @@ mobile/scan-app/android/app/build/outputs/apk/release
 <<<<<<< HEAD
 ```
 
+### Build iOS App
+
+1. Install carthage & (Homebrew https://brew.sh/)
+```
+brew install carthage
+```
+
 
 # Misc
 
