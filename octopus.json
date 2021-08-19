@@ -752,6 +752,10 @@
                 {
                     "type": "execute",
                     "cmd": "echo \"Continue with ipa builds\""
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd mobile/scan-app/ios/PSKNodeServer/ && carthage update"
                 }
             ]
         },
@@ -770,6 +774,7 @@
                 }
             ]
         }
+
     ],
 
     "build-android-apk" : [
