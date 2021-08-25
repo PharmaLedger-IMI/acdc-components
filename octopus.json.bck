@@ -263,6 +263,16 @@
             ]
         },
         {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm install"
+                }
+            ]
+        },
+        {
             "name": "gtin-dsu-wizard",
             "src": "https://github.com/PharmaLedger-IMI/gtin-dsu-wizard.git",
             "actions": [
@@ -345,7 +355,7 @@
                 }
             ]
         },
-        {
+		{
             "name": "ethadapter",
             "src": "https://github.com/PharmaLedger-IMI/ethadapter",
             "actions": [
@@ -380,6 +390,48 @@
                 {
                     "type": "execute",
                     "cmd": "cd dsu-fabric-ssapp && npm install"
+                }
+            ]
+        },
+        {
+            "name": "install backoffice-backend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-backend && npm install"
+                }
+            ]
+        },
+        {
+            "name": "install backoffice-frontend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-frontend && npm install"
+                }
+            ]
+        }
+    ],
+    "build-use-case": [
+        {
+            "name": "build backoffice-backend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-backend && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "build backoffice-frontend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-frontend && npm run build"
                 }
             ]
         }
@@ -479,6 +531,38 @@
                 {
                     "type": "execute",
                     "cmd": "cd gtin-resolver && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "patch eLeaflet app",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/leaflet-patch",
+                    "target": "./leaflet-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/build/bundles/acdc.js",
+                    "target": "./leaflet-ssapp/code/scripts/bundles/acdc.js",
+                    "options": {
+                        "overwrite": true
+                    }
                 }
             ]
         },
@@ -639,7 +723,7 @@
                     "target": ".",
                     "collectLog": false
                 },
-                {
+		{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/ios/PSKNodeServer && carthage bootstrap"
                 },
@@ -658,23 +742,23 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && gradlew.bat -b ndk.gradle installNDK",
-                    "os": "win32",
+					"os": "win32",
                     "options": {
                         "ignoreErrors": true
                     }
                 },
-                {
+				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew -b ndk.gradle installNDK",
-                    "os": "linux",
+					"os": "linux",
                     "options": {
                         "ignoreErrors": true
                     }
                 },
-                {
+				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew -b ndk.gradle installNDK",
-                    "os": "darwin",
+					"os": "darwin",
                     "options": {
                         "ignoreErrors": true
                     }
@@ -687,23 +771,23 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && gradlew.bat assembleRelease",
-                    "os": "win32",
+					"os": "win32",
                     "options": {
                         "ignoreErrors": true
                     }
                 },
-                {
+				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew assembleRelease",
-                    "os": "linux",
+					"os": "linux",
                     "options": {
                         "ignoreErrors": true
                     }
                 },
-                {
+				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew assembleRelease",
-                    "os": "darwin",
+					"os": "darwin",
                     "options": {
                         "ignoreErrors": true
                     }
