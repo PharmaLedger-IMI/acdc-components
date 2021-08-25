@@ -24,7 +24,7 @@
             <psk-condition condition="@displayCredentialArea">
                 <psk-layout slot="condition-true" row-gap="1em">
                     <psk-form-row>
-                        <psk-input value="@domain" label="Domain" disabled></psk-input>
+                        <psk-input value="@domain" label="Domain" disabled read-only="true" ></psk-input>
                     </psk-form-row>
                     <psk-form-row>
                         <psk-textarea value="@credential" label="Copy/paste your credential here."></psk-textarea>
@@ -36,6 +36,8 @@
 
                 <div slot="condition-false">
                     <p>Everything is fine. Start creating products and batches</p>
+                    <p>To configure the import API please use the following Wallet Identifier in your API-Hub config:</p>
+                    <h5><psk-label label="@walletKeySSI"></psk-label></h5>
                 </div>
             </psk-condition>
         </psk-layout>

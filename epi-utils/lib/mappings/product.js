@@ -1,111 +1,98 @@
 const gtinResolver = require("gtin-resolver");
-function verifyIfProductMessage(message){
-	return message.messageType === "Product" && typeof message.product === "object";
+
+
+function verifyIfProductMessage(message) {
+  return message.messageType === "Product" && typeof message.product === "object";
 }
 
-async function processProductMessage(message){
-		const constants = require("./utils").constants;
-		const productCode = message.product.productCode;
-		let version = parseInt(message.product.version);
-		const mappingLogService = require("./logs").createInstance(this.storageService);
+async function processProductMessage(message) {
+  const utils = require("./../utils");
+  const errMap = require("opendsu").loadApi("m2dsu").getErrorsMap();
+  const constants = utils.constants;
+  const productCode = message.product.productCode;
+  const mappingLogService = require("./logs").createInstance(this.storageService);
+  let version;
+  const schemaValidator = require("./utils/schema-validator");
+  const schema = require("./schemas/productSchema");
+  const msgValidation = schemaValidator.validateMsgOnSchema(message, schema);
 
-		if(Number.isNaN(version)){
-			version = undefined;
-		}
+  if (!msgValidation.valid) {
+    message.invalidFields = msgValidation.invalidFields;
+    await mappingLogService.logFailedMapping(message, "lookup", "Invalid message format");
+    throw errMap.newCustomError(errMap.errorTypes.INVALID_MESSAGE_FORMAT, msgValidation.invalidFields);
+  }
 
-		const gtinSSI = gtinResolver.createGTIN_SSI(this.options.holderInfo.domain,this.options.holderInfo.subdomain,productCode);
-		const {dsu, alreadyExists} =  await this.loadConstSSIDSU(gtinSSI);
-		const constDSU = dsu;
+  const gtinSSI = gtinResolver.createGTIN_SSI(this.options.holderInfo.domain, this.options.holderInfo.subdomain, productCode);
+  const {dsu, alreadyExists} = await this.loadConstSSIDSU(gtinSSI);
+  const constDSU = dsu;
 
-		let productDSU;
-		let latestProductMetadata = {};
-		if(!alreadyExists){
-			 productDSU = await this.createDSU(this.options.holderInfo.subdomain,"seed");
-			 version = 1;
-			 latestProductMetadata.version = version;
-		}
-		else{
-			try{
-				latestProductMetadata = await this.storageService.getRecord(constants.LAST_VERSION_PRODUCTS_TABLE, productCode);
-			}
-			catch (e){}
-			console.log("INFO:",latestProductMetadata, latestProductMetadata.version)
-			if(latestProductMetadata && latestProductMetadata.version){
-				latestProductMetadata.version = parseInt(latestProductMetadata.version);
-				if(typeof version ==="undefined"){
-					version = ++latestProductMetadata.version;
-				}
-				else{
-				 	if(version>latestProductMetadata.version+1){
-				 		throw new Error("Version of the product is greater than the next available version");
-					}
-				}
-			}else{
-				//TODO heal database records using data from the DSU
-				throw new Error("This case is not implemented. Missing product from the wallet database or database is corrupted");
+  let productDSU;
+  let productMetadata = {};
+  if (!alreadyExists) {
+    productDSU = await this.createDSU(this.options.holderInfo.subdomain, "seed");
+    version = 1;
+  } else {
+    try {
+      productMetadata = await this.storageService.getRecord(constants.PRODUCTS_TABLE, productCode);
+      if (productMetadata.version) {
+        version = productMetadata.version + 1;
+      }
+    } catch (e) {
+      await mappingLogService.logFailedMapping(message, "lookup", "Database corrupted");
+      throw errMap.newCustomError(errMap.errorTypes.DB_OPERATION_FAIL, "productCode");
+    }
+    productDSU = await this.loadDSU(productMetadata.keySSI);
+  }
 
-				if(typeof version ==="undefined"){
-					version = 1;
-				}
-				else{
-					if(version>1){
-						throw new Error("Version of the product is greater than the next available version");
-					}
-				}
-				latestProductMetadata = {version:version}
-			}
-			productDSU = await this.loadDSU(latestProductMetadata.keySSI);
-		}
+  const indication = {product: "/product.json"};
+  await this.loadJSONS(productDSU, indication);
 
+  if (typeof this.product === "undefined") {
+    this.product = JSON.parse(JSON.stringify(productMetadata));
+  }
 
-		const indication =  {product:"/"+version+"/product.json"};
+  utils.transformFromMessage(this.product, message.product, utils.productDataSourceMapping);
 
-		await this.loadJSONS(productDSU, indication);
+  this.product.version = version;
+  await this.saveJSONS(productDSU, indication);
 
-		if(typeof this.product ==="undefined"){
-			this.product = JSON.parse(JSON.stringify(latestProductMetadata));
-		}
-		const propertiesMapping = require("./utils").productDataSourceMapping;
+  if (!alreadyExists) {
+    productDSU.getKeySSIAsString(async (err, keySSI) => {
+      if (err) {
+        throw new Error("get keySSIAsString from prod DSU failed");
+      }
+      await constDSU.mount(constants.PRODUCT_DSU_MOUNT_POINT, keySSI);
+    })
 
-		for (let prop in propertiesMapping){
-			this.product[prop] = message.product[propertiesMapping[prop]];
-		}
-		await this.saveJSONS(productDSU, indication);
+  }
 
-		if(!alreadyExists){
-			await constDSU.mount(constants.PRODUCT_DSU_MOUNT_POINT, productDSU);
-		}
+  this.product.keySSI = await productDSU.getKeySSIAsString();
 
-		this.product.keySSI = await productDSU.getKeySSIAsString();
+  if (typeof this.options.logService !== "undefined") {
+    await $$.promisify(this.options.logService.log.bind(this.options.logService))({
+      logInfo: this.product,
+      username: message.senderId,
+      action: alreadyExists ? "Edited product" : "Created product",
+      logType: 'PRODUCT_LOG'
+    });
 
-		if(typeof this.options.logService!=="undefined"){
-			await $$.promisify(this.options.logService.log.bind(this.options.logService))({
-				logInfo: this.product,
-				username: message.senderId,
-				action: alreadyExists?"Edited product":"Created product",
-				logType: 'PRODUCT_LOG'
-			});
+    let prod;
+    try {
+      prod = await this.storageService.getRecord(constants.PRODUCTS_TABLE, this.product.gtin);
+    } catch (e) {
+    }
 
-			await this.storageService.insertRecord(constants.PRODUCTS_TABLE, `${this.product.gtin}|${this.product.version}`, this.product);
+    if (prod) {
+      await this.storageService.updateRecord(constants.PRODUCTS_TABLE, this.product.gtin, this.product);
+    } else {
+      await this.storageService.insertRecord(constants.PRODUCTS_TABLE, this.product.gtin, this.product)
+    }
 
-			let prod;
-			try {
-				prod = await this.storageService.getRecord(constants.LAST_VERSION_PRODUCTS_TABLE, this.product.gtin);
-			}
-			catch (e){}
+  } else {
+    throw new Error("LogService is not available!")
+  }
 
-			if (!prod) {
-				this.product.initialVersion = this.product.version;
-				await this.storageService.insertRecord(constants.LAST_VERSION_PRODUCTS_TABLE, this.product.gtin, this.product);
-			} else {
-				await this.storageService.updateRecord(constants.LAST_VERSION_PRODUCTS_TABLE, this.product.gtin, this.product);
-			}
-		}
-		else{
-			throw new Error("LogService is not available!")
-		}
-
-		await mappingLogService.logSuccessMapping(message, alreadyExists ? "updated" : "created");
+  await mappingLogService.logSuccessMapping(message, alreadyExists ? "updated" : "created");
 
 }
 

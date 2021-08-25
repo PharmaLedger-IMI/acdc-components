@@ -1,9 +1,8 @@
 import ContainerController from "../../cardinal/controllers/base-controllers/ContainerController.js";
 import constants from "./constants.js";
-import { copyToClipboard } from "../helpers/document-utils.js";
+import {copyToClipboard} from "../helpers/document-utils.js";
 
 let crypto = require("opendsu").loadApi("crypto");
-
 
 
 export default class HolderController extends ContainerController {
@@ -11,7 +10,7 @@ export default class HolderController extends ContainerController {
         super(element, history);
 
 
-        this.setModel({ displayCredentialArea: true, isInvalidCredential: false });
+        this.setModel({displayCredentialArea: true, isInvalidCredential: false});
         this.model.domain = "epi";
 
         const setCredential = credential => {
@@ -23,9 +22,9 @@ export default class HolderController extends ContainerController {
                     this.model.isInvalidCredential = true;
                     return console.log('Error parsing user credential', parseError);
                 }
-                console.log('Parsed credential', jwtContent);
-                const { header, body } = jwtContent;
-                this.model.readableCredential = JSON.stringify({ header, body }, null, 4);
+                //console.log('Parsed credential', jwtContent);
+                const {header, body} = jwtContent;
+                this.model.readableCredential = JSON.stringify({header, body}, null, 4);
 
                 const readableContainer = this.element.querySelector('#readableContainer');
                 let readableCredentialElement = readableContainer.querySelector('#readableCredential');
@@ -39,10 +38,21 @@ export default class HolderController extends ContainerController {
                 readableCredentialElement.language = "json";
                 readableCredentialElement.innerHTML = this.model.readableCredential;
                 readableContainer.appendChild(readableCredentialElement);
+                this.DSUStorage.enableDirectAccess(() => {
+                    let sc = require("opendsu").loadAPI("sc");
+                    sc.getMainDSU((err, mainDSU) => {
+                        if (err) {
+                            return console.log('Error getting mainDSU', err);
+                        }
+                        mainDSU.getKeySSIAsString((err, keySSI) => {
+                            this.model.walletKeySSI = keySSI
+                        });
+                    })
+                })
             });
         }
 
-        this.DSUStorage.getObject(constants.HOLDER_FILE_PATH, (err, holder) => {
+        this.DSUStorage.getObject(constants.WALLET_HOLDER_FILE_PATH, (err, holder) => {
 
             function getReadableSSI(ssi) {
                 return crypto.getReadableSSI(ssi) || ssi;
@@ -56,9 +66,9 @@ export default class HolderController extends ContainerController {
 
             this.model.readableHolderSSI = getReadableSSI(holder.ssi);
 
-            this.DSUStorage.getObject(constants.CREDENTIAL_FILE_PATH, (err, credential) => {
+            this.DSUStorage.getObject(constants.WALLET_CREDENTIAL_FILE_PATH, (err, credential) => {
 
-                console.log("Got:", err, credential);
+                //console.log("Got:", err, credential);
                 if (err || !credential) {
                     return;
                 } else {
@@ -74,27 +84,34 @@ export default class HolderController extends ContainerController {
 
         this.on("save-credential", (event) => {
             if (this.model.credential) {
-                this.DSUStorage.setObject(constants.CREDENTIAL_FILE_PATH, { credential: this.model.credential }, (err) => {
+                this.DSUStorage.setObject(constants.WALLET_CREDENTIAL_FILE_PATH, {credential: this.model.credential}, (err) => {
                     if (err) {
                         this.showError(err);
                     }
-                    this.model.displayCredentialArea = false;
-                    setCredential(this.model.credential);
-                    const crypto = require("opendsu").loadApi("crypto");
-                    const keyssi = require("opendsu").loadApi("keyssi");
-                    crypto.parseJWTSegments(this.model.credential, (parseError, jwtContent) => {
-                        if (parseError) {
-                            return reportUserRelevantError('Error parsing user credential:',parseError);
+
+                    this.DSUStorage.setObject(constants.SSAPP_CREDENTIAL_FILE_PATH, {credential: this.model.credential}, (err) => {
+                        if (err) {
+                            this.showError(err);
                         }
-                        this.DSUStorage.call("mountDSU","/apps/dsu-fabric-ssapp/sharedDB",jwtContent.body.iss, function(err,res){
-                            if(err) reportUserRelevantError('Error mounting sharedDb:',err);
-                        })
+
+                        this.model.displayCredentialArea = false;
+                        setCredential(this.model.credential);
+                        const crypto = require("opendsu").loadApi("crypto");
+                        const keyssi = require("opendsu").loadApi("keyssi");
+                        crypto.parseJWTSegments(this.model.credential, (parseError, jwtContent) => {
+                            if (parseError) {
+                                return reportUserRelevantError('Error parsing user credential:', parseError);
+                            }
+                            this.DSUStorage.call("mountDSU", "/apps/dsu-fabric-ssapp/sharedDB", jwtContent.body.iss, function (err, res) {
+                                if (err) reportUserRelevantError('Error mounting sharedDb:', err);
+                            })
+                        });
                     });
                 });
             } else {
                 this.showError("Invalid credential");
             }
-        }, { capture: true });
+        }, {capture: true});
 
         this.on('copy-text', (e) => {
             copyToClipboard(e.data);

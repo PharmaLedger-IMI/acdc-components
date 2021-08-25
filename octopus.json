@@ -255,6 +255,10 @@
                 {
                     "type": "execute",
                     "cmd": "cd gtin-resolver && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd gtin-resolver && npm run build"
                 }
             ]
         },
@@ -362,15 +366,15 @@
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd ethadapter && npm install"
+                    "cmd": "echo \"manualy run cd ethadapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd ethadapter/EthAdapter && npm install"
+                    "cmd": "echo \"manualy run cd ethadapter/EthAdapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd ethadapter/SmartContracts && npm install"
+                    "cmd": "echo \"manualy run cd ethadapter/SmartContracts && npm install\""
                 }
             ]
         },
@@ -604,7 +608,38 @@
                 }
             ]
         },
-
+        {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "patch eLeaflet app",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/leaflet-patch",
+                    "target": "./leaflet-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/build/bundles/acdc.js",
+                    "target": "./leaflet-ssapp/code/scripts/bundles/acdc.js",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
         {
             "name": "dsu-explorer_bind_to_dossier-explorer-ssapp",
             "src": "",
@@ -715,11 +750,24 @@
             "actions": [
                 {
                     "type": "execute",
+                    "cmd": "cd apihub-root/leaflet-wallet/loader && npm install"
+                },
+                {
+                    "type": "execute",
                     "cmd": "cd apihub-root/dsu-fabric-wallet/loader && npm install"
                 },
                 {
                     "type": "execute",
                     "cmd": "cd apihub-root/dsu-explorer/loader && npm install"
+                }
+            ]
+        },
+        {
+            "name": "leaflet-wallet-loader-build",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd apihub-root/leaflet-wallet/loader && npm run build"
                 }
             ]
         }
@@ -784,17 +832,26 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && gradlew.bat -b ndk.gradle installNDK",
-					"os": "win32"
+					"os": "win32",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
 				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew -b ndk.gradle installNDK",
-					"os": "linux"
+					"os": "linux",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
 				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew -b ndk.gradle installNDK",
-					"os": "darwin"
+					"os": "darwin",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 }
             ]
         },
@@ -804,17 +861,26 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && gradlew.bat assembleRelease",
-					"os": "win32"
+					"os": "win32",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
 				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew assembleRelease",
-					"os": "linux"
+					"os": "linux",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
 				{
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew assembleRelease",
-					"os": "darwin"
+					"os": "darwin",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
                 {
                     "type": "execute",
