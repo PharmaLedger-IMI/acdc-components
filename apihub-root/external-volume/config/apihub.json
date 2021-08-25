@@ -28,6 +28,10 @@
       "module": "./../../epi-utils",
       "function": "getEPIMappingEngineMessageResults"
     },
+    "acdc-reporting": {
+      "module": "./../../reporting-service/middleware",
+      "function": "Init"
+    },
     "gtin-dsu-wizard": {
       "module": "./../../gtin-dsu-wizard"
     },
