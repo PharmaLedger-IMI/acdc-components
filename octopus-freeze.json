@@ -9,7 +9,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "605a753f15e53ef6befabd6e79ba626987d4794e"
+                    "commit": "daf6f94e69e5b20e787d08df8974b1ad3cd8c064"
                 },
                 {
                     "type": "execute",
@@ -25,7 +25,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "2ffbfae1d80b3251c5d39c3820fb2e99dba7bda3"
+                    "commit": "f2080909d6780d532225389eefadbbba494d70b4"
                 },
                 {
                     "type": "execute",
@@ -45,7 +45,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "518e0e6a62427052be09ce4a8be59503fd2a245b"
+                    "commit": "7955152325022430f5af82ac2cc5dc29192f8828"
                 },
                 {
                     "type": "execute",
@@ -83,7 +83,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "43cdecf66b1dfbeaba003cb46e03390a7bcc8f29"
+                    "commit": "f1b399830c426eca33c3ee5af57a918441f808e7"
                 },
                 {
                     "type": "execute",
@@ -99,7 +99,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "bfb0e1b7dceb103b8c3c1f69f755d7cbd31b0097"
+                    "commit": "1b1ee7a08011c6f13c17aed37b3ef97fb002056a"
                 },
                 {
                     "type": "execute",
@@ -115,7 +115,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "dd2d5a6bd5c431478cd6a75239e2c3f72c6fdff4"
+                    "commit": "743222816345ca11e4d90e9a2e60406331e2f1b2"
                 },
                 {
                     "type": "execute",
@@ -139,7 +139,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "dd2d5a6bd5c431478cd6a75239e2c3f72c6fdff4"
+                    "commit": "743222816345ca11e4d90e9a2e60406331e2f1b2"
                 },
                 {
                     "type": "execute",
@@ -159,7 +159,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "674ed57c7f98c5f90193c343eaa547bfd883e036"
+                    "commit": "3b5593866ead4dfa9d16358bacd24cdea83ffd3d"
                 },
                 {
                     "type": "execute",
@@ -207,7 +207,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "93c92170df5bf426d1a05e94ee2032cce98fc918"
+                    "commit": "fc2ee2879299cd68184e5798093a34da1ea92b86"
                 },
                 {
                     "type": "execute",
@@ -239,7 +239,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "dd2d5a6bd5c431478cd6a75239e2c3f72c6fdff4"
+                    "commit": "743222816345ca11e4d90e9a2e60406331e2f1b2"
                 },
                 {
                     "type": "execute",
@@ -268,6 +268,10 @@
                 {
                     "type": "execute",
                     "cmd": "cd gtin-resolver && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd gtin-resolver && npm run build"
                 }
             ]
         },
@@ -377,19 +381,19 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "d312ffb4dc46e35ad2c37380025ba9df5d73f683"
+                    "commit": "6ed981e2cd3a3f22a8147f82e2969474242decb3"
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd ethadapter && npm install"
+                    "cmd": "echo \"manualy run cd ethadapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd ethadapter/EthAdapter && npm install"
+                    "cmd": "echo \"manualy run cd ethadapter/EthAdapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd ethadapter/SmartContracts && npm install"
+                    "cmd": "echo \"manualy run cd ethadapter/SmartContracts && npm install\""
                 }
             ]
         },
@@ -401,7 +405,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "705d183dce3ea7b0ebc33d6e30d62c5f56676af3"
+                    "commit": "76b11d2d685f49c871ec427a65d5032c5844e9bf"
                 },
                 {
                     "type": "execute",
@@ -722,7 +726,8 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "60d0d94ce8caf8bc48421a99b920e52e748c70ff"
                 },
                 {
                     "type": "execute",
@@ -732,12 +737,17 @@
         },
         {
             "name": "mobile/scan-app/ios",
-            "src": "https://github.com/PrivateSky/ios-edge-agent",
+            "src": "https://github.com/PharmaLedger-IMI/ios-edge-agent",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "3667710c947530b8f96f5cb5ab2fc4d96d48f48c"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd mobile/scan-app/ios/PSKNodeServer && carthage bootstrap"
                 },
                 {
                     "type": "execute",
@@ -753,17 +763,26 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && gradlew.bat -b ndk.gradle installNDK",
-                    "os": "win32"
+                    "os": "win32",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew -b ndk.gradle installNDK",
-                    "os": "linux"
+                    "os": "linux",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew -b ndk.gradle installNDK",
-                    "os": "darwin"
+                    "os": "darwin",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 }
             ]
         },
@@ -773,17 +792,26 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && gradlew.bat assembleRelease",
-                    "os": "win32"
+                    "os": "win32",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew assembleRelease",
-                    "os": "linux"
+                    "os": "linux",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/android && ./gradlew assembleRelease",
-                    "os": "darwin"
+                    "os": "darwin",
+                    "options": {
+                        "ignoreErrors": true
+                    }
                 },
                 {
                     "type": "execute",
