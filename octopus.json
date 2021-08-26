@@ -263,6 +263,16 @@
             ]
         },
         {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm install"
+                }
+            ]
+        },
+        {
             "name": "gtin-dsu-wizard",
             "src": "https://github.com/PharmaLedger-IMI/gtin-dsu-wizard.git",
             "actions": [
@@ -382,6 +392,48 @@
                     "cmd": "cd dsu-fabric-ssapp && npm install"
                 }
             ]
+        },
+        {
+            "name": "install backoffice-backend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-backend && npm install"
+                }
+            ]
+        },
+        {
+            "name": "install backoffice-frontend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-frontend && npm install"
+                }
+            ]
+        }
+    ],
+    "build-use-case": [
+        {
+            "name": "build backoffice-backend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-backend && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "build backoffice-frontend",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd backoffice-frontend && npm run build"
+                }
+            ]
         }
     ],
     "build": [
@@ -479,6 +531,38 @@
                 {
                     "type": "execute",
                     "cmd": "cd gtin-resolver && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "acdc-reporting",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd reporting-service && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "patch eLeaflet app",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/leaflet-patch",
+                    "target": "./leaflet-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/build/bundles/acdc.js",
+                    "target": "./leaflet-ssapp/code/scripts/bundles/acdc.js",
+                    "options": {
+                        "overwrite": true
+                    }
                 }
             ]
         },

@@ -65,16 +65,15 @@
                         </div>
                     </div>
                 </psk-accordion-item>
+                <!-- ACDC SETTINGS -->
+                <psk-accordion-item title="Setup Anti-Counterfeiting Integration">
+                    <psk-select view-model="acdc.enabled"></psk-select>
+                    <psk-condition condition="@acdc.enabled.value">
+                        <psk-select view-model="acdc.did"></psk-select>
+                        <psk-select view-model="acdc.location"></psk-select>
+                    </psk-condition>
+                </psk-accordion-item>
             </psk-accordion>
-
-            <!-- ACDC SETTINGS -->
-            <psk-accordion-item title="Setup Anti-Counterfeiting Integration">
-                <psk-select view-model="acdc.enabled"></psk-select>
-                <psk-condition condition="@acdc.enabled.value">
-                    <psk-select view-model="acdc.did"></psk-select>
-                    <psk-select view-model="acdc.location"></psk-select>
-                </psk-condition>
-            </psk-accordion-item>
         </webc-container>
 
         <div slot="footer"><page-footer class="w-100"></page-footer></div>
