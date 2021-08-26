@@ -1,14 +1,14 @@
-import ContainerController from "../../cardinal/controllers/base-controllers/ContainerController.js";
+const {WebcController} = WebCardinal.controllers;
 import LanguageService from "../services/LanguageService/LanguageService.js";
 import languageServiceUtils from "../services/LanguageService/languageServiceUtils.js";
 import SettingsService from "../services/SettingsService.js";
 import constants from "../../constants.js";
 
-export default class SettingsController extends ContainerController {
+export default class SettingsController extends WebcController {
     constructor(element, history) {
         super(element, history);
 
-        this.setModel({languageSelectorOpened: false, origin: window.location.origin});
+        this.setModel({languageSelectorOpened: false, origin: window.location.origin, networkEditMode: true, scanditLicenseEditMode: true});
         this.languageService = new LanguageService(this.DSUStorage);
         this.settingsService = new SettingsService(this.DSUStorage);
 
@@ -29,19 +29,26 @@ export default class SettingsController extends ContainerController {
         };
         this.initNetworkSettingsTab();
 
+        this.on("change-edit-mode", (event)=>{
+            this.toggleEditMode(event.target.getAttribute("data"));
+        })
+
         this.on("change-network", ()=>{
             this.settingsService.writeSetting("networkname", this.model.networkNameSetting.value, (err)=>{
                 if(err){
                     console.log(err);
                 }
+                this.toggleEditMode("networkEditMode");
             });
         });
+
         this.on("change-default-network", ()=>{
             this.settingsService.writeSetting("networkname", undefined, (err)=>{
                 if(err){
                     console.log(err);
                 }
                 this.initNetworkSettingsTab();
+                this.toggleEditMode("networkEditMode");
             });
         });
 
@@ -53,11 +60,6 @@ export default class SettingsController extends ContainerController {
             this.model.languageSelectorOpened = true;
         });
 
-        this.on("go-back", (event) => {
-            history.push({
-                pathname: `${new URL(history.win.basePath).pathname}home`,
-            });
-        })
         this.model.onChange("languagesToAdd", () => {
             this.languageService.addWorkingLanguages(this.model.languagesToAdd.value, (err) => {
                 if (err) {
@@ -79,6 +81,7 @@ export default class SettingsController extends ContainerController {
                 if(err){
                     console.log(err);
                 }
+                this.toggleEditMode("scanditLicenseEditMode");
             });
         });
 
@@ -90,6 +93,9 @@ export default class SettingsController extends ContainerController {
             : "Acdc Settings Added"));
     }
 
+    toggleEditMode(prop){
+        this.model[prop] = !this.model[prop]
+    }
     initNetworkSettingsTab(){
         this.settingsService.readSetting("networkname", (err, networkname)=>{
             if(err || typeof networkname === "undefined"){
