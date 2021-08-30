@@ -956,13 +956,8 @@
                 },
                 {
                     "type": "copy",
-                    "src": "reporting-service/middleware/acdc-middleware.js",
-                    "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/acdc-middleware.js"
-                },
-                {
-                    "type": "copy",
-                    "src": "reporting-service/middleware/index.js",
-                    "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/acdc-index.js"
+                    "src": "./reporting-service",
+                    "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/acdc-reporting"
                 },
                 {
                     "type": "copy",

@@ -27,7 +27,7 @@
       "function": "getEPIMappingEngineMessageResults"
     },
     "acdc-reporting": {
-      "module": "./acdc-index.js",
+      "module": "./acdc-reporting/middleware",
       "function": "Init"
     },
     "gtin-dsu-wizard": {
