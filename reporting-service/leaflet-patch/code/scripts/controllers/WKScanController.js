@@ -1,6 +1,4 @@
-import ContainerController from '../../cardinal/controllers/base-controllers/ContainerController.js';
-const gtinResolver = require("gtin-resolver");
-
+const {WebcController} = WebCardinal.controllers;
 
 
 const sessionPresetNames = [
@@ -94,7 +92,7 @@ class PLCameraConfig {
 
 
 
-export default class WKScanController extends ContainerController {
+export default class WKScanController extends WebcController{
     constructor(element, history) {
         super(element, history);
         this.setModel({
