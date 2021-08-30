@@ -810,7 +810,7 @@
         },
         {
             "name": "mobile/scan-app/ios",
-            "src": "https://github.com/PharmaLedger-IMI/ios-edge-agent",
+            "src": "https://github.com/smotaPDM/ios-edge-agent.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -819,7 +819,23 @@
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd mobile/scan-app/ios/PSKNodeServer && carthage bootstrap"
+                    "cmd": "echo \"Continue with ipa builds\""
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd mobile/scan-app/ios/PSKNodeServer/ && carthage update"
+                }
+            ]
+        },
+        {
+            "name": "mobile/scan-app/ios/pharmaledger-camera",
+            "src": "https://github.com/PharmaLedger-IMI/pharmaledger-camera.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false,
+                    "commit": "95b1abad2794e338285be5fc38b7031ce889a0d8"
                 },
                 {
                     "type": "execute",
