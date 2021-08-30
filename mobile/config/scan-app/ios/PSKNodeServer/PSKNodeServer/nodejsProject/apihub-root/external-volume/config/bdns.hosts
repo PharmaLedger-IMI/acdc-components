@@ -6,42 +6,21 @@
     ],
     "anchoringServices": [
       "$ORIGIN"
+    ],
+    "notifications": [
+      "$ORIGIN"
     ]
   },
   "epi": {
     "replicas": [],
     "brickStorages": [
-      "https://epi.westeurope.cloudapp.azure.com"
+      "$ORIGIN"
     ],
     "anchoringServices": [
-      "https://epi.westeurope.cloudapp.azure.com"
-    ]
-  },
-  "epipharma": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
+      "$ORIGIN"
     ],
-    "anchoringServices": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
-    ]
-  },
-  "nvs.epipharma": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
-    ],
-    "anchoringServices": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
-    ]
-  },
-  "jnj.epipharma": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epi-test.epi-jnj.com"
-    ],
-    "anchoringServices": [
-      "https://epi-test.epi-jnj.com"
+    "notifications": [
+      "$ORIGIN"
     ]
   },
   "predefined": {
@@ -51,60 +30,57 @@
     ],
     "anchoringServices": [
       "$ORIGIN"
+    ],
+    "notifications": [
+      "$ORIGIN"
     ]
   },
   "epidev": {
     "replicas": [],
     "brickStorages": [
-      "https://gov-dev.pharmaledger.dev"
+      "$ORIGIN"
     ],
     "anchoringServices": [
-      "https://gov-dev.pharmaledger.dev"
-    ]
-  },
-  "nvs.epi": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epi.westeurope.cloudapp.azure.com"
+      "$ORIGIN"
     ],
-    "anchoringServices": [
-      "https://epi.westeurope.cloudapp.azure.com"
+    "notifications": [
+      "$ORIGIN"
     ]
   },
-  "msd.epi": {
+  "mah1.epidev": {
     "replicas": [],
     "brickStorages": [
       "$ORIGIN"
     ],
     "anchoringServices": [
       "$ORIGIN"
-    ]
-  },
-  "nvs.epiqa": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
     ],
-    "anchoringServices": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
+    "notifications": [
+      "$ORIGIN"
     ]
   },
-  "msd.epiqa": {
+  "mah2.epidev": {
     "replicas": [],
     "brickStorages": [
       "$ORIGIN"
     ],
     "anchoringServices": [
+      "$ORIGIN"
+    ],
+    "notifications": [
       "$ORIGIN"
     ]
   },
   "epiqa": {
     "replicas": [],
     "brickStorages": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
+      "$ORIGIN"
     ],
     "anchoringServices": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
+      "$ORIGIN"
+    ],
+    "notifications": [
+      "$ORIGIN"
     ]
   },
   "vault": {
@@ -114,33 +90,21 @@
     ],
     "anchoringServices": [
       "$ORIGIN"
-    ]
-  },
-  "vault.nvs": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
     ],
-    "anchoringServices": [
-      "https://epiqa.westeurope.cloudapp.azure.com"
-    ]
-  },
-  "vault.jnj": {
-    "replicas": [],
-    "brickStorages": [
-      "https://epi-test.epi-jnj.com"
-    ],
-    "anchoringServices": [
-      "https://epi-test.epi-jnj.com"
-    ]
-  },
-  "vault.msd": {
-    "replicas": [],
-    "brickStorages": [
-      "$ORIGIN"
-    ],
-    "anchoringServices": [
+    "notifications": [
       "$ORIGIN"
     ]
-  }
+  },
+    "vault.nvs": {
+      "replicas": [],
+      "brickStorages": [
+        "$ORIGIN"
+      ],
+      "anchoringServices": [
+        "$ORIGIN"
+      ],
+      "notifications": [
+        "$ORIGIN"
+      ]
+    }
 }

@@ -1,0 +1,14 @@
+{
+  "anchoring": {
+    "type": "FS",
+    "option": {
+      "enableBricksLedger": false
+    },
+    "commands": {
+      "addAnchor": "anchor"
+    }
+  },
+  "mappingEngineWalletSSI": "65FmT6jYpmQXhAkCPpZszXShetyTEiRknZJEfveCEa8s6A1S9RHZ5wfEUbKxteNh4Zk7c8oD7uWwGZmaztrRyZneELozwt6d",
+  "messagesEndpoint": "http://localhost:8080/mappingEngine/epi/default/saveResult",
+  "bricksDomain": "default"
+}
