@@ -2,6 +2,7 @@
   "storage": "../apihub-root",
   "port": 8080,
   "preventRateLimit": true,
+  "iframeHandlerDsuBootPath": "./nodeBoot.js",
   "activeComponents": [
     "virtualMQ",
     "messaging",
