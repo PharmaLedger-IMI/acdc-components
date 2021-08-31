@@ -24,6 +24,7 @@ module.exports = {
           "flagEnableACFBatchCheck": {"type": "boolean"},
           "acfBatchCheckURL": {"type": "string"},
           "flagEnableSNVerification": {"type": "boolean"},
+          "acdcAuthFeatureSSI": {"type": "string"},
           "snValidReset": {"type": "boolean"},
           "snValid": {
             "type": "array",

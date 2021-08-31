@@ -117,8 +117,8 @@ export default class addBatchController extends WebcController {
 
       let error = batch.validate();
       if (error) {
-        printOpenDSUError(createOpenDSUErrorWrapper("Invalid batch info", err));
-        return this.showErrorModalAndRedirect("Invalid batch info" + err.message, "batches");
+        printOpenDSUError(createOpenDSUErrorWrapper("Invalid batch info", error));
+        return this.showErrorModalAndRedirect("Invalid batch info" + error, "batches");
       }
       this.createWebcModal({
         disableExpanding: true,

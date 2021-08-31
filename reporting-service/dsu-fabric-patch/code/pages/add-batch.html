@@ -122,10 +122,16 @@
                     </div>
 
 <!--                    PATCH START -->
-                    <psk-checkbox checkbox-label="Enable Authentication Feature" checked="@batch.hasAuthFeature"
+                    <psk-checkbox checkbox-label="Enable Authentication Feature" checked="@batch.acdcAuthFeatureSSI"
                                   name="authFeature" value="@batch.serialCheck"></psk-checkbox>
-
-
+                    <div class="col p-0">
+                        <i class="fa fa-pencil-square-o editable-icon" slot="false"></i>
+                        <div class="background-container col mb-3 pl-3" slot="false">
+                            <div class="form-label">Authentication Feature SSI</div>
+                            <input class="form-control" placeholder="Add an authentication feature ssi" type="text"
+                                   value="@batch.acdcAuthFeatureSSI"/>
+                        </div>
+                    </div>
 <!--                    PATCH END -->
                     <psk-checkbox checkbox-label="Enable Serial Number Verification" checked="@batch.serialCheck"
                                   name="serialCheck" value="@batch.serialCheck"></psk-checkbox>
