@@ -1,0 +1,340 @@
+<psk-page title="Edit batch">
+    <h6>
+        <webc-container controller="addBatchController">
+
+            <div class="d-flex flex-row justify-content-around mt-5">
+                <div class="col-5 align-self-start p-0">
+                    <div class="col p-0">
+                        <div data-if="@editMode">
+                            <div class="read-only-container col mb-3 mt-2 pl-3" slot="true">
+                                <div class="form-label">Batch</div>
+                                <input class="form-control" placeholder="-" readonly type="text"
+                                       value="@batch.batchNumber"/>
+                            </div>
+                            <i class="fa fa-pencil-square-o editable-icon" slot="false"></i>
+                            <div class="background-container col mb-3 pl-3" slot="false">
+                                <div class="form-label">Batch</div>
+                                <input class="form-control" placeholder="Add batch id" type="text"
+                                       value="@batch.batchNumber"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col p-0">
+                        <i class="fa fa-pencil-square-o editable-icon" slot="false"></i>
+                        <div class="background-container col mb-3 pl-3" slot="false">
+                            <div class="form-label">Packaging site name</div>
+                            <input class="form-control" placeholder="Add site name" type="text"
+                                   value="@batch.packagingSiteName"/>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-lg-row flex-sm-column justify-content-start">
+                        <div class="p-0 col-sm-12 col-lg-6">
+                            <i class="fa fa-pencil-square-o editable-icon"></i>
+                            <div class="form-label pl-3">Expiry date</div>
+                            <div class="background-container col mb-3" data-if="@batch.enableExpiryDay">
+
+                                <psk-date-input data-format="DD MM YYYY" placeholder="dd/mm/yyyy" required slot="true"
+                                                value="@batch.expiryForDisplay"></psk-date-input>
+                                <psk-date-input data-format="MM YYYY" placeholder="mm/yyyy" required slot="false"
+                                                type="month"
+                                                value="@batch.expiryForDisplay"></psk-date-input>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-auto ml-auto p-0">
+                            <psk-checkbox checkbox-label="Enable day selection"
+                                          checked="@batch.enableExpiryDay"
+                                          name="enableExpiryDay"
+                                          value="@batch.enableExpiryDay"></psk-checkbox>
+                        </div>
+                    </div>
+                    <div>
+                        <psk-checkbox checkbox-label="Enable Incorrect Expiration Date Verification"
+                                      checked="@batch.incorrectDateCheck" name="incorrectDateCheck"
+                                      value="@batch.incorrectDateCheck"></psk-checkbox>
+                        <psk-checkbox checkbox-label="Enable Expired Expiration Date Verification"
+                                      checked="@batch.expiredDateCheck"
+                                      name="expiredDateCheck"
+                                      value="@batch.expiredDateCheck"></psk-checkbox>
+                    </div>
+                    <div class="background-container col pl-3 mb-3 pl-3">
+                        <div class="form-label">Batch message</div>
+                        <i class="fa fa-pencil-square-o editable-icon" slot="false"></i>
+                        <textarea class="w-100 mt-2"
+                                  placeholder="This text will be displayed to user after Barcode is scanned"
+                                  required rows="3" value="@batch.defaultMessage"></textarea>
+                    </div>
+                    <psk-checkbox checkbox-label="Check to recall this batch" checked="@batch.recalled"
+                                  name="recalled" value="@batch.recalled"></psk-checkbox>
+                    <div data-if="@batch.recalled">
+                        <div class="background-container col pl-3 mb-3 pl-3" slot="true">
+                            <div class="form-label">Recall message</div>
+                            <i class="fa fa-pencil-square-o editable-icon" slot="true"></i>
+                            <textarea class="w-100 mt-2"
+                                      placeholder="This text will be displayed to user after Barcode is scanned if batch is recalled"
+                                      required
+                                      rows="3" slot="true" value="@batch.recalledMessage"></textarea>
+                        </div>
+                    </div>
+
+
+                    <div class="d-flex flex-row">
+                        <div class="read-only-container pl-3">
+                            <div class="form-label">Batch version</div>
+                            <input class="form-control" readonly type="text" value="@batch.version"/>
+
+                        </div>
+                    </div>
+
+
+                    <div class="d-flex flex-row mt-5">
+                        <psk-button data-tag="cancel" label="Cancel"></psk-button>
+                        <div data-if="@editMode">
+                            <psk-button data-tag="update-batch" label="Update batch" slot="true"></psk-button>
+                            <psk-button data-tag="add-batch" label="Add batch" slot="false"></psk-button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-5 align-self-start p-0">
+                    <div data-if="@editMode">
+                        <div class="read-only-container col mb-3 mt-2 pl-3" slot="true">
+                            <div class="form-label">Product Code</div>
+                            <input class="form-control" placeholder="-" readonly type="text"
+                                   value="@batch.gtin"/>
+                        </div>
+                        <i class="fa fa-pencil-square-o editable-icon" slot="false"></i>
+                        <div class="background-container col pl-3 mb-3 pl-3" slot="false">
+                            <div class="form-label">Product Code</div>
+                            <psk-select class="default-select" required slot="false"
+                                        view-model="@products"></psk-select>
+                        </div>
+
+                    </div>
+                    <div class="read-only-container col mb-3 mt-2 pl-3">
+                        <div class="form-label">Brand / invented name</div>
+                        <input class="form-control" placeholder="-" readonly type="text"
+                               value="@batch.productName"/>
+                    </div>
+                    <div class="read-only-container col mb-3 mt-2 pl-3">
+                        <div class="form-label">Name of Medicinal Product</div>
+                        <textarea class="w-100 mt-2" placeholder="-" readonly required
+                                  rows="3" value="@productDescription"></textarea>
+                    </div>
+
+<!--                    PATCH START -->
+                    <psk-checkbox checkbox-label="Enable Authentication Feature" checked="@batch.hasAuthFeature"
+                                  name="authFeature" value="@batch.serialCheck"></psk-checkbox>
+
+
+<!--                    PATCH END -->
+                    <psk-checkbox checkbox-label="Enable Serial Number Verification" checked="@batch.serialCheck"
+                                  name="serialCheck" value="@batch.serialCheck"></psk-checkbox>
+                    <div class="d-flex flex-row">
+                        <div class="select-label d-flex flex-column justify-content-center">Manage serial numbers
+                        </div>
+                        <div class="custom-select d-flex flex-column justify-content-center">
+                            <psk-select required value="" view-model="@serial_update_options"></psk-select>
+                        </div>
+                    </div>
+                    <dsu-leaflet data-view-model="@"></dsu-leaflet>
+                </div>
+            </div>
+
+
+        </webc-container>
+    </h6>
+</psk-page>
+
+<style>
+
+
+    psk-input div input,
+    psk-textarea div textarea,
+    .context-group {
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+
+    psk-checkbox input {
+        box-shadow: 0px 1px 3px rgba(231, 82, 34, 0.6);
+    }
+
+    psk-checkbox input:checked {
+        color: #E75222;
+    }
+
+    psk-checkbox .form-check-inline {
+        margin-right: 0px;
+    }
+
+    .read-only-container {
+        background: #f3f3f3;
+    }
+
+    .read-only-container,
+    .background-container {
+        border-bottom: 1.5px solid #E75222;
+    }
+
+    .background-container input,
+    .background-container input:focus,
+    .background-container textarea,
+    .read-only-container textarea,
+    .background-container textarea:focus,
+    .background-container psk-select .form-control,
+    .background-container psk-select .form-control:focus,
+    psk-date-input .form-control[readonly],
+    .read-only-container .form-control[readonly] {
+        border: none;
+        background: none;
+        box-shadow: none;
+        padding: 0px;
+        outline: none;
+        resize: none;
+        overflow: auto;
+    }
+
+    psk-select .form-control,
+    psk-select .form-control:focus {
+        background: none;
+        box-shadow: none;
+        padding: 0px;
+        outline: none;
+        resize: none;
+        overflow: auto;
+        border-color: black;
+    }
+
+    .background-container input::placeholder,
+    .background-container textarea::placeholder {
+        font-style: italic;
+        font-size: smaller;
+    }
+
+    .form-label,
+    .form-button {
+        color: #E75222;
+    }
+
+    .editable-icon {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+    }
+
+    .form-button {
+        border: 1px solid #E75222;
+        border-radius: 3px;
+        padding: 7px;
+        background: none;
+    }
+
+    .select-label {
+        border: 1px solid #E75222;
+        color: #E75222;
+        height: auto;
+        border-bottom-left-radius: 3px;
+        border-top-left-radius: 3px;
+        padding: 9px 1em;
+    }
+
+    psk-select label {
+        display: none;
+    }
+
+    psk-select.default-select .form-group {
+        margin: 0px;
+        width: fit-content;
+        min-width: 175px;
+        position: relative;
+        left: -4px;
+    }
+
+    psk-select.default-select select {
+        padding-right: 15px;
+    }
+
+    psk-date-input .form-group {
+        margin: 0px;
+        width: calc(100% + 25px);
+        position: relative;
+    }
+
+    psk-date-input .formated-date:before {
+        left: 0px;
+    }
+
+    .custom-select select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -ms-appearance: none;
+        appearance: none;
+        outline: 0;
+        box-shadow: none;
+        border: 0 !important;
+        background: none;
+        background-image: none;
+        flex: 1;
+        color: #fff;
+        cursor: pointer;
+        max-width: 50px;
+    }
+
+    /* Remove IE arrow */
+    .custom-select select::-ms-expand {
+        display: none;
+    }
+
+    .custom-select psk-select .form-group {
+        margin: 0px;
+    }
+
+    /* Custom Select */
+    .custom-select {
+        position: relative;
+        width: fit-content;
+        height: 100%;
+        background: none;
+        overflow: hidden;
+        border: 1px solid #E75222;
+        border-bottom-right-radius: 3px;
+        border-top-right-radius: 3px;
+        border-bottom-left-radius: 0px;
+        border-top-left-radius: 0px;
+        padding: 0px;
+    }
+
+    /* Arrow */
+    .custom-select::after {
+        content: '\25BE';
+        position: absolute;
+        background: #fff;
+        cursor: pointer;
+        pointer-events: none;
+        -webkit-transition: .25s all ease;
+        -o-transition: .25s all ease;
+        transition: .25s all ease;
+        color: #E75222;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        margin-top: 15px;
+    }
+
+    input[type="date"]::after {
+        content: '\f073';
+        font-family: 'FontAwesome';
+        color: black;
+        font-weight: bolder;
+        position: absolute;
+        right: 15px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        background: none;
+        z-index: 1;
+    }
+
+</style>

@@ -587,6 +587,43 @@
             ]
         },
         {
+            "name": "patch DSU Fabric app",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/dsu-fabric-patch",
+                    "target": "./dsu-fabric-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "patch epi-utils",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/epi-utils-patch",
+                    "target": "./epi-utils",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "re-bundle epi-utils after patch",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd epi-utils && npm run build"
+                }
+            ]
+        },
+        {
             "name": "dsu-explorer_bind_to_dossier-explorer-ssapp",
             "src": "",
             "actions": [
