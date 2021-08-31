@@ -108,7 +108,11 @@ export default class WKScanController extends WebcController{
             window.getPLRgbImageFromResponse = this.getPLRgbImageFromResponse;
             window.onFrameGrabbed = this.onFrameGrabbed;
             window.onFramePreview = this.onFramePreview;
+            window.onFramePreview = this.onFramePreview;
             window.onCameraInitializedCallBack = this.onCameraInitializedCallBack;
+            window.placeUint8RGBArrayInCanvas = this.placeUint8RGBArrayInCanvas;
+            window.show = this.show;
+            window.hide = this.hide;
         }
 
         this.cameraProps = {};
@@ -551,8 +555,7 @@ export default class WKScanController extends WebcController{
             rawframeLengthMB = -1
         }
 
-
-        this.cameraProps.status_test.innerHTML = `${this.cameraProps.selectedPresetName}${pSizeText}, raw FPS:${this.cameraProps.targetRawFPS}<br/> raw frame length: ${Math.round(10 * rawframe.byteLength / 1024 / 1024) / 10}MB, ${rgbImage.width}x${rgbImage.height}`;
+        this.cameraProps.status_test.innerHTML = `${this.cameraProps.selectedPresetName}${pSizeText}, raw FPS:${this.cameraProps.targetRawFPS}<br/> raw frame length: ${rawframeLengthMB}MB, ${plImage.width}x${plImage.height}`
 
         if (this.cameraProps.rawFramesCounter !== 0 && this.cameraProps.rawFramesCounter % (this.cameraProps.fpsMeasurementInterval - 1) === 0) {
             this.cameraProps.rawFramesMeasuredFPS = 1000 / this.cameraProps.rawFramesElapsedSum * this.cameraProps.fpsMeasurementInterval;
@@ -562,7 +565,7 @@ export default class WKScanController extends WebcController{
             this.cameraProps.rawFramesCounter += 1;
             this.cameraProps.rawFramesElapsedSum += elapsedTime;
         }
-        this.cameraProps.status_fps_raw.innerHTML = `raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(rawFramesMeasuredFPS)})`;
+        this.cameraProps.status_fps_raw.innerHTML = `raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.cameraProps.rawFramesMeasuredFPS)})`;
     }
 
     onPictureTaken(base64ImageData) {
