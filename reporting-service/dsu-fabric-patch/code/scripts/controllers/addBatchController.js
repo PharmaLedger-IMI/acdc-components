@@ -34,6 +34,17 @@ export default class addBatchController extends WebcController {
     })
 
     this.model.batch = batch;
+
+    // ACDC PATCH START
+    this.model.hasAcdcAuthFeature = !!batch.acdcAuthFeatureSSI;
+    this.model.authFeatureFieldModel = {
+      label: "Authentication Feature SSI",
+      type: "text",
+      placeholder: "Add an authentication feature ssi",
+      value: this.model.batch.acdcAuthFeatureSSI
+    }
+    // ACDC PATCH END
+
     this.model.batch.productName = "";
     this.model.productDescription = "";
     this.model.editMode = editMode;

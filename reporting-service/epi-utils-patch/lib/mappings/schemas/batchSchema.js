@@ -24,8 +24,10 @@ module.exports = {
           "flagEnableACFBatchCheck": {"type": "boolean"},
           "acfBatchCheckURL": {"type": "string"},
           "flagEnableSNVerification": {"type": "boolean"},
+            // ACDC PATCH START
           "acdcAuthFeatureSSI": {"type": "string"},
-          "snValidReset": {"type": "boolean"},
+            // ACDC PATCH END
+            "snValidReset": {"type": "boolean"},
           "snValid": {
             "type": "array",
             "items": {

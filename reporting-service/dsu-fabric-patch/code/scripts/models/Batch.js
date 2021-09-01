@@ -27,7 +27,9 @@ export default class Batch {
   acfBatchCheckURL = false;
   flagEnableACFBatchCheck = false;
 
-  acdcAuthFeatureSSI = undefined;
+  // ACDC PATCH START
+  acdcAuthFeatureSSI = "";
+  // ACDC PATCH END
 
   constructor(batch) {
     if (typeof batch !== undefined) {
