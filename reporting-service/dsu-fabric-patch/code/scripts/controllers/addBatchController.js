@@ -117,6 +117,11 @@ export default class addBatchController extends WebcController {
         return this.showErrorModal("Invalid product code. Please select a valid code");
       }
       let batch = this.initBatch();
+
+      // ACDC PATCH START
+      batch.acdcAuthFeatureSSI = this.model.authFeatureFieldModel.value;
+      // ACDC PATCH END
+
       if (!batch.expiryForDisplay) {
         return this.showErrorModal("Invalid date");
       }

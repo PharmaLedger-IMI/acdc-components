@@ -4,6 +4,12 @@ import DSUDataRetrievalService from "../services/DSUDataRetrievalService/DSUData
 import constants from "../../constants.js";
 import XMLDisplayService from "../services/XMLDisplayService/XMLDisplayService.js";
 
+const ACDC_CONSTANTS = {
+  ACTION_REQUIRED: "Action required",
+  NOT_AVAILABLE: "No Package Authentication available",
+  VERIFIED: "Package verified"
+}
+
 export default class DrugDetailsController extends WebcController {
   constructor(element, history) {
     super(element, history);
@@ -11,7 +17,8 @@ export default class DrugDetailsController extends WebcController {
       serialNumberLabel: constants.SN_LABEL,
       serialNumberVerification: constants.SN_OK_MESSAGE,
       productStatus: constants.PRODUCT_STATUS_OK_MESSAGE,
-      packageVerification: "Action required",
+      packageVerification: ACDC_CONSTANTS.NOT_AVAILABLE,
+      packageVerificationDisabled: true,
       displayItems: 3,
       secondRowColumns: 3,
       showVerifyPackageButton: true,
@@ -139,6 +146,15 @@ export default class DrugDetailsController extends WebcController {
           }
           return console.log(err);
         }
+
+        // ACDC PATCH START
+
+        if (!!batchData.acdcAuthFeatureSSI){
+          this.model.packageVerification = ACDC_CONSTANTS.ACTION_REQUIRED;
+          this.element.querySelector("#acdc-feature-launch").disabled = false;
+        }
+
+        // ACDC PATCH END
 
         //serial number data validation item is not displayed
         if (!batchData.serialCheck) {
@@ -362,5 +378,9 @@ export default class DrugDetailsController extends WebcController {
     }
 
     return false;
+  }
+
+  loadAuthFeature(authFeatureSSI){
+
   }
 }
