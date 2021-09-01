@@ -1,0 +1,127 @@
+<style>
+    .topPadding {
+        margin-top: 50px;
+    }
+</style>
+<psk-example class="mobile-example">
+    <psk-mobile class="noPadding">
+        <webc-container controller="DrugDetailsController">
+            <psk-layout align-items="center" class="coloredBackground" template-columns="1fr">
+                <psk-layout-item>
+                    <psk-label class="drugName" label="@product.name"></psk-label>
+                </psk-layout-item>
+                <psk-layout-item>
+
+                </psk-layout-item>
+                <psk-layout-item>
+                    <psk-label label="@product.manufName"></psk-label>
+                </psk-layout-item>
+            </psk-layout>
+
+
+            <psk-details layout="collapsable">
+                <div>
+                    <psk-echo value="Expiry: "></psk-echo>
+                    <strong>
+                        <psk-echo value="@expiryForDisplay"></psk-echo>
+                    </strong>
+                </div>
+
+                <div>
+                    <psk-echo value="Serial number: "></psk-echo>
+                    <strong>
+                        <psk-echo value="@serialNumber"></psk-echo>
+                    </strong>
+                </div>
+
+                <div>
+                    <psk-echo value="Product Code (GTIN/ NTIN): "></psk-echo>
+                    <strong>
+                        <psk-echo value="@gtin"></psk-echo>
+                    </strong>
+                </div>
+
+                <div>
+                    <psk-echo value="Batch: "></psk-echo>
+                    <strong>
+                        <psk-echo value="@batchNumber"></psk-echo>
+                    </strong>
+                </div>
+
+                <section slot="footer">
+                    <psk-layout class="coloredBackground smallTopPadding" columns="@displayItems" columns-gap="10px"
+                                id="batch-status" rows="1">
+                        <div class="horizontal-aligned" id="serial-number-validation-item">
+                            <psk-echo value="@serialNumberLabel"></psk-echo>
+                            <psk-img class="productStatusImg" height='70' src="@SNCheckIcon" width='70'></psk-img>
+                            <psk-echo class="small-text" id="serialNumberVerification"
+                                      value=@serialNumberVerification></psk-echo>
+                        </div>
+
+                        <div class="horizontal-aligned" id="date-validation-item">
+                            <psk-echo value="Product status"></psk-echo>
+                            <psk-img class="productStatusImg" height='70' src="@PSCheckIcon" width='70'></psk-img>
+                            <psk-label class="small-text" id="productStatusVerification"
+                                       label=@productStatus></psk-label>
+                        </div>
+
+                        <div class="horizontal-aligned" id="package-verification-item">
+                            <psk-echo value="Package verification"></psk-echo>
+                            <psk-img class="productStatusImg" height='70' src="@PVIcon" width='70'>
+                            </psk-img>
+                            <psk-label class="small-text" id="packageVerification" label=@packageVerification
+                                       style="color: orange"></psk-label>
+                        </div>
+
+                    </psk-layout>
+                </section>
+            </psk-details>
+
+            <div data-if="@showEPI">
+                <psk-layout align-items="center" class="topPadding" columns="@epiColumns" row-gap="30px"
+                            slot="true">
+                    <div class="ml-auto col text-center" data-if="@showLeaflet">
+                        <div class="controlButton" slot="true">
+                            <psk-button-link class="xxlIcon active" event-name="view-leaflet" icon="file-text"
+                                             name="@product.patientLeafletInfo"></psk-button-link>
+                        </div>
+                    </div>
+                    <div class="ml-auto mr-auto col text-center" data-if="@showSmpc">
+                        <div class="controlButton" slot="true">
+                            <psk-button-link class="xxlIcon active" event-name="view-smpc" icon="book"
+                                             name="@product.practitionerInfo"></psk-button-link>
+                        </div>
+                    </div>
+                </psk-layout>
+            </div>
+            <psk-layout align-items="center" class="topPadding" columns="@secondRowColumns" row-gap="30px">
+                <psk-condition condition="showVerifyPackageButton">
+                    <psk-layout-item class="controlButton" slot="condition-true">
+                        <psk-button-link class="xlIcon active" disabled icon="info-circle"
+                                         name="Verify package"></psk-button-link>
+                    </psk-layout-item>
+                </psk-condition>
+
+                <psk-condition condition="showReportButton">
+                    <psk-layout-item class="controlButton" slot="condition-true">
+                        <psk-button-link class="xlIcon active" disabled icon="exclamation-triangle"
+                                         name="Report"></psk-button-link>
+                    </psk-layout-item>
+                </psk-condition>
+
+                <psk-condition condition="showAddToCabinetButton">
+                    <psk-layout-item class="controlButton" slot="condition-true">
+                        <psk-button-link class="xlIcon active" disabled icon="archive"
+                                         name="Add to cabinet"></psk-button-link>
+                    </psk-layout-item>
+                </psk-condition>
+            </psk-layout>
+
+        </webc-container>
+
+        <div slot="footer">
+            <page-footer class="w-100"></page-footer>
+        </div>
+
+    </psk-mobile>
+</psk-example>
