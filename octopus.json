@@ -800,16 +800,12 @@
                 {
                     "type": "execute",
                     "cmd": "echo \"Continue with ipa builds\""
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd mobile/scan-app/ios/PSKNodeServer/ && carthage update"
                 }
             ]
         },
         {
             "name": "mobile/scan-app/ios/pharmaledger-camera",
-            "src": "https://github.com/PharmaLedger-IMI/pharmaledger-camera.git",
+            "src": "https://github.com/PharmaLedger-IMI/acdc-ios-edge-agent.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -819,6 +815,16 @@
                 {
                     "type": "execute",
                     "cmd": "echo \"Continue with ipa builds\""
+                }
+            ]
+        },
+        {
+            "name": "update carthage",
+            "src": ".",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd mobile/scan-app/ios/PSKNodeServer/ && carthage update"
                 }
             ]
         }
