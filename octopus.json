@@ -414,6 +414,15 @@
             ]
         },
         {
+            "name": "pdm-web-components",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd pdm-web-components && npm install && npm run build"
+                }
+            ]
+        },
+        {
             "name": "authentication-feature-template",
             "src": "https://github.com/PharmaLedger-IMI/acdc-authentication-feature-template.git",
             "actions": [
@@ -638,6 +647,16 @@
                 {
                     "type": "execute",
                     "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/dsu-explorer/apps-patch/dossier-explorer-ssapp/readme"
+                }
+            ]
+        },
+        {
+            "name": "Build Components",
+            "src": ".",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd pdm-web-components && npm run build"
                 }
             ]
         },
