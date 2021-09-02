@@ -390,11 +390,12 @@ export default class DrugDetailsController extends WebcController {
   }
 
   // ACDC PATCH START
-  loadAuthFeature(){
+  loadAuthFeature(batchData){
     if (!this.model.batch || !this.model.batch.acdcAuthFeatureSSI)
       return this.showErrorModal(`Could not find and Authentication Feature`, "Anti Counterfeiting");
     this.navigateToPageTag('auth-feature', {
-      ssi: this.model.batch.acdcAuthFeatureSSI
+      ssi: this.model.batch.acdcAuthFeatureSSI,
+      gs1Fields: this.gs1Fields
     });
   }
 
