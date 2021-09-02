@@ -20,6 +20,9 @@ pdm-web-components/node_modules
 pdm-web-components/dist
 pdm-web-components/www
 
+native-integration/node_modules
+native-integration/build/bundles
+
 mobile/scan-app
 privatesky
 menu-wallet-prototype
