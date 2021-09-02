@@ -1,6 +1,7 @@
 .idea
 cardinal
 webcardinal
+webcardinal/**
 authentication-feature-template
 
 

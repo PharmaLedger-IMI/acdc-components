@@ -642,6 +642,16 @@
             ]
         },
         {
+            "name": "Build acdc Authentication Feature template",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-template && npm run build"
+                }
+            ]
+        },
+        {
             "name": "leaflet-wallet_bind_to_leaflet-ssapp",
             "src": "",
             "actions": [
