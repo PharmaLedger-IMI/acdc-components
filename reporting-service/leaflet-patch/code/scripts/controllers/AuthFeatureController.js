@@ -1,7 +1,8 @@
 const {WebcController} = WebCardinal.controllers;
 
-export default class DrugDetailsController extends WebcController {
+export default class AuthFeatureController extends WebcController {
     constructor(...args) {
         super(...args);
+        console.log(`AuthFeature Controller`, ...args);
     }
 }

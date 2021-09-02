@@ -391,18 +391,10 @@ export default class DrugDetailsController extends WebcController {
 
   // ACDC PATCH START
   loadAuthFeature(){
-    const self = this;
-    if (!self.model.batch || !self.model.batch.acdcAuthFeatureSSI)
-      return self.showErrorModal(`Could not find and Authentication Feature`, "Anti Counterfeiting");
-    self.showModalFromTemplate('auth-feature', (evt) => {
-      console.log(`Success modal close`, evt)
-    }, (evt) => {
-      console.log(`Failure modal close`, evt)
-    }, {
-        model: {
-          ssi: self.model.batch.acdcAuthFeatureSSI
-        },
-        expanded: true
+    if (!this.model.batch || !this.model.batch.acdcAuthFeatureSSI)
+      return this.showErrorModal(`Could not find and Authentication Feature`, "Anti Counterfeiting");
+    this.navigateToPageTag('auth-feature', {
+      ssi: this.model.batch.acdcAuthFeatureSSI
     });
   }
 
