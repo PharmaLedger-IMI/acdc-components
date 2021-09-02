@@ -113,6 +113,9 @@ export default class DrugDetailsController extends WebcController {
           gs1Fields: this.gs1Fields
       });
     });
+    // AUTH FEATURE PATCH START
+    this.onTagClick('auth-feature', this.loadAuthFeature.bind(this));
+    // AUTH FEATURE PATCH END
 
     this.dsuDataRetrievalService.readProductData((err, product) => {
       if (err) {
@@ -380,7 +383,16 @@ export default class DrugDetailsController extends WebcController {
     return false;
   }
 
-  loadAuthFeature(authFeatureSSI){
-
+  loadAuthFeature(){
+    const self = this;
+    if (!self.model.batch || !self.model.batch.acdcAuthFeatureSSI)
+      return self.showErrorModal(`Could not find and Authentication Feature`, "Anti Counterfeiting");
+    self.showModalFromTemplate('auth-feature', () => {
+    }, () => {
+    }, {
+      model: {
+        ssi: self.model.batch.acdcAuthFeatureSSI
+      }, disableExpanding: false
+    });
   }
 }

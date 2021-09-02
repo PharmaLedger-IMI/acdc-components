@@ -57,6 +57,7 @@ class CameraApi extends CameraInterface{
         if (!this.__stream || !this.__stream.getTracks)
             return;
         this.__stream.getTracks().forEach(t => t.readyState === 'live' && t.stop());
+        this.__stream = undefined;
     };
 
     getStatus(){
@@ -82,4 +83,8 @@ class CameraApi extends CameraInterface{
     switchCamera(){
         console.log("Not supported");
     };
+}
+
+module.exports = {
+    CameraApi
 }

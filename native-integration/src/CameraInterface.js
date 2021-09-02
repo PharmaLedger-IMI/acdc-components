@@ -32,7 +32,7 @@ class CameraInterface {
     };
 }
 
-module.export = {
+module.exports = {
     CameraInterface,
     STATUS
 }
