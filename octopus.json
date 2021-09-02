@@ -412,7 +412,23 @@
                     "cmd": "cd backoffice-frontend && npm install"
                 }
             ]
+        },
+        {
+            "name": "authentication-feature-template",
+            "src": "https://github.com/PharmaLedger-IMI/acdc-authentication-feature-template.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-template && npm install"
+                }
+            ]
         }
+
     ],
     "build-use-case": [
         {
