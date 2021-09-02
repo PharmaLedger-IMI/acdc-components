@@ -1,9 +1,9 @@
 import {Component, h, State, Element, Watch, Prop, EventEmitter, Event} from '@stencil/core';
-import * as SSAppInstanceRegistry from "../../utils/SSAppInstancesRegistry";
+import {getInstance} from "../../utils/SSAppInstancesRegistry";
 
 declare const $$: any;
 
-type MatchResults ={
+export type MatchResults ={
   path: string;
   url: string;
   isExact: boolean;
@@ -70,8 +70,7 @@ export class SsappWindow {
   componentDidLoad() {
     let iframe = this.element.querySelector("iframe");
     console.log("#### Trying to register ssapp reference");
-    // @ts-ignore
-    SSAppInstanceRegistry.getInstance().addSSAppReference(this.appName, iframe);
+    getInstance().addSSAppReference(this.appName, iframe);
 
     this.eventHandler = this.__ssappEventHandler.bind(this);
     window.document.addEventListener(this.digestKeySsiHex, this.eventHandler);

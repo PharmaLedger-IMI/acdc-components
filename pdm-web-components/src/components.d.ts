@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { MatchResults } from "./components/ssapp-window/ssapp-window";
 export namespace Components {
     interface MultiSpinner {
         "type"?: string;
@@ -23,6 +24,14 @@ export namespace Components {
         "holdForScan": (callback: any) => Promise<any>;
         "present": (props?: any, callback?: any) => Promise<any>;
         "scannerMode"?: string;
+    }
+    interface SsappWindow {
+        "appName": string;
+        "landingPath": string;
+        "match": MatchResults;
+        "params": string;
+        "refresh": any;
+        "seed": string;
     }
 }
 declare global {
@@ -44,10 +53,17 @@ declare global {
         prototype: HTMLPdmBarcodeScannerControllerElement;
         new (): HTMLPdmBarcodeScannerControllerElement;
     };
+    interface HTMLSsappWindowElement extends Components.SsappWindow, HTMLStencilElement {
+    }
+    var HTMLSsappWindowElement: {
+        prototype: HTMLSsappWindowElement;
+        new (): HTMLSsappWindowElement;
+    };
     interface HTMLElementTagNameMap {
         "multi-spinner": HTMLMultiSpinnerElement;
         "pdm-barcode-scanner": HTMLPdmBarcodeScannerElement;
         "pdm-barcode-scanner-controller": HTMLPdmBarcodeScannerControllerElement;
+        "ssapp-window": HTMLSsappWindowElement;
     }
 }
 declare namespace LocalJSX {
@@ -72,10 +88,20 @@ declare namespace LocalJSX {
         "barcodeTitle"?: string;
         "scannerMode"?: string;
     }
+    interface SsappWindow {
+        "appName"?: string;
+        "landingPath"?: string;
+        "match"?: MatchResults;
+        "onWindowAction"?: (event: CustomEvent<any>) => void;
+        "params"?: string;
+        "refresh"?: any;
+        "seed"?: string;
+    }
     interface IntrinsicElements {
         "multi-spinner": MultiSpinner;
         "pdm-barcode-scanner": PdmBarcodeScanner;
         "pdm-barcode-scanner-controller": PdmBarcodeScannerController;
+        "ssapp-window": SsappWindow;
     }
 }
 export { LocalJSX as JSX };
@@ -85,6 +111,7 @@ declare module "@stencil/core" {
             "multi-spinner": LocalJSX.MultiSpinner & JSXBase.HTMLAttributes<HTMLMultiSpinnerElement>;
             "pdm-barcode-scanner": LocalJSX.PdmBarcodeScanner & JSXBase.HTMLAttributes<HTMLPdmBarcodeScannerElement>;
             "pdm-barcode-scanner-controller": LocalJSX.PdmBarcodeScannerController & JSXBase.HTMLAttributes<HTMLPdmBarcodeScannerControllerElement>;
+            "ssapp-window": LocalJSX.SsappWindow & JSXBase.HTMLAttributes<HTMLSsappWindowElement>;
         }
     }
 }
