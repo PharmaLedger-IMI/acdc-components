@@ -611,6 +611,28 @@
             ]
         },
         {
+            "name": "patch eLeaflet Loader",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./native-integration/loader-patch",
+                    "target": "./apihub-root/leaflet-wallet/loader",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./native-integration/build/bundles/camera.js",
+                    "target": "./apihub-root/leaflet-wallet/loader/camera.js",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
             "name": "patch DSU Fabric app",
             "src": "",
             "actions": [
