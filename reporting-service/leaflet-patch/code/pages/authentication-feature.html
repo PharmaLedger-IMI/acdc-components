@@ -6,7 +6,10 @@
 <psk-example class="mobile-example">
     <psk-mobile class="noPadding">
         <webc-container controller="AuthFeatureController">
-            <h5>{{ @ssi }}</h5>
+            <ssapp-window key-ssi="@ssi"
+                          landing-path="/auth-feature"
+                          app-name="AuthFeature"
+                          params="@gs1Fields"></ssapp-window>
         </webc-container>
 
         <div slot="footer">

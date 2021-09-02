@@ -25,11 +25,8 @@ export class SsappWindow {
 
   @Prop({attribute: "key-ssi", mutable: false, reflect: false}) seed: string = undefined;
 
-  @Prop() landingPath: string;
-  @Prop() params: string;
-
-  @Prop() match: MatchResults;
-  @Prop() refresh;
+  @Prop({attribute: 'landing-path', mutable: false, reflect: false}) landingPath: string;
+  @Prop({attribute: 'params', mutable: false, reflect: false}) params: string;
 
   @State() digestKeySsiHex;
   @State() parsedParams;
@@ -80,14 +77,8 @@ export class SsappWindow {
 
   @Watch("seed")
   @Watch("params")
-  @Watch("match")
   @Watch("landingPath")
-  @Watch("refresh")
   loadApp(callback?) {
-    if (this.__hasRelevantMatchParams()) {
-      this.seed = this.match.params.keySSI;
-    }
-
     if (this.componentInitialized) {
       this.digestKeySsiHex = this.__digestMessage(this.seed);
       // NavigatinTrackerService.getInstance().setIdentity(this.digestKeySsiHex);
@@ -95,9 +86,9 @@ export class SsappWindow {
         callback();
       }
 
-      if (this.params != null && this.params != undefined) {
+      if (!!this.params) {
         try{
-          this.parsedParams = JSON.parse(this.params);
+          this.parsedParams = Object.assign({}, this.params);
         }catch (e) {
           console.log("Attribute called 'params' could not be parsed.")
         }
@@ -105,28 +96,7 @@ export class SsappWindow {
     }
   };
 
-  ___sendLoadingProgress(progress?: any, status?: any) {
-    let currentWindow: any = window;
-    let parentWindow: any = currentWindow.parent;
-
-    while (currentWindow !== parentWindow) {
-      currentWindow = parentWindow;
-      parentWindow = currentWindow.parent;
-    }
-
-    parentWindow.document.dispatchEvent(new CustomEvent('ssapp:loading:progress', {
-      detail: {
-        progress,
-        status
-      }
-    }));
-  }
-
   __onServiceWorkerMessageHandler: (e) => void;
-
-  __hasRelevantMatchParams() {
-    return this.match && this.match.params && this.match.params.keySSI;
-  }
 
   __ssappEventHandler(e) {
     const data = e.detail || {};
@@ -143,7 +113,6 @@ export class SsappWindow {
 
     if (data.status === 'completed') {
       const signalFinishLoading = () => {
-        this.___sendLoadingProgress(100);
         iframe.removeEventListener('load', signalFinishLoading);
       };
 
@@ -215,7 +184,7 @@ export class SsappWindow {
     // we are in a context in which SW are not enabled so the iframe must be identified by the seed
     const iframeKeySsi = $$.SSAPP_CONTEXT && $$.SSAPP_CONTEXT.BASE_URL && $$.SSAPP_CONTEXT.SEED ? this.seed : this.digestKeySsiHex;
 
-    const iframeSrc = basePath + "iframe/" + iframeKeySsi + (queryParams.length > 1 ? queryParams + "&" + this.refresh : "?" + this.refresh);
+    const iframeSrc = basePath + "iframe/" + iframeKeySsi + (queryParams.length > 1 ? queryParams : '');
     console.log("Loading sssap in: " + iframeSrc);
     return (
       <iframe

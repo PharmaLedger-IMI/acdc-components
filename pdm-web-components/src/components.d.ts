@@ -5,7 +5,6 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { MatchResults } from "./components/ssapp-window/ssapp-window";
 export namespace Components {
     interface MultiSpinner {
         "type"?: string;
@@ -28,9 +27,7 @@ export namespace Components {
     interface SsappWindow {
         "appName": string;
         "landingPath": string;
-        "match": MatchResults;
         "params": string;
-        "refresh": any;
         "seed": string;
     }
 }
@@ -91,10 +88,8 @@ declare namespace LocalJSX {
     interface SsappWindow {
         "appName"?: string;
         "landingPath"?: string;
-        "match"?: MatchResults;
         "onWindowAction"?: (event: CustomEvent<any>) => void;
         "params"?: string;
-        "refresh"?: any;
         "seed"?: string;
     }
     interface IntrinsicElements {
