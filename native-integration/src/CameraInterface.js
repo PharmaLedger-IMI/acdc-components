@@ -6,15 +6,30 @@ const STATUS = {
 }
 
 class CameraInterface {
-    async getCameraStream(){};
 
-    closeCameraStream(){};
+    async bindStreamToElement(element, ...args){
+        throw new Error(`Not implemented`);
+    }
 
-    switchCamera(){};
+    async getCameraStream(...args){
+        throw new Error(`Not implemented`);
+    };
 
-    getStatus(){};
+    closeCameraStream(...args){
+        throw new Error(`Not implemented`);
+    };
 
-    hasPermissions(){};
+    switchCamera(...args){
+        throw new Error(`Not implemented`);
+    };
+
+    getStatus(...args){
+        throw new Error(`Not implemented`);
+    };
+
+    hasPermissions(...args){
+        throw new Error(`Not implemented`);
+    };
 }
 
 module.export = {

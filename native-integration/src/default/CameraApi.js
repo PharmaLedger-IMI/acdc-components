@@ -32,6 +32,9 @@ class CameraApi extends CameraInterface{
         }
         const constraints = await this._getConstraints();
 
+        if (this.__stream)
+            this.closeCameraStream();
+
         try{
             this.__stream = await navigator.mediaDevices.getUserMedia(constraints);
         } catch (e){
@@ -50,7 +53,6 @@ class CameraApi extends CameraInterface{
         return this.__stream;
     }
 
-
     closeCameraStream(){
         if (!this.__stream || !this.__stream.getTracks)
             return;
@@ -65,6 +67,14 @@ class CameraApi extends CameraInterface{
         return this._hasPermissions;
     };
 
+    async bindStreamToElement(element){
+        const stream = this.getCameraStream();
+        if (stream && element)
+            element.srcObject = stream;
+        else
+            console.error(`Missing stream or destination element`, stream, element);
+    }
+
     async getCameraStream(){
         return await this._getPermissions();
     }
@@ -72,5 +82,4 @@ class CameraApi extends CameraInterface{
     switchCamera(){
         console.log("Not supported");
     };
-
 }

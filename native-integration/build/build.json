@@ -1,11 +1,11 @@
 {
-  "cameradefault": {
+  "camera": {
     "deps": "../../../native-integration/src/default:camera",
     "autoLoad":  true,
     "bundleExternal": false,
     "exclude": "fs"
   },
-  "cameraios": {
+  "camera_ios": {
     "deps": "../../../native-integration/src/ios:camera",
     "autoLoad":  true,
     "bundleExternal": false,
