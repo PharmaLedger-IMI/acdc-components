@@ -60,6 +60,6 @@ class SSAppInstancesRegistry {
 
 let instance = new SSAppInstancesRegistry();
 
-export const getInstance = function() : SSAppInstancesRegistry{
+export const getInstanceRegistry = function() : SSAppInstancesRegistry{
   return instance;
 }

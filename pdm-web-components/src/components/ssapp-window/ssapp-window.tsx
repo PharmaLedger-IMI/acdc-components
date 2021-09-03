@@ -1,16 +1,8 @@
 import {Component, h, State, Element, Watch, Prop, EventEmitter, Event} from '@stencil/core';
-import {getInstance} from "../../utils/SSAppInstancesRegistry";
+import {getInstanceRegistry} from "../../utils/SSAppInstancesRegistry";
+import {getNavigationTrackerInstance} from "../../utils/NavigationTrackerService";
 
 declare const $$: any;
-
-export type MatchResults ={
-  path: string;
-  url: string;
-  isExact: boolean;
-  params: {
-    [key: string]: string;
-  };
-}
 
 @Component({
   tag: 'ssapp-window',
@@ -26,6 +18,7 @@ export class SsappWindow {
   @Prop({attribute: "key-ssi", mutable: false, reflect: false}) seed: string = undefined;
 
   @Prop({attribute: 'landing-path', mutable: false, reflect: false}) landingPath: string;
+
   @Prop({attribute: 'params', mutable: false, reflect: false}) params: string;
 
   @State() digestKeySsiHex;
@@ -67,12 +60,12 @@ export class SsappWindow {
   componentDidLoad() {
     let iframe = this.element.querySelector("iframe");
     console.log("#### Trying to register ssapp reference");
-    getInstance().addSSAppReference(this.appName, iframe);
+    getInstanceRegistry().addSSAppReference(this.appName, iframe);
 
     this.eventHandler = this.__ssappEventHandler.bind(this);
     window.document.addEventListener(this.digestKeySsiHex, this.eventHandler);
     window.document.addEventListener(this.parsedParams, this.eventHandler);
-    // NavigatinTrackerService.getInstance().listenForSSAppHistoryChanges();
+    getNavigationTrackerInstance().listenForSSAppHistoryChanges();
   }
 
   @Watch("seed")
@@ -81,7 +74,7 @@ export class SsappWindow {
   loadApp(callback?) {
     if (this.componentInitialized) {
       this.digestKeySsiHex = this.__digestMessage(this.seed);
-      // NavigatinTrackerService.getInstance().setIdentity(this.digestKeySsiHex);
+      getNavigationTrackerInstance().setIdentity(this.digestKeySsiHex);
       if (typeof callback === "function") {
         callback();
       }
@@ -98,6 +91,23 @@ export class SsappWindow {
 
   __onServiceWorkerMessageHandler: (e) => void;
 
+  ___sendLoadingProgress(progress?: any, status?: any) {
+    let currentWindow: any = window;
+    let parentWindow: any = currentWindow.parent;
+
+    while (currentWindow !== parentWindow) {
+      currentWindow = parentWindow;
+      parentWindow = currentWindow.parent;
+    }
+
+    parentWindow.document.dispatchEvent(new CustomEvent('ssapp:loading:progress', {
+      detail: {
+        progress,
+        status
+      }
+    }));
+  }
+
   __ssappEventHandler(e) {
     const data = e.detail || {};
     let iframe = this.element.querySelector("iframe");
@@ -113,6 +123,7 @@ export class SsappWindow {
 
     if (data.status === 'completed') {
       const signalFinishLoading = () => {
+        this.___sendLoadingProgress(100);
         iframe.removeEventListener('load', signalFinishLoading);
       };
 
