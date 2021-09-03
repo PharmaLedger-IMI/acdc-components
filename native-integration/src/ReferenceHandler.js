@@ -1,7 +1,29 @@
+
 const handleFrameBinding = function(camera){
     if (!window)
-        return console.error(`Not in a browser environment...`)
-    window.Camera = window.Camera || new (camera.default || camera)();
+        return console.error(`Not in a browser environment...`);
+
+    let currentWindow = window;
+    if (!!currentWindow.Native)
+        return console.log(`Native APIs already loaded`);
+
+    const bindToWindow = function(){
+        window.Native = {};
+        window.Native.Camera = new (camera.default || camera)();
+    }
+
+    let parentWindow = window.parent;
+
+    while(parentWindow !== currentWindow && !parentWindow.Native){
+        console.log(parentWindow, currentWindow);
+        currentWindow = parentWindow;
+        parentWindow = parentWindow.parent;
+    }
+
+    if (!parentWindow || !parentWindow.Native)
+        return bindToWindow();
+
+    window.Native = parentWindow.Native;
 }
 
 module.exports = {

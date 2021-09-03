@@ -64,6 +64,16 @@ export class SsappWindow {
     this.eventHandler = this.ssappEventHandler.bind(this);
     window.document.addEventListener(this.digestKeySsiHex, this.eventHandler);
     window.document.addEventListener(this.parsedParams, this.eventHandler);
+
+    const handleFrameBinding = function(iframe){
+      // @ts-ignore
+      if (!window || !window.Native)
+        return console.error(`Missing Native components...`);
+      // @ts-ignore
+      iframe.Native = window.Native;
+    }
+
+    handleFrameBinding(iframe);
   }
 
   @Watch("seed")

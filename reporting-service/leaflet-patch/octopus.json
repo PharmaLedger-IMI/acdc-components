@@ -71,13 +71,21 @@
   ],
   "build": [
     {
-      "name": "Pdm Components",
+      "name": "Pdm Components && native imports",
       "src": "",
       "actions": [
         {
           "type": "copy",
           "src": "../pdm-web-components/dist/pdm-web-components",
           "target": "code/assets/pdm-web-components",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../native-integration/build/bundles/camera.js",
+          "target": "code/scripts/bundles/camera.js",
           "options": {
             "overwrite": true
           }
