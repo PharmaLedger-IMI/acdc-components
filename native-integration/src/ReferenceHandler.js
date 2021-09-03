@@ -12,12 +12,12 @@ const handleFrameBinding = function(camera){
         window.Native.Camera = new (camera.default || camera)();
     }
 
-    let parentWindow = window.parent;
+    let parentWindow = currentWindow.parent;
 
     while(parentWindow !== currentWindow && !parentWindow.Native){
         console.log(parentWindow, currentWindow);
         currentWindow = parentWindow;
-        parentWindow = parentWindow.parent;
+        parentWindow = currentWindow.parent;
     }
 
     if (!parentWindow || !parentWindow.Native)
