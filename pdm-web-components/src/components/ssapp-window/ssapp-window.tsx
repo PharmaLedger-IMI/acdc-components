@@ -26,7 +26,10 @@ export class SsappWindow {
   private eventHandler;
   private componentInitialized = false;
 
-  @Event()
+  @Event({
+    bubbles: true,
+    cancelable: true
+  })
   windowAction: EventEmitter
 
   connectedCallback() {
@@ -64,12 +67,27 @@ export class SsappWindow {
     this.eventHandler = this.ssappEventHandler.bind(this);
     window.document.addEventListener(this.digestKeySsiHex, this.eventHandler);
     window.document.addEventListener(this.parsedParams, this.eventHandler);
+
+    console.log(`### Trying to add listener to iframe document`);
+    const self = this;
+    iframe.addEventListener('load', () => {
+      iframe.contentWindow.addEventListener('ssapp-action', self.handleActionFromWindow.bind(self));
+    });
+  }
+
+  private handleActionFromWindow(evt){
+    evt.preventDefault();
+    evt.stopImmediatePropagation();
+    const {detail} = evt;
+    this.windowAction.emit(detail);
   }
 
   @Watch("seed")
   @Watch("params")
   @Watch("landingPath")
   loadApp(callback?) {
+    if (!this.seed)
+      return;
     if (this.componentInitialized) {
       this.digestKeySsiHex = this.digestMessage(this.seed);
       if (typeof callback === "function") {
@@ -191,6 +209,8 @@ export class SsappWindow {
   }
 
   render() {
+    if (!this.seed)
+      return;
     const iframeSrc = this.getIFrameSrc();
     console.log("Loading sssap in: " + iframeSrc);
     return (

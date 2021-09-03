@@ -193,7 +193,7 @@ export default class ScanController extends WebcController {
                         if (status) {
                             evt.setBatchDSUStatus(true)
                             evt.report((response) => {
-                                this.addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, (err) => {
+                                this.addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, evt,(err) => {
                                     if (err) {
                                         return console.log("Failed to add package to history", err);
                                     }
@@ -334,7 +334,7 @@ export default class ScanController extends WebcController {
         });
     }
 
-    addConstProductDSUToHistory(gs1Fields) {
+    addConstProductDSUToHistory(gs1Fields, evt) {
         this.createConstProductDSU_SSI(gs1Fields, (err, constProductDSU_SSI) => {
             if (err) {
                 //todo: what to do in this case?
@@ -345,7 +345,7 @@ export default class ScanController extends WebcController {
                     return console.log("Failed to check constProductDSU existence", err);
                 }
                 if (status) {
-                    this.addPackageToHistoryAndRedirect(constProductDSU_SSI, gs1Fields, (err) => {
+                    this.addPackageToHistoryAndRedirect(constProductDSU_SSI, gs1Fields, evt,(err) => {
                         if (err) {
                             return console.log("Failed to add package to history", err);
                         }
@@ -357,7 +357,7 @@ export default class ScanController extends WebcController {
         });
     }
 
-    addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, callback) {
+    addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, scanEvent,  callback) {
         this.packageAlreadyScanned(gtinSSI, gs1Fields, (err, status) => {
             if (err) {
                 return console.log("Failed to verify if package was already scanned", err);
@@ -368,7 +368,7 @@ export default class ScanController extends WebcController {
                     if (err) {
                         return callback(err);
                     }
-                    this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), gs1Fields});
+                    this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: scanEvent, gs1Fields});
                 });
             } else {
                 this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: scanEvent, gs1Fields});

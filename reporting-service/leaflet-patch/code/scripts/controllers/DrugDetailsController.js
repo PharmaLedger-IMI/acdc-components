@@ -7,6 +7,7 @@ import XMLDisplayService from "../services/XMLDisplayService/XMLDisplayService.j
 const ACDC_CONSTANTS = {
   ACTION_REQUIRED: "Action required",
   NOT_AVAILABLE: "No Package Authentication available",
+  INVALID: "Invalid Package",
   VERIFIED: "Package verified"
 }
 
@@ -35,6 +36,11 @@ export default class DrugDetailsController extends WebcController {
     if (typeof history.location.state !== "undefined") {
       this.gtinSSI = history.location.state.gtinSSI;
       this.gs1Fields = history.location.state.gs1Fields;
+
+      // AUTH FEATURE PATCH START
+      this.authFeatureResult = history.location.state.authFeature;
+      // AUTH FEATURE PATCH END
+
       this.model.serialNumber = this.gs1Fields.serialNumber === "0" ? "-" : this.gs1Fields.serialNumber;
       this.model.gtin = this.gs1Fields.gtin;
       this.model.batchNumber = this.gs1Fields.batchNumber;
@@ -116,11 +122,6 @@ export default class DrugDetailsController extends WebcController {
     // AUTH FEATURE PATCH START
     this.onTagClick('auth-feature', this.loadAuthFeature.bind(this));
 
-    this.on('auth-feature-report', (evt) => {
-      evt.preventDefault();
-      evt.stopImmediatePropagation();
-      console.log(evt.detail)
-    });
     // AUTH FEATURE PATCH END
 
     this.dsuDataRetrievalService.readProductData((err, product) => {
@@ -159,8 +160,15 @@ export default class DrugDetailsController extends WebcController {
         // ACDC PATCH START
 
         if (!!batchData.acdcAuthFeatureSSI){
-          this.model.packageVerification = ACDC_CONSTANTS.ACTION_REQUIRED;
-          this.element.querySelector("#acdc-feature-launch").disabled = false;
+          if (!!this.authFeatureResult && batchData.acdcAuthFeatureSSI === this.authFeatureResult.ssi){
+            const {status, error} = this.authFeatureResult;
+            this.model.packageVerification = status ? ACDC_CONSTANTS.VERIFIED : `${ACDC_CONSTANTS.INVALID}${error.message ? `\n${error.message}` : ''}`;
+            this.element.querySelector('#packageVerification').style.setAttribute("color", status ? "green" : "red");
+            this.element.querySelector("#acdc-feature-launch").disabled = true;
+          } else {
+            this.model.packageVerification = ACDC_CONSTANTS.ACTION_REQUIRED;
+            this.element.querySelector("#acdc-feature-launch").disabled = false;
+          }
         }
 
         // ACDC PATCH END
@@ -390,11 +398,12 @@ export default class DrugDetailsController extends WebcController {
   }
 
   // ACDC PATCH START
-  loadAuthFeature(batchData){
+  loadAuthFeature(){
     if (!this.model.batch || !this.model.batch.acdcAuthFeatureSSI)
       return this.showErrorModal(`Could not find and Authentication Feature`, "Anti Counterfeiting");
     this.navigateToPageTag('auth-feature', {
       ssi: this.model.batch.acdcAuthFeatureSSI,
+      gtinSSI: this.gtinSSI,
       gs1Fields: this.gs1Fields
     });
   }
