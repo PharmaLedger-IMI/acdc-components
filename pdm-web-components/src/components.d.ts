@@ -27,7 +27,7 @@ export namespace Components {
     interface SsappWindow {
         "appName": string;
         "landingPath": string;
-        "params": string;
+        "params": {[indexer: string]: string,};
         "seed": string;
     }
 }
@@ -89,7 +89,7 @@ declare namespace LocalJSX {
         "appName"?: string;
         "landingPath"?: string;
         "onWindowAction"?: (event: CustomEvent<any>) => void;
-        "params"?: string;
+        "params"?: {[indexer: string]: string,};
         "seed"?: string;
     }
     interface IntrinsicElements {

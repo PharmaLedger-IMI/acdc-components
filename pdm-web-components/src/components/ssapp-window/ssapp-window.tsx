@@ -1,6 +1,5 @@
 import {Component, h, State, Element, Watch, Prop, EventEmitter, Event} from '@stencil/core';
 import {getInstanceRegistry} from "../../utils/SSAppInstancesRegistry";
-import {getNavigationTrackerInstance} from "../../utils/NavigationTrackerService";
 
 declare const $$: any;
 
@@ -17,9 +16,9 @@ export class SsappWindow {
 
   @Prop({attribute: "key-ssi", mutable: false, reflect: false}) seed: string = undefined;
 
-  @Prop({attribute: 'landing-path', mutable: false, reflect: false}) landingPath: string;
+  @Prop({attribute: 'landing-path', mutable: false, reflect: false}) landingPath: string = "/";
 
-  @Prop({attribute: 'params', mutable: false, reflect: false}) params: string;
+  @Prop({attribute: 'params', mutable: false, reflect: false}) params: {[indexer: string]: string,};
 
   @State() digestKeySsiHex;
   @State() parsedParams;
@@ -31,11 +30,11 @@ export class SsappWindow {
   windowAction: EventEmitter
 
   connectedCallback() {
-    navigator.serviceWorker.addEventListener('message', this.__getSWOnMessageHandler());
+    navigator.serviceWorker.addEventListener('message', this.getSWOnMessageHandler());
   }
 
   disconnectedCallback() {
-    navigator.serviceWorker.removeEventListener('message', this.__getSWOnMessageHandler());
+    navigator.serviceWorker.removeEventListener('message', this.getSWOnMessageHandler());
   }
 
   componentShouldUpdate(newValue, oldValue, changedState) {
@@ -62,10 +61,9 @@ export class SsappWindow {
     console.log("#### Trying to register ssapp reference");
     getInstanceRegistry().addSSAppReference(this.appName, iframe);
 
-    this.eventHandler = this.__ssappEventHandler.bind(this);
+    this.eventHandler = this.ssappEventHandler.bind(this);
     window.document.addEventListener(this.digestKeySsiHex, this.eventHandler);
     window.document.addEventListener(this.parsedParams, this.eventHandler);
-    getNavigationTrackerInstance().listenForSSAppHistoryChanges();
   }
 
   @Watch("seed")
@@ -73,8 +71,7 @@ export class SsappWindow {
   @Watch("landingPath")
   loadApp(callback?) {
     if (this.componentInitialized) {
-      this.digestKeySsiHex = this.__digestMessage(this.seed);
-      getNavigationTrackerInstance().setIdentity(this.digestKeySsiHex);
+      this.digestKeySsiHex = this.digestMessage(this.seed);
       if (typeof callback === "function") {
         callback();
       }
@@ -89,9 +86,9 @@ export class SsappWindow {
     }
   };
 
-  __onServiceWorkerMessageHandler: (e) => void;
+  private onServiceWorkerMessageHandler: (e) => void;
 
-  ___sendLoadingProgress(progress?: any, status?: any) {
+  private getWindows(){
     let currentWindow: any = window;
     let parentWindow: any = currentWindow.parent;
 
@@ -99,6 +96,12 @@ export class SsappWindow {
       currentWindow = parentWindow;
       parentWindow = currentWindow.parent;
     }
+
+    return {currentWindow, parentWindow}
+  }
+
+  private sendLoadingProgress(progress?: any, status?: any) {
+    const {parentWindow} = this.getWindows();
 
     parentWindow.document.dispatchEvent(new CustomEvent('ssapp:loading:progress', {
       detail: {
@@ -108,7 +111,7 @@ export class SsappWindow {
     }));
   }
 
-  __ssappEventHandler(e) {
+  private ssappEventHandler(e) {
     const data = e.detail || {};
     let iframe = this.element.querySelector("iframe");
 
@@ -123,7 +126,7 @@ export class SsappWindow {
 
     if (data.status === 'completed') {
       const signalFinishLoading = () => {
-        this.___sendLoadingProgress(100);
+        this.sendLoadingProgress(100);
         iframe.removeEventListener('load', signalFinishLoading);
       };
 
@@ -132,15 +135,15 @@ export class SsappWindow {
     }
   }
 
-  __getSWOnMessageHandler() {
-    if (this.__onServiceWorkerMessageHandler) {
-      return this.__onServiceWorkerMessageHandler;
+  private getSWOnMessageHandler() {
+    if (this.onServiceWorkerMessageHandler) {
+      return this.onServiceWorkerMessageHandler;
     }
 
     /**
      * Listen for seed requests
      */
-    this.__onServiceWorkerMessageHandler = (e) => {
+    this.onServiceWorkerMessageHandler = (e) => {
       if (!e.data || e.data.query !== 'seed') {
         return;
       }
@@ -152,50 +155,43 @@ export class SsappWindow {
         });
       }
     };
-    return this.__onServiceWorkerMessageHandler;
+    return this.onServiceWorkerMessageHandler;
   }
 
-  __digestMessage(message) {
+  private digestMessage(message) {
     // @ts-ignore
     const crypto = require("opendsu").loadApi("crypto");
     const hash = crypto.sha256(message);
     return hash;
   }
 
-  render() {
+  private getQueryParams(){
+    let queryParams = "";
+    if (this.parsedParams)
+      queryParams += Object.keys(this.parsedParams)
+        .map((key) => key + "=" + this.parsedParams[key])
+        .join('&');
+
+    return queryParams ? '?' + encodeURI(queryParams) : '';
+  }
+
+  private getIFrameSrc(){
     let basePath;
-    let parentWindow = window.parent;
-    let currentWindow = window;
-
-    try {
-      while (currentWindow !== parentWindow) {
-        basePath = parentWindow.location.origin + parentWindow.location.pathname;
-        // @ts-ignore
-        currentWindow = parentWindow;
-        parentWindow = parentWindow.parent;
-      }
-
-    }
-    catch (e) {
-      console.log(`Error inside weird while`, e)
-    }
+    const {currentWindow} = this.getWindows();
 
     basePath = currentWindow.location.origin + currentWindow.location.pathname;
     basePath = basePath.replace("index.html", "")
     if (basePath[basePath.length - 1] !== '/')
       basePath += '/';
 
-    let queryParams = "?";
-    if (this.parsedParams)
-      queryParams += Object.keys(this.parsedParams)
-        .map((key) => key + "=" + this.parsedParams[key])
-        .join('&');
-
-
     // we are in a context in which SW are not enabled so the iframe must be identified by the seed
     const iframeKeySsi = $$.SSAPP_CONTEXT && $$.SSAPP_CONTEXT.BASE_URL && $$.SSAPP_CONTEXT.SEED ? this.seed : this.digestKeySsiHex;
 
-    const iframeSrc = basePath + "iframe/" + iframeKeySsi + (queryParams.length > 1 ? queryParams : '');
+    return basePath + "iframe/" + iframeKeySsi + this.getQueryParams();
+  }
+
+  render() {
+    const iframeSrc = this.getIFrameSrc();
     console.log("Loading sssap in: " + iframeSrc);
     return (
       <iframe
