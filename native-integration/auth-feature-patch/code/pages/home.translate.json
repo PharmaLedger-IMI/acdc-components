@@ -1,0 +1,14 @@
+{
+  "title": "Demo Authentication Feature",
+  "scan-title": "Please scan your pack",
+  "details": {
+    "productCode": "Product Code:",
+    "batchNumber": "Batch Number:",
+    "serialNumber": "Serial Number:",
+    "expiry": "Expiration Date:"
+  },
+  "buttons": {
+    "scan": "Scan",
+    "native": "Native"
+  }
+}

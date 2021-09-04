@@ -92,7 +92,7 @@ class PLCameraConfig {
 
 
 
-export default class WKScanController extends WebcController{
+export default class NativeController extends WebcController{
     constructor(element, history) {
         super(element, history);
         this.setModel({

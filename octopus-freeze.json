@@ -1039,6 +1039,28 @@
 
     "build-ios-app": [
         {
+            "name": "patch auth feature ssapp",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "native-integration/auth-feature-patch/code",
+                    "target": "authentication-feature-template/src/code",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "rebuild all",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "npm run clean && npm run build-all"
+                }
+            ]
+        },
+        {
             "name": "build-ios-app",
             "actions": [
                 {
@@ -1123,22 +1145,30 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "patch ios loader with ios native APIs",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "native-integration/build/bundles/camera_ios.js",
+                    "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/apihub-root/app/loader/camera.js",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
         }
     ],
 
     "build-mobile" : [
         {
-            "name": "prebuild",
+            "name": "build android app",
             "actions": [
                 {
                     "type": "execute",
                     "cmd": "npm run clean && npm run build-all"
-                }
-            ]
-        },
-        {
-            "name": "build-android-app",
-            "actions": [
+                },
                 {
                     "type": "remove",
                     "target": "mobile/scan-app/android/app/src/main/assets/nodejs-project"
@@ -1197,7 +1227,8 @@
                 {
                     "type": "execute",
                     "cmd": "npm run build-ios-app"
-                }]
+                }
+            ]
         }
     ]
 }
