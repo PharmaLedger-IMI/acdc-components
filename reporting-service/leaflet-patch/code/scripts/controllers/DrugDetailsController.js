@@ -115,10 +115,6 @@ export default class DrugDetailsController extends WebcController {
           gs1Fields: this.gs1Fields
       });
     });
-    // AUTH FEATURE PATCH START
-    this.onTagClick('auth-feature', this.loadAuthFeature.bind(this));
-
-    // AUTH FEATURE PATCH END
 
     this.dsuDataRetrievalService.readProductData((err, product) => {
       if (err) {
@@ -161,6 +157,7 @@ export default class DrugDetailsController extends WebcController {
           this.model.packageVerification = ACDC_CONSTANTS.ACTION_REQUIRED;
           this.setColor('packageVerification', 'orange');
           this.element.querySelector("#acdc-feature-launch").disabled = false;
+          this.onTagClick('auth-feature', this.loadAuthFeature.bind(this));
         } else if (this.acdc && this.acdc.authResponse){
           const {status, error} = this.acdc.authResponse;
           this.model.packageVerification = status ? ACDC_CONSTANTS.VERIFIED : `${ACDC_CONSTANTS.INVALID}${error.message ? `\n${error.message}` : ''}`;

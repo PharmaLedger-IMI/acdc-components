@@ -19,6 +19,18 @@ const COMPATIBILITY = {
   IOS: "ios"
 }
 
+type CameraInterface = {
+  isAvailable: () => boolean;
+  bindStreamToElement: (element: HTMLElement, ...args: any[]) => void;
+  getCameraStream: (...args: any[]) => any;
+  closeCameraStream: (...args: any[]) => void;
+  switchCamera: (...args: any[]) => void;
+  getStatus: (...args: any[]) => string;
+  hasPermissions: (...args: any[]) => string;
+  getConstraints : (...args: any[]) => any;
+}
+
+
 @Component({
   tag: 'pdm-barcode-scanner',
   styleUrl: 'pdm-barcode-scanner.css',
@@ -65,9 +77,10 @@ export class PdmBarcodeScanner {
 
   private codeReader = null;
   private overlay = null;
-  private devices = [];
   private isScanDone = false;
   private isComponentDisconnected = false;
+
+  private Camera : CameraInterface;
 
   constructor() {
     window.addEventListener('resize', _ => {
@@ -75,6 +88,12 @@ export class PdmBarcodeScanner {
       if (this.isCameraAvailable && this.hasPermissions)
         this.drawOverlays();
     });
+    try {
+      // @ts-ignore
+      this.Camera = window.Native.Camera;
+    } catch (e){
+      throw new Error(`Missing native integration`);
+    }
   }
 
   private drawOverlays() {
@@ -101,26 +120,20 @@ export class PdmBarcodeScanner {
     setTimeout(() => this.sendActionEvent.emit(result), this.timeout);
   }
 
-  private startScanning(videoElement, constraints) {
+  private async startScanning(videoElement) {
 
     if (!this.isScanDone) {
       this.cleanupOverlays();
       this.drawOverlays();
 
-      const closeStream = function(videoStream: MediaStream){
-        videoStream.getTracks().forEach(function(track) {
-          if (track.readyState == 'live') {
-            track.stop();
-          }
-        });
-      }
+      const constraints = await this.Camera.getConstraints();
 
       this.codeReader.reset();
       this.codeReader.decodeFromConstraints(constraints, videoElement, (result, err) => {
         if (result && !this.isScanDone) {
           audio.play();
           this.overlay.drawOverlay(result.resultPoints);
-          closeStream(videoElement.srcObject);
+          this.Camera.closeCameraStream();
           this.isScanDone = true;
           this.status = STATUS.DONE;
           setTimeout(_ => {
@@ -139,19 +152,7 @@ export class PdmBarcodeScanner {
 
   @Method()
   async switchCamera() {
-    let devices = [undefined];
-
-    for (const device of this.devices) {
-      devices.push(device.deviceId);
-    }
-
-    let currentIndex = devices.indexOf(this.activeDeviceId);
-    if (currentIndex === devices.length - 1) {
-      currentIndex = -1;
-    }
-    currentIndex++;
-
-    this.activeDeviceId = devices[currentIndex];
+    this.Camera.switchCamera();
     this.isScanDone = false;
   }
 
@@ -168,16 +169,10 @@ export class PdmBarcodeScanner {
   }
 
   async componentWillRender() {
-
     // No devices yet
-    if (this.devices.length === 0 || !this.activeDeviceId) {
-      try {
-        this.devices = await this.codeReader.listVideoInputDevices();
-      } catch (error) {
-        // console.error(error);
-      }
-
-      if (this.devices.length > 0) {
+    if (!this.isCameraAvailable) {
+      const temp = await this.Camera.isAvailable();
+      if (temp) {
         this.isCameraAvailable = true;
       } else {
         this.status = STATUS.NO_DETECTION;
@@ -187,75 +182,12 @@ export class PdmBarcodeScanner {
 
   async componentDidRender() {
     if (this.isCameraAvailable && !this.isComponentDisconnected) {
-      switch (this.compatibilityMode){
-        case COMPATIBILITY.IOS:
-          const constraints = this.getConstraints();
-          const videoElement = this.element.querySelector('#video');
-          if (videoElement)
-            await this.startScanning(videoElement, constraints);
-          break;
-        default:
-          await this.getPermissions(this.startScanning.bind(this));
-      }
-    }
-  }
-
-  private async getConstraints(){
-    const constraints = {
-      video: {
-        facingMode: 'environment'
-      }
-    };
-    const deviceId = this.activeDeviceId;
-    if (deviceId && deviceId !== 'no-camera') {
-      delete constraints.video.facingMode;
-      constraints.video['deviceId'] = {
-        exact: deviceId
-      };
-    }
-
-    return constraints;
-  }
-
-  private async getPermissions(followUp){
-
-    if (!(navigator &&'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices)) {
-      this.hasPermissions = false;
-      this.status = STATUS.NO_PERMISSION;
-      return;
-    }
-    const constraints = await this.getConstraints();
-
-    const self = this;
-    const doFollowUp = function(stream?){
-      const videoElement = self.element.querySelector('#video');
+      const videoElement = this.element.querySelector('#video');
       if (videoElement){
-        if (stream)
-          videoElement.srcObject = stream;
-        followUp(videoElement, constraints);
+        await this.Camera.bindStreamToElement(videoElement);
+        await this.startScanning(videoElement);
       }
     }
-
-    if (this.hasPermissions)
-      return doFollowUp();
-
-    let stream;
-    try{
-      stream = await navigator.mediaDevices.getUserMedia(constraints);
-    } catch (e){
-      this.hasPermissions = false;
-      this.status = STATUS.NO_PERMISSION;
-      return
-    }
-
-    if (!stream){
-      this.status = STATUS.NO_PERMISSION;
-      this.hasPermissions = false;
-      return
-    }
-
-    this.hasPermissions = true;
-    doFollowUp();
   }
 
   async connectedCallback() {
@@ -275,6 +207,13 @@ export class PdmBarcodeScanner {
     const self = this;
 
     const getResults = function(status){
+      const wrapInDiv = function(el){
+        return (
+          <div class="icon-wrapper ion-justify-content-center ion-align-items-center">
+            {el}
+          </div>
+        )
+      }
 
       const getIcon = function(){
         switch (status){
@@ -288,36 +227,22 @@ export class PdmBarcodeScanner {
             return (<ion-icon class="result-icon" color="danger" size="large" name="close-circle-outline"></ion-icon>);
         }
       }
-        return wrapInDiv(getIcon());
-    }
 
-    const wrapInDiv = function(el){
-      return (
-        <div class="icon-wrapper ion-justify-content-center ion-align-items-center">
-          {el}
-        </div>
-      )
+      return wrapInDiv(getIcon());
     }
 
     const getContent = function(){
-      if (!self.isCameraAvailable || (self.hasPermissions === undefined && self.compatibilityMode !== COMPATIBILITY.IOS))
-        return [getResults(STATUS.IN_PROGRESS)];
-      if (self.hasPermissions || self.compatibilityMode === COMPATIBILITY.IOS){
-        if (!self.isScanDone){
-          const result = [<video id="video" muted autoplay playsinline={true}/>];
-          if (self.compatibilityMode === COMPATIBILITY.IOS)
-            result.unshift(<input type="file" accept="video/*" capture="camera"/>);
-          return result;
-        }
-        return [getResults(self.status)];
-      }
-      return [getResults(self.status)]
+      if (!self.isCameraAvailable)
+        return getResults(STATUS.IN_PROGRESS);
+        if (!self.isScanDone)
+          return <video id="video" muted autoplay playsinline={true}/>;
+        return getResults(self.status);
     }
 
     return (
       <div class="barcodeWrapper">
         <div id="scanner-container" class="videoWrapper">
-          {...getContent()}
+          {getContent()}
         </div>
       </div>
     )

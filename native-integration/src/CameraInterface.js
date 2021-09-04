@@ -7,6 +7,14 @@ const STATUS = {
 
 class CameraInterface {
 
+    async isAvailable(){
+        throw new Error(`Not implemented`);
+    }
+
+    getConstraints(...args){
+        throw new Error(`Not implemented`);
+    }
+
     async bindStreamToElement(element, ...args){
         throw new Error(`Not implemented`);
     }

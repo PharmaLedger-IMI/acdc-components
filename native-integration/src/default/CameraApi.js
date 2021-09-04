@@ -5,8 +5,10 @@ class CameraApi extends CameraInterface{
     _status = undefined;
 
     __stream = undefined;
+    __devices = undefined;
+    __activeDeviceId = undefined;
 
-    async _getConstraints(){
+    async getConstraints(){
         const constraints = {
             video: {
                 facingMode: 'environment'
@@ -30,7 +32,7 @@ class CameraApi extends CameraInterface{
             this._status = STATUS.NO_DETECTION;
             return;
         }
-        const constraints = await this._getConstraints();
+        const constraints = await this.getConstraints();
 
         if (this.__stream)
             this.closeCameraStream();
@@ -53,6 +55,14 @@ class CameraApi extends CameraInterface{
         return this.__stream;
     }
 
+    async isAvailable(){
+        const self = this;
+        return await navigator.mediaDevices.enumerateDevices().then(devices => {
+            self.__devices = devices.filter(d => d.kind === 'videoinput');
+            return !!self.__devices.length;
+        });
+    }
+
     closeCameraStream(){
         if (!this.__stream || !this.__stream.getTracks)
             return;
@@ -65,11 +75,11 @@ class CameraApi extends CameraInterface{
     }
 
     hasPermissions(){
-        return this._hasPermissions;
+        return this._hasPermissions || false;
     };
 
     async bindStreamToElement(element){
-        const stream = this.getCameraStream();
+        const stream = await this.getCameraStream();
         if (stream && element)
             element.srcObject = stream;
         else
@@ -81,7 +91,18 @@ class CameraApi extends CameraInterface{
     }
 
     switchCamera(){
-        console.log("Not supported");
+        let devices = [undefined];
+
+        for (const device of this.__devices)
+            devices.push(device.deviceId);
+
+        let currentIndex = devices.indexOf(this.activeDeviceId);
+        if (currentIndex === devices.length - 1)
+            currentIndex = -1;
+
+        currentIndex++;
+
+        this.activeDeviceId = devices[currentIndex];
     };
 }
 
