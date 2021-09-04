@@ -37,10 +37,6 @@ export default class DrugDetailsController extends WebcController {
       this.gtinSSI = history.location.state.gtinSSI;
       this.gs1Fields = history.location.state.gs1Fields;
 
-      // AUTH FEATURE PATCH START
-      this.authFeatureResult = history.location.state.authFeature;
-      // AUTH FEATURE PATCH END
-
       this.model.serialNumber = this.gs1Fields.serialNumber === "0" ? "-" : this.gs1Fields.serialNumber;
       this.model.gtin = this.gs1Fields.gtin;
       this.model.batchNumber = this.gs1Fields.batchNumber;
@@ -159,16 +155,17 @@ export default class DrugDetailsController extends WebcController {
 
         // ACDC PATCH START
 
-        if (!!batchData.acdcAuthFeatureSSI){
-          if (!!this.authFeatureResult && batchData.acdcAuthFeatureSSI === this.authFeatureResult.ssi){
-            const {status, error} = this.authFeatureResult;
-            this.model.packageVerification = status ? ACDC_CONSTANTS.VERIFIED : `${ACDC_CONSTANTS.INVALID}${error.message ? `\n${error.message}` : ''}`;
-            this.element.querySelector('#packageVerification').style.setAttribute("color", status ? "green" : "red");
-            this.element.querySelector("#acdc-feature-launch").disabled = true;
-          } else {
-            this.model.packageVerification = ACDC_CONSTANTS.ACTION_REQUIRED;
-            this.element.querySelector("#acdc-feature-launch").disabled = false;
-          }
+        this.acdc = history.location.state.acdc;
+        if ((!this.acdc || !this.acdc.authResponse) && !!batchData.acdcAuthFeatureSSI){
+          // Batch has auth Feature but is has never ran before
+          this.model.packageVerification = ACDC_CONSTANTS.ACTION_REQUIRED;
+          this.setColor('packageVerification', 'orange');
+          this.element.querySelector("#acdc-feature-launch").disabled = false;
+        } else if (this.acdc && this.acdc.authResponse){
+          const {status, error} = this.acdc.authResponse;
+          this.model.packageVerification = status ? ACDC_CONSTANTS.VERIFIED : `${ACDC_CONSTANTS.INVALID}${error.message ? `\n${error.message}` : ''}`;
+          this.setColor('packageVerification', status ? 'green' : 'red');
+          this.element.querySelector("#acdc-feature-launch").disabled = true;
         }
 
         // ACDC PATCH END

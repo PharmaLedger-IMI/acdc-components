@@ -41,11 +41,23 @@ class ScanEvent {
      */
     productDsuStatus;
 
-    constructor(gs1Data){
-        this.batch = gs1Data.batchNumber;
-        this.productCode = gs1Data.gtin;
-        this.expiryDate = gs1Data.expiry; // no format conversion (a wrong date format is also an indicator of something)
-        this.serialNumber = gs1Data.serialNumber;
+    constructor(data){
+        for (let key in data)
+            if(data.hasOwnProperty(key))
+                switch (key){
+                    case 'batchNumber':
+                        this.batch = data.batchNumber;
+                        break;
+                    case 'gtin':
+                        this.productCode = data.gtin;
+                        break;
+                    case 'expiry':
+                        this.expiryDate = data.expiry; // no format conversion (a wrong date format is also an indicator of something)
+                        break;
+                    default:
+                        this[key] = data[key];
+                }
+
         this.snCheckDateTime = new Date().toISOString();
     }
 
