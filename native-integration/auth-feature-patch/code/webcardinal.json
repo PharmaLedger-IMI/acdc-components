@@ -16,7 +16,7 @@
       "path": "./native",
       "src": "native.html",
       "indexed": false,
-      "tag": "home"
+      "tag": "native"
     }
   ]
 }
