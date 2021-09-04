@@ -21,11 +21,6 @@
       "path": "./scan"
     },
     {
-      "name": "WKCamera",
-      "tag": "WKCamera",
-      "path": "./wkcamera"
-    },
-    {
       "name": "History",
       "tag": "history",
       "path": "./history"
@@ -66,6 +61,12 @@
       "tag": "leaflet",
       "indexed": false,
       "path": "./leaflet"
+    },
+    {
+      "name": "Authentication Feature",
+      "tag": "auth-feature",
+      "indexed": false,
+      "path": "./auth-feature"
     },
     {
       "name": "smpc",

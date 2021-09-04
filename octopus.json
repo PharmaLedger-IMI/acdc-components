@@ -412,7 +412,41 @@
                     "cmd": "cd backoffice-frontend && npm install"
                 }
             ]
+        },
+        {
+            "name": "pdm-web-components",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd pdm-web-components && npm install && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "native integration",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd native-integration && npm install && npm run prebuild"
+                }
+            ]
+        },
+        {
+            "name": "authentication-feature-template",
+            "src": "https://github.com/PharmaLedger-IMI/acdc-authentication-feature-template.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-template && npm install"
+                }
+            ]
         }
+
     ],
     "build-use-case": [
         {
@@ -619,6 +653,16 @@
             ]
         },
         {
+            "name": "native integration build",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd native-integration && npm run prebuild"
+                }
+            ]
+        },
+        {
             "name": "patch eLeaflet app",
             "src": "",
             "actions": [
@@ -641,6 +685,65 @@
             ]
         },
         {
+            "name": "patch eLeaflet Loader",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./native-integration/loader-patch",
+                    "target": "./apihub-root/leaflet-wallet/loader",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./native-integration/build/bundles/camera.js",
+                    "target": "./apihub-root/leaflet-wallet/loader/camera.js",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "patch DSU Fabric app",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/dsu-fabric-patch",
+                    "target": "./dsu-fabric-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "patch epi-utils",
+            "src": "",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./reporting-service/epi-utils-patch",
+                    "target": "./epi-utils",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "re-bundle epi-utils after patch",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd epi-utils && npm run build"
+                }
+            ]
+        },
+        {
             "name": "dsu-explorer_bind_to_dossier-explorer-ssapp",
             "src": "",
             "actions": [
@@ -659,6 +762,26 @@
                 {
                     "type": "execute",
                     "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/dsu-explorer/apps-patch/dossier-explorer-ssapp/readme"
+                }
+            ]
+        },
+        {
+            "name": "Build Components",
+            "src": ".",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd pdm-web-components && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "Build acdc Authentication Feature template",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-template && npm run build"
                 }
             ]
         },

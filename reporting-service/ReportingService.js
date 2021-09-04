@@ -259,13 +259,22 @@ class ReportingService {
             callback = callback || function(err, result){
                 if (err)
                     return console.log(err);
-                console.log(JSON.stringify(result));
+                console.log(result);
             }
 
             this._bindUserDetails(evt, (err, boundEvt) => {
                 if (err)
                     return callback(`Could not bind user details`);
-                self.http.doPost(API_HUB_ENDPOINT, JSON.stringify(boundEvt), HEADERS, callback);
+                self.http.doPost(API_HUB_ENDPOINT, JSON.stringify(boundEvt), HEADERS, (err, result) => {
+                    if (err)
+                        return callback(err);
+                    try{
+                        result = JSON.parse(result);
+                    } catch (e) {
+                        return callback(e);
+                    }
+                    callback(undefined, result);
+                });
             });
         });
     }

@@ -1,0 +1,107 @@
+{
+  "workDir": ".",
+  "dependencies": [],
+  "prebuild": [
+    {
+      "name": "PSK bundles",
+      "src": "",
+      "actions": [
+        {
+          "type": "execute",
+          "cmd": "node ../privatesky/psknode/bin/scripts/pskbuild.js --projectMap=./build/build.json  --prod=true --output=./code/constitution"
+        },
+        {
+          "type": "copy",
+          "src": "../privatesky/psknode/bundles/pskruntime.js",
+          "target": "code/constitution/pskruntime.js",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../privatesky/psknode/bundles/webshims.js",
+          "target": "code/constitution/webshims.js",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../privatesky/psknode/bundles/pskruntime.js",
+          "target": "code/scripts/bundles/pskruntime.js",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../privatesky/psknode/bundles/webshims.js",
+          "target": "code/scripts/bundles/webshims.js",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../privatesky/psknode/bundles/iframeBoot.js",
+          "target": "code/scripts/bundles/iframeBoot.js",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../gtin-resolver/build/bundles/gtinResolver.js",
+          "target": "code/scripts/bundles/gtinResolver.js",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../gtin-resolver/build/bundles/gtinResolver.js",
+          "target": "code/constitution/gtinResolver.js",
+          "options": {
+            "overwrite": true
+          }
+        }
+      ]
+    }
+  ],
+  "build": [
+    {
+      "name": "Pdm Components && native imports",
+      "src": "",
+      "actions": [
+        {
+          "type": "copy",
+          "src": "../pdm-web-components/dist/pdm-web-components",
+          "target": "code/assets/pdm-web-components",
+          "options": {
+            "overwrite": true
+          }
+        },
+        {
+          "type": "copy",
+          "src": "../native-integration/build/bundles/camera.js",
+          "target": "code/scripts/bundles/camera.js",
+          "options": {
+            "overwrite": true
+          }
+        }
+      ]
+    }
+  ],
+  "postbuild": [
+    {
+      "name": "post build clean up",
+      "actions": [
+        {
+          "type": "remove",
+          "target": "./builds"
+        }
+      ]
+    }
+  ]
+}
