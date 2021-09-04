@@ -184,7 +184,9 @@ export default class ScanController extends WebcController {
         this.buildSSI(gs1Fields, (err, gtinSSI) => {
             this.packageAlreadyScanned(gtinSSI, gs1Fields, (err, status) => {
                 if (err) {
-                    evt.report(response => {
+                    evt.report((err, response) => {
+                        if (err)
+                            console.log(err)
                         return this.redirectToError("Product code combination could not be resolved.", gs1Fields);
                     });
                 }
@@ -192,8 +194,10 @@ export default class ScanController extends WebcController {
                     this.batchAnchorExists(gtinSSI, (err, status) => {
                         if (status) {
                             evt.setBatchDSUStatus(true)
-                            evt.report((response) => {
-                                this.addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, evt,(err) => {
+                            evt.report((err, response) => {
+                                if (err)
+                                    console.log(err)
+                                this.addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, response,(err) => {
                                     if (err) {
                                         return console.log("Failed to add package to history", err);
                                     }
@@ -202,12 +206,14 @@ export default class ScanController extends WebcController {
 
                         } else {
                             evt.setBatchDSUStatus(false);
-                            this.addConstProductDSUToHistory(gs1Fields, evt);
+                            this.addConstProductDSUToHistory(gs1Fields, response);
                         }
                     });
                 } else {
                     evt.setBatchDSUStatus(true);
-                    evt.report(response => {
+                    evt.report((err, response) => {
+                        if (err)
+                            console.log(err)
                         this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: response, gs1Fields});
                     });
                 }
@@ -334,7 +340,7 @@ export default class ScanController extends WebcController {
         });
     }
 
-    addConstProductDSUToHistory(gs1Fields, evt) {
+    addConstProductDSUToHistory(gs1Fields, response) {
         this.createConstProductDSU_SSI(gs1Fields, (err, constProductDSU_SSI) => {
             if (err) {
                 //todo: what to do in this case?
@@ -345,7 +351,7 @@ export default class ScanController extends WebcController {
                     return console.log("Failed to check constProductDSU existence", err);
                 }
                 if (status) {
-                    this.addPackageToHistoryAndRedirect(constProductDSU_SSI, gs1Fields, evt,(err) => {
+                    this.addPackageToHistoryAndRedirect(constProductDSU_SSI, gs1Fields, response,(err) => {
                         if (err) {
                             return console.log("Failed to add package to history", err);
                         }
@@ -357,21 +363,21 @@ export default class ScanController extends WebcController {
         });
     }
 
-    addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, scanEvent,  callback) {
+    addPackageToHistoryAndRedirect(gtinSSI, gs1Fields, response,  callback) {
         this.packageAlreadyScanned(gtinSSI, gs1Fields, (err, status) => {
             if (err) {
                 return console.log("Failed to verify if package was already scanned", err);
             }
 
             if (!status) {
-                this.addPackageToScannedPackagesList(gtinSSI, gs1Fields, (err) => {
+                this.addPackageToScannedPackagesList(gtinSSI, gs1Fields, response,(err) => {
                     if (err) {
                         return callback(err);
                     }
-                    this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: scanEvent, gs1Fields});
+                    this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: response, gs1Fields});
                 });
             } else {
-                this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: scanEvent, gs1Fields});
+                this.redirectToDrugDetails({gtinSSI: gtinSSI.getIdentifier(), acdc: response, gs1Fields});
             }
         });
 
@@ -398,7 +404,11 @@ export default class ScanController extends WebcController {
         })
     }
 
-    addPackageToScannedPackagesList(packageGTIN_SSI, gs1Fields, callback) {
+    addPackageToScannedPackagesList(packageGTIN_SSI, gs1Fields, acdcData, callback) {
+        if (!callback){
+            callback = acdcData;
+            acdcData = undefined;
+        }
         const gtinSSIIdentifier = packageGTIN_SSI.getIdentifier();
         this.DSUStorage.call("mountDSU", utils.getMountPath(packageGTIN_SSI, gs1Fields), gtinSSIIdentifier, (err) => {
             if (err) {
@@ -419,7 +429,8 @@ export default class ScanController extends WebcController {
                     this.dbStorage.insertRecord(constants.HISTORY_TABLE, pk, {
                         ...gs1Fields,
                         gtinSSI: packageGTIN_SSI,
-                        ...product
+                        ...product,
+                        acdc: acdcData
                     }, (err, result) => {
                         if (err) {
                             return callback(err);
@@ -488,11 +499,15 @@ export default class ScanController extends WebcController {
             secondaryMessage
         });
     }
+    // AUTH FEATURE PATCH START
 
-    redirectToDrugDetails(state) {
+    redirectToDrugDetails(state, response) {
         this.disposeOfBarcodePicker();
+        if (response)
+            state.acdc = response;
         this.navigateToPageTag("drug-details", state);
     }
+    // AUTH FEATURE PATCH END
 
     getNativeApiHandler(callback) {
         try {
