@@ -43,7 +43,7 @@ export default class NativeController extends WebcController{
                 alert('failed to parse torch level value');
             } else {
                 this.Camera.setTorchLevel(level);
-                this.elements.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.elements.torchRange.value}`;
+                this.elements.torchLevelRangeLabel.innerHTML = this.Camera.getStatus();
             }
         });
         this.elements.getConfigButton.addEventListener("click", (e) => {
@@ -65,14 +65,16 @@ export default class NativeController extends WebcController{
                     nextColorspace = 'sRGB';
                     break;
             }
-            this.elements.colorspaceButton.innerHTML = nextColorspace;
             this.Camera.setColorSpace(nextColorspace);
+            this.elements.colorspaceButton.innerHTML = this.Camera.getStatus();
         });
         this.elements.continuousAFButton.addEventListener('click', (e) => {
-            this.elements.continuousAFButton.innerHTML = `AF ${this.Camera.toggleContinuousAF() ? "ON" : "OFF"}`
+            this.Camera.toggleContinuousAF()
+            this.elements.continuousAFButton.innerHTML = this.Camera.getStatus();
         });
         this.elements.selectCameraButton.addEventListener('click', (e) => {
-            this.elements.selectCameraButton.innerHTML = `${this.Camera.switchCamera() === 'front' ? "Front" : "Back"} Cam`;
+            this.Camera.switchCamera()
+            this.elements.selectCameraButton.innerHTML = this.Camera.getStatus();
         });
         this.elements.rawCropRoiInput.addEventListener("change", () => {
             this.setCropCoords();
@@ -149,15 +151,16 @@ export default class NativeController extends WebcController{
                 default:
                     break;
             }
-            this.elements.flashButton.innerHTML = `T ${newMode}`;
+            this.elements.flashButton.innerHTML = this.Camera.getStatus();
         });
     }
     
     _initializeValues(){
         this.elements.torchRange.value = "1.0";
         this.elements.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.elements.torchRange.value}`;
-        let i = 0
-        for (let presetName of sessionPresetNames) {
+
+        let i = 0;
+        for (let presetName of this.Camera.getDeviceTypes()) {
             var p_i = new Option(presetName, presetName)
             // @ts-ignore
             this.elements.select_preset.options.add(p_i);
@@ -176,6 +179,7 @@ export default class NativeController extends WebcController{
             // @ts-ignore
             this.elements.select_cameras.options.add(new Option(deviceTypeName, deviceTypeName));
         }
+
         this.elements.select_cameras.selectedIndex = 0;
         this.cameraProps.selectedDevicesNames = [this.Camera.getDeviceTypes()[0]]
         
@@ -209,88 +213,16 @@ export default class NativeController extends WebcController{
 
     ChangeDesiredCamerasList() {
         this.cameraProps.selectedDevicesNames = [];
-        for (let i = 0; i < this.cameraProps.select_cameras.options.length; i++) {
-            if (this.cameraProps.select_cameras.options[i].selected) {
-                this.cameraProps.selectedDevicesNames.push(this.cameraProps.select_cameras.options[i].value);
+        for (let i = 0; i < this.elements.select_cameras.options.length; i++) {
+            if (this.elements.select_cameras.options[i].selected) {
+                this.cameraProps.selectedDevicesNames.push(this.elements.select_cameras.options[i].value);
             }
         }
     }
 
     ChangePresetList() {
-        let selectedPresetName = this.cameraProps.select_preset.options[this.cameraProps.select_preset.selectedIndex].value;
-        this.cameraProps.status_test.innerHTML = selectedPresetName;
-    }
-
-    setCropCoords() {
-        let rawCrop = {
-            x: undefined,
-            y: undefined,
-            w: undefined,
-            h: undefined
-        }
-        
-        let result = Object.assign({}, rawCrop);
-        if (this.elements.cropRawFrameCheck.checked) {
-            const coords = this.elements.rawCropRoiInput.value.split(",");
-            let rawCrop = {
-                x: parseInt(coords[0]),
-                y: parseInt(coords[1]),
-                w: parseInt(coords[2]),
-                h: parseInt(coords[3])
-            }
-           
-            if (!Object.keys(rawCrop).every(k => rawCrop[k] !== undefined)) {
-                alert("failed to parse coords");
-                this.elements.cropRawFrameCheck.checked = false;
-                
-                this.hide(this.elements.rawCropRoiInput);
-                
-                result = rawCrop;
-            }
-        } else {
-            result = rawCrop;
-        }
-        this.Camera.setCrop(result.x, result.y, result.w, result.h);
-    }
-
-    /**
-     * @param {PLRgbImage | PLYCbCrImage} plImage raw data coming from native camera
-     * @param {number} elapsedTime time in ms elapsed to get the raw frame
-     */
-    onFrameGrabbed(plImage, elapsedTime) {
-        var pSizeText = "";
-        if (this.cameraProps.usingMJPEG === false) {
-            pSizeText = `, p(${this.cameraProps.previewWidth}x${this.cameraProps.previewHeight}), p FPS:${this.cameraProps.targetPreviewFPS}`;
-        }
-        let rawframeLengthMB = undefined
-        if (plImage instanceof PLRgbImage) {
-            rawframeLengthMB = Math.round(10 * plImage.arrayBuffer.byteLength / 1024 / 1024) / 10;
-            this.placeUint8RGBArrayInCanvas(rawCropCanvas, new Uint8Array(plImage.arrayBuffer), plImage.width, plImage.height);
-            this.show(this.cameraProps.rawCropCanvas);
-            this.hide(this.cameraProps.rawCropCbCanvas);
-            this.hide(this.cameraProps.rawCropCrCanvas);
-        } else if (plImage instanceof PLYCbCrImage) {
-            rawframeLengthMB = Math.round(10 * (plImage.yArrayBuffer.byteLength + plImage.cbCrArrayBuffer.byteLength) / 1024 / 1024) / 10;
-            this.placeUint8GrayScaleArrayInCanvas(this.cameraProps.rawCropCanvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
-            this.show(this.cameraProps.rawCropCanvas);
-            this.placeUint8CbCrArrayInCanvas(this.cameraProps.rawCropCbCanvas, this.cameraProps.rawCropCrCanvas, new Uint8Array(plImage.cbCrArrayBuffer), plImage.width / 2, plImage.height / 2);
-            this.show(this.cameraProps.rawCropCbCanvas);
-            this.show(this.cameraProps.rawCropCrCanvas);
-        } else {
-            rawframeLengthMB = -1
-        }
-
-        this.cameraProps.status_test.innerHTML = `${this.cameraProps.selectedPresetName}${pSizeText}, raw FPS:${this.cameraProps.targetRawFPS}<br/> raw frame length: ${rawframeLengthMB}MB, ${plImage.width}x${plImage.height}`
-
-        if (this.cameraProps.rawFramesCounter !== 0 && this.cameraProps.rawFramesCounter % (this.cameraProps.fpsMeasurementInterval - 1) === 0) {
-            this.cameraProps.rawFramesMeasuredFPS = 1000 / this.cameraProps.rawFramesElapsedSum * this.cameraProps.fpsMeasurementInterval;
-            this.cameraProps.rawFramesCounter = 0;
-            this.cameraProps.rawFramesElapsedSum = 0;
-        } else {
-            this.cameraProps.rawFramesCounter += 1;
-            this.cameraProps.rawFramesElapsedSum += elapsedTime;
-        }
-        this.cameraProps.status_fps_raw.innerHTML = `raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.cameraProps.rawFramesMeasuredFPS)})`;
+        let selectedPresetName = this.elements.select_preset.options[this.cameraProps.select_preset.selectedIndex].value;
+        this.elements.status_test.innerHTML = selectedPresetName;
     }
 
     hide(element) {
@@ -300,217 +232,4 @@ export default class NativeController extends WebcController{
     show(element) {
         element.style.display = "block";
     }
-
-    placeUint8RGBArrayInCanvas(canvasElem, array, w, h) {
-        let a = 1;
-        let b = 0;
-        if (this.cameraProps.invertRawFrameCheck.checked === true) {
-            a = -1;
-            b = 255;
-        }
-        canvasElem.width = w;
-        canvasElem.height = h;
-        var ctx = canvasElem.getContext('2d');
-        var clampedArray = new Uint8ClampedArray(w * h * 4);
-        let j = 0
-        for (let i = 0; i < 3 * w * h; i += 3) {
-            clampedArray[j] = b + a * array[i];
-            clampedArray[j + 1] = b + a * array[i + 1];
-            clampedArray[j + 2] = b + a * array[i + 2];
-            clampedArray[j + 3] = 255;
-            j += 4;
-        }
-        var imageData = new ImageData(clampedArray, w, h);
-        ctx.putImageData(imageData, 0, 0);
-    }
-
-    placeUint8GrayScaleArrayInCanvas(canvasElem, array, w, h) {
-        let a = 1;
-        let b = 0;
-        if (invertRawFrameCheck.checked === true) {
-            a = -1;
-            b = 255;
-        }
-        canvasElem.width = w;
-        canvasElem.height = h;
-        var ctx = canvasElem.getContext('2d');
-        var clampedArray = new Uint8ClampedArray(w * h * 4);
-        let j = 0
-        for (let i = 0; i < w * h; i++) {
-            clampedArray[j] = b + a * array[i];
-            clampedArray[j + 1] = b + a * array[i];
-            clampedArray[j + 2] = b + a * array[i];
-            clampedArray[j + 3] = 255;
-            j += 4;
-        }
-        var imageData = new ImageData(clampedArray, w, h);
-        ctx.putImageData(imageData, 0, 0);
-    }
-
-    placeUint8CbCrArrayInCanvas(canvasElemCb, canvasElemCr, array, w, h) {
-        canvasElemCb.width = w;
-        canvasElemCb.height = h;
-        canvasElemCr.width = w;
-        canvasElemCr.height = h;
-        var ctxCb = canvasElemCb.getContext('2d');
-        var ctxCr = canvasElemCr.getContext('2d');
-        var clampedArrayCb = new Uint8ClampedArray(w * h * 4);
-        var clampedArrayCr = new Uint8ClampedArray(w * h * 4);
-        let j = 0
-        for (let i = 0; i < 2 * w * h; i += 2) {
-            clampedArrayCb[j] = array[i];
-            clampedArrayCb[j + 1] = array[i];
-            clampedArrayCb[j + 2] = array[i];
-            clampedArrayCb[j + 3] = 255;
-            clampedArrayCr[j] = array[i + 1];
-            clampedArrayCr[j + 1] = array[i + 1];
-            clampedArrayCr[j + 2] = array[i + 1];
-            clampedArrayCr[j + 3] = 255;
-            j += 4;
-        }
-        var imageDataCb = new ImageData(clampedArrayCb, w, h);
-        ctxCb.putImageData(imageDataCb, 0, 0);
-        var imageDataCr = new ImageData(clampedArrayCr, w, h);
-        ctxCr.putImageData(imageDataCr, 0, 0);
-    }
-
-    /**
-     * Gets a raw RGB frame. A ROI can be specified, corresponds to endpoint /rawframe
-     * @param  {number} [x=undefined]
-     * @param  {number} [y=undefined]
-     * @param  {number} [w=undefined]
-     * @param  {number} [h=undefined]
-     * @returns {Promise<void | PLRgbImage>} a raw RGB frame
-     */
-    getRawFrame(x = undefined, y = undefined, w = undefined, h = undefined) {
-        let fetchString = `${this.cameraProps._serverUrl}/rawframe`;
-        let params = {};
-        if (x !== undefined) {
-            params.x = x;
-        }
-        if (y !== undefined) {
-            params.y = y;
-        }
-        if (w !== undefined) {
-            params.w = w;
-        }
-        if (h !== undefined) {
-            params.h = h;
-        }
-        if (Object.keys(params).length > 0) {
-            // @ts-ignore
-            const urlParams = new URLSearchParams(params);
-            fetchString = `${fetchString}?${urlParams.toString()}`;
-        }
-        return fetch(fetchString)
-            .then(response => {
-                let image = this.getPLRgbImageFromResponse(response);
-                return image;
-            })
-            .catch(error => {
-                console.log(error);
-            })
-    }
-
-    /** Get a raw YCbCr 420 frame A ROI can be specified, corresponds to endpoint /rawframe_ycbcr
-     * @param  {number} [x=undefined]
-     * @param  {number} [y=undefined]
-     * @param  {number} [w=undefined]
-     * @param  {number} [h=undefined]
-     * @returns {Promise<Void | PLYCbCrImage>} a raw YCbCr frame
-     */
-    getRawFrameYCbCr(x = undefined, y = undefined, w = undefined, h = undefined) {
-        let fetchString = `${this.cameraProps._serverUrl}/rawframe_ycbcr`;
-        let params = {};
-        if (x !== undefined) {
-            params.x = x;
-        }
-        if (y !== undefined) {
-            params.y = y;
-        }
-        if (w !== undefined) {
-            params.w = w;
-        }
-        if (h !== undefined) {
-            params.h = h;
-        }
-        if (Object.keys(params).length > 0) {
-            // @ts-ignore
-            const urlParams = new URLSearchParams(params);
-            fetchString = `${fetchString}?${urlParams.toString()}`;
-        }
-        return fetch(fetchString)
-            .then(response => {
-                let image = this.getPLYCbCrImageFromResponse(response);
-                return image;
-            })
-            .catch(error => {
-                console.log(error);
-            })
-    }
-    /**
-     * Get the current camera configuration, corresponds to endpoint /cameraconfig
-     * @returns {Promise<any>} the current camera configuration
-     */
-    getCameraConfiguration() {
-        let fetchString = `${this.cameraProps._serverUrl}/cameraconfig`;
-        return fetch(fetchString)
-            .then(response => {
-                return response.json()
-            })
-    }
-
-    /**
-     * Packs a response from endpoints providing raw rgb buffer as octet-stream and image size in headers
-     *
-     * @param  {Response} response
-     * @returns {Promise<PLRgbImage>} the image in a promise
-     */
-    getPLRgbImageFromResponse(response) {
-        let frame_w = 0
-        let frame_h = 0
-        if (response.headers.has("image-width")) {
-            frame_w = parseInt(response.headers.get("image-width"));
-        } else {
-            frame_w = this.cameraProps.previewWidth;
-        }
-        if (response.headers.has("image-height")) {
-            frame_h = parseInt(response.headers.get("image-height"));
-        } else {
-            frame_h = this.cameraProps.previewHeight;
-        }
-        return response.blob().then(b => {
-            return b.arrayBuffer().then(a => {
-                let image = new PLRgbImage(a, frame_w, frame_h);
-                return image;
-            })
-        })
-    }
-
-    /**
-     * Packs a response from endpoints providing raw YCbCr 420 buffer as octet-stream and image size in headers
-     *
-     * @param  {Response} response
-     * @returns {Promise<PLYCbCrImage>} the image in a promise
-     */
-    getPLYCbCrImageFromResponse(response) {
-        let frame_w = 0
-        let frame_h = 0
-        if (response.headers.has("image-width")) {
-            frame_w = parseInt(response.headers.get("image-width"));
-        } else {
-            frame_w = this.cameraProps.previewWidth;
-        }
-        if (response.headers.has("image-height")) {
-            frame_h = parseInt(response.headers.get("image-height"));
-        } else {
-            frame_h = this.cameraProps.previewHeight;
-        }
-        return response.blob().then(b => {
-            return b.arrayBuffer().then(a => {
-                let image = new PLYCbCrImage(a, frame_w, frame_h);
-                return image;
-            })
-        })
-    } 
 }
