@@ -206,7 +206,11 @@ export default class ScanController extends WebcController {
 
                         } else {
                             evt.setBatchDSUStatus(false);
-                            this.addConstProductDSUToHistory(gs1Fields, response);
+                            evt.report((err, response) => {
+                                if (err)
+                                    console.log(err);
+                                this.addConstProductDSUToHistory(gs1Fields, response);
+                            });
                         }
                     });
                 } else {
