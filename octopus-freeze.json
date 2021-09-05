@@ -718,7 +718,7 @@
                 },
                 {
                     "type": "copy",
-                    "src": "./native-integration/build/bundles/camera.js",
+                    "src": "./native-integration/build/bundles/default/camera.js",
                     "target": "./apihub-root/leaflet-wallet/loader/camera.js",
                     "options": {
                         "overwrite": true
@@ -1176,7 +1176,7 @@
             "actions": [
                 {
                     "type": "copy",
-                    "src": "native-integration/build/bundles/camera_ios.js",
+                    "src": "native-integration/build/bundles/ios/camera.js",
                     "target": "mobile/scan-app/ios/PSKNodeServer/PSKNodeServer/nodejsProject/apihub-root/app/loader/camera.js",
                     "options": {
                         "overwrite": true

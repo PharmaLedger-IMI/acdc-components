@@ -84,7 +84,7 @@
         },
         {
           "type": "copy",
-          "src": "../native-integration/build/bundles/camera.js",
+          "src": "../native-integration/build/bundles/default/camera.js",
           "target": "code/scripts/bundles/camera.js",
           "options": {
             "overwrite": true
