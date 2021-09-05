@@ -4,6 +4,8 @@ class CameraApi extends CameraInterface{
     _hasPermissions = undefined;
     _status = undefined;
 
+    __statusHandler;
+
     __stream = undefined;
     __devices = undefined;
     __activeDeviceId = undefined;
@@ -29,7 +31,7 @@ class CameraApi extends CameraInterface{
 
         if (!(navigator &&'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices)) {
             this._hasPermissions = false;
-            this._status = STATUS.NO_DETECTION;
+            this._updateStatus(STATUS.NO_DETECTION);
             return;
         }
         const constraints = await this.getConstraints();
@@ -41,12 +43,12 @@ class CameraApi extends CameraInterface{
             this.__stream = await navigator.mediaDevices.getUserMedia(constraints);
         } catch (e){
             this._hasPermissions = false;
-            this._status = STATUS.NO_PERMISSION;
+            this._updateStatus(STATUS.NO_PERMISSION);
             return;
         }
 
         if (!this.__stream){
-            this._status = STATUS.NO_PERMISSION;
+            this._updateStatus(STATUS.NO_PERMISSION);
             this._hasPermissions = false;
             return;
         }
@@ -70,8 +72,16 @@ class CameraApi extends CameraInterface{
         this.__stream = undefined;
     };
 
-    getStatus(){
-        return this._status;
+    getStatus(handler){
+        if (!handler)
+            return this._status;
+        this.__statusHandler = handler;
+    }
+
+    _updateStatus(message){
+        this._status = message;
+        if (this.__statusHandler)
+            this.__statusHandler(message);
     }
 
     hasPermissions(){
@@ -103,7 +113,37 @@ class CameraApi extends CameraInterface{
         currentIndex++;
 
         this.activeDeviceId = devices[currentIndex];
+
+        this._updateStatus(`Current Device Id: ${this.activeDeviceId}`);
     };
+
+    async takePicture(...args){
+        console.log(`Not implemented`);
+    }
+
+    toggleTorch(...args){
+        console.log(`Not implemented`);
+    }
+
+    setTorchLevel(...args){
+        console.log(`Not implemented`);
+    }
+
+    setColorSpace(...args){
+        console.log(`Not implemented`);
+    }
+
+    setCrop(x, y, w, h, ...args){
+        console.log(`Not implemented`);
+    }
+
+    toggleContinuousAF(...args){
+        console.log(`Not implemented`);
+    }
+
+    getDeviceTypes(...args){
+        console.log(`Not implemented`);
+    }
 }
 
 module.exports = {
