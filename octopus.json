@@ -1040,6 +1040,23 @@
             ]
         },
         {
+            "name": "re-patch & rebuild eleaflet for Native integration",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "native-integration/leaflet-patch",
+                    "target": "leaflet-ssapp",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd leaflet-ssapp && npm run build build"
+                }
+            ]
+        },
+        {
             "name": "build-ios-app",
             "actions": [
                 {
@@ -1211,3 +1228,7 @@
         }
     ]
 }
+
+
+
+
