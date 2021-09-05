@@ -112,8 +112,9 @@ export class PdmBarcodeScannerController {
     if (!!customElements.get(CONTENT_COMPONENT_NAME))
       return;
 
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevicesCount = devices.filter(device => device.kind === 'videoinput').length;
+    // @ts-ignore
+    const devices = await window.Native.Camera.getDeviceTypes();
+    const videoDevicesCount = devices.length;
 
     customElements.define(CONTENT_COMPONENT_NAME, class extends HTMLElement{
       connectedCallback(){

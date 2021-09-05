@@ -5,7 +5,13 @@ const STATUS = {
     NO_PERMISSION: "No permission given"
 }
 
+const {CameraCapabilities} = require('./CameraCapabilities');
+
 class CameraInterface {
+
+    getCapabilities(){
+        return new CameraCapabilities();
+    }
 
     async isAvailable(){
         throw new Error(`Not implemented`);

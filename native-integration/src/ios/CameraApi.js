@@ -17,6 +17,7 @@ const {setTorchLevelNativeCamera,
     placeUint8GrayScaleArrayInCanvas,
     placeUint8CbCrArrayInCanvas
 } = require('./util/bridge');
+const {CameraCapabilities} = require("../CameraCapabilities");
 
 const MODE = {
     GL: "gl",
@@ -314,6 +315,12 @@ class CameraApi extends CameraInterface{
         return deviceTypeNames;
     }
 
+    getCapabilities(){
+        return new CameraCapabilities({
+            cameraEnv: 'ios',
+            getCameraStream: false
+        });
+    }
 }
 
 module.exports = {

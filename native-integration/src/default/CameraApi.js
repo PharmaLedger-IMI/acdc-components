@@ -1,4 +1,5 @@
 const {STATUS, CameraInterface} = require('../CameraInterface');
+const {CameraCapabilities} = require('../CameraCapabilities');
 
 class CameraApi extends CameraInterface{
     _hasPermissions = undefined;
@@ -59,7 +60,7 @@ class CameraApi extends CameraInterface{
 
     async isAvailable(){
         const self = this;
-        return await navigator.mediaDevices.enumerateDevices().then(devices => {
+        return await this.getDeviceTypes().then(devices => {
             self.__devices = devices.filter(d => d.kind === 'videoinput');
             return !!self.__devices.length;
         });
@@ -141,8 +142,20 @@ class CameraApi extends CameraInterface{
         console.log(`Not implemented`);
     }
 
-    getDeviceTypes(...args){
-        console.log(`Not implemented`);
+    getCapabilities(){
+        return new CameraCapabilities({
+            cameraEnv: 'default',
+            takePicture: false,
+            toggleTorch: false,
+            setTorchLevel: false,
+            setColorSpace: false,
+            setCrop: false,
+            toggleContinuousAf: false
+        });
+    }
+
+    async getDeviceTypes(){
+        return await navigator.mediaDevices.enumerateDevices();
     }
 }
 
