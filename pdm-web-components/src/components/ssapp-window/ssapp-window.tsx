@@ -33,11 +33,13 @@ export class SsappWindow {
   windowAction: EventEmitter
 
   connectedCallback() {
-    navigator.serviceWorker.addEventListener('message', this.getSWOnMessageHandler());
+    if (navigator.serviceWorker)
+      navigator.serviceWorker.addEventListener('message', this.getSWOnMessageHandler());
   }
 
   disconnectedCallback() {
-    navigator.serviceWorker.removeEventListener('message', this.getSWOnMessageHandler());
+    if (navigator.serviceWorker)
+      navigator.serviceWorker.removeEventListener('message', this.getSWOnMessageHandler());
   }
 
   componentShouldUpdate(newValue, oldValue, changedState) {

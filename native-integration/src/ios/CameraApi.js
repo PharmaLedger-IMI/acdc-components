@@ -1,5 +1,5 @@
-const threeLib = require('./lib/three.min');
 const orbitLib = require('./lib/OrbitControls');
+const threeLib = require('./lib/three.min');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {CameraProps} = require("./util/CameraProps");
 const {deviceTypeNames} = require('./util/constants');
