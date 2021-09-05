@@ -250,6 +250,185 @@ function getPLYCbCrImageFromResponse(cameraProps, response) {
     })
 }
 
+
+/**
+ * Starts the native camera frame grabber
+ * @param {CameraProps} cameraProps
+ * @param  {string} sessionPresetName one of the session presets available in sessionPresetNames
+ * @param  {string} flashMode can be `torch`, `flash`, or `off`, all other values will be treated as `auto`
+ * @param  {function} onFramePreviewCallback callBack for each preview frame. Data are received as PLRgbImage. Can be undefined if you want to call 'getPreviewFrame' yourself
+ * @param {number} targetPreviewFps fps for the preview
+ * @param {number} previewWidth width for the preview data
+ * @param {function} onFrameGrabbedCallBack callBack for each raw frame. Data are received as PLRgbImage or PLYCbCrImage. Can be undefined if you want to call 'getRawFrame' or 'getRawFrameYCbCr' yourself
+ * @param {number} targetGrabFps fps for the full resolution raw frame
+ * @param {boolean} [auto_orientation_enabled=false] set to true to rotate image feed with respect to device orientation
+ * @param {function} onCameraInitializedCallBack called after camera initilaization is finished
+ * @param  {number} [x=undefined] RGB/YCbCr raw frame ROI top-left x-coord
+ * @param  {number} [y=undefined] RGB/YCbCr raw frame ROI top-left y-coord
+ * @param  {number} [w=undefined] RGB/YCbCr raw frame ROI width
+ * @param  {number} [h=undefined] RGB/YCbCr raw frame ROI height
+ * @param  {boolean} [ycbcr=false] set to true to receive data as YCbCr 420 in 'onFrameGrabbedCallBack'
+ */
+function startNativeCamera(cameraProps, sessionPresetName, flashMode, onFramePreviewCallback = undefined, targetPreviewFps = 25, previewWidth = 640, onFrameGrabbedCallBack = undefined, targetGrabFps = 10, auto_orientation_enabled = false, onCameraInitializedCallBack = undefined, x = undefined, y = undefined, w = undefined, h = undefined, ycbcr = false) {
+    cameraProps._targetPreviewFps = targetPreviewFps
+    cameraProps._previewWidth = previewWidth
+    cameraProps._onFramePreviewCallback = onFramePreviewCallback;
+    cameraProps._onFrameGrabbedCallBack = onFrameGrabbedCallBack;
+    cameraProps._onCameraInitializedCallBack = onCameraInitializedCallBack;
+    cameraProps._ycbcr = ycbcr;
+    cameraProps._targetGrabFps = targetGrabFps
+    setRawCropRoi(cameraProps, x, y, w, h);
+    let params = {
+        "onInitializedJsCallback": onNativeCameraInitialized.name,
+        "sessionPreset": sessionPresetName,
+        "flashMode": flashMode,
+        "previewWidth": previewWidth,
+        "auto_orientation_enabled": auto_orientation_enabled
+    }
+    this.callNative("StartCamera", params);
+}
+
+/**
+ * @param {cameraProps} cameraProps
+ * @param  {PLCameraConfig} config
+ * @param  {function} onFramePreviewCallback callBack for each preview frame. Data are received as PLRgbImage. Can be undefined if you want to call 'getPreviewFrame' yourself
+ * @param  {number} targetPreviewFps=25 fps for the preview
+ * @param  {number} previewWidth=640 width for the preview data
+ * @param  {function} onFrameGrabbedCallBack=undefined callBack for each raw frame. Data are received as PLRgbImage or PLYCbCrImage. Can be undefined if you want to call 'getRawFrame' or 'getRawFrameYCbCr' yourself
+ * @param  {number} targetGrabFps=10 fps for the full resolution raw frame
+ * @param  {function} onCameraInitializedCallBack=undefined called after camera initilaization is finished
+ * @param  {number} x=undefined RGB/YCbCr raw frame ROI top-left x-coord
+ * @param  {number} y=undefined RGB/YCbCr raw frame ROI top-left y-coord
+ * @param  {number} w=undefined RGB/YCbCr raw frame ROI width
+ * @param  {number} h=undefined RGB/YCbCr raw frame ROI height
+ * @param  {boolean} ycbcr=false set to true to receive data as YCbCr 420 in 'onFrameGrabbedCallBack'
+ */
+function startNativeCameraWithConfig(cameraProps, config, onFramePreviewCallback = undefined, targetPreviewFps = 25, previewWidth = 640, onFrameGrabbedCallBack = undefined, targetGrabFps = 10, onCameraInitializedCallBack = undefined, x = undefined, y = undefined, w = undefined, h = undefined, ycbcr = false) {
+    cameraProps._targetPreviewFps = targetPreviewFps
+    cameraProps._previewWidth = previewWidth
+    cameraProps._onFramePreviewCallback = onFramePreviewCallback;
+    cameraProps._onFrameGrabbedCallBack = onFrameGrabbedCallBack;
+    cameraProps._onCameraInitializedCallBack = onCameraInitializedCallBack;
+    cameraProps._ycbcr = ycbcr;
+    cameraProps._targetGrabFps = targetGrabFps
+    setRawCropRoi(cameraProps, x, y, w, h);
+    let params = {
+        "onInitializedJsCallback": this.onNativeCameraInitialized.name,
+        "previewWidth": previewWidth,
+        "config": config
+    }
+    callNative("StartCameraWithConfig", params);
+}
+
+function onNativeCameraInitialized(cameraProps){
+    return function(wsPort){
+        cameraProps._serverUrl = `http://localhost:${wsPort}`
+        if (cameraProps._onFramePreviewCallback !== undefined) {
+            cameraProps._previewHandle = setInterval(() => {
+                let t0 = performance.now();
+                getPreviewFrame(cameraProps).then(image => {
+                    if (image instanceof PLRgbImage)
+                        this.onFramePreview(image, performance.now() - t0)
+                });
+            }, 1000 / cameraProps._targetPreviewFps);
+        }
+        if (cameraProps._onFrameGrabbedCallBack !== undefined) {
+            cameraProps._grabHandle = setInterval(() => {
+                let t0 = performance.now();
+                if (cameraProps._ycbcr) {
+                    getRawFrameYCbCr(cameraProps, cameraProps._x, cameraProps._y, cameraProps._w, cameraProps._h).then(image => {
+                        if (image instanceof PLYCbCrImage)
+                            this.onFrameGrabbed(image, performance.now() - t0);
+                    });
+                } else {
+                    getRawFrame(cameraProps, cameraProps._x, cameraProps._y, cameraProps._w, cameraProps._h).then(image => {
+                        if (image instanceof PLRgbImage)
+                            this.onFrameGrabbed(image, performance.now() - t0);
+                    });
+                }
+            }, 1000 / cameraProps._targetGrabFps);
+        }
+        if (cameraProps._onCameraInitializedCallBack !== undefined) {
+            setTimeout(() => {
+                this.onCameraInitializedCallBack();
+            }, 500);
+        }
+    }
+}
+
+function placeUint8RGBArrayInCanvas(cameraProps, canvasElem, array, w, h) {
+    let a = 1;
+    let b = 0;
+    if (cameraProps.invertRawFrameCheck.checked === true) {
+        a = -1;
+        b = 255;
+    }
+    canvasElem.width = w;
+    canvasElem.height = h;
+    let ctx = canvasElem.getContext('2d');
+    let clampedArray = new Uint8ClampedArray(w * h * 4);
+    let j = 0
+    for (let i = 0; i < 3 * w * h; i += 3) {
+        clampedArray[j] = b + a * array[i];
+        clampedArray[j + 1] = b + a * array[i + 1];
+        clampedArray[j + 2] = b + a * array[i + 2];
+        clampedArray[j + 3] = 255;
+        j += 4;
+    }
+    let imageData = new ImageData(clampedArray, w, h);
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function placeUint8GrayScaleArrayInCanvas(cameraProps, canvasElem, array, w, h) {
+    let a = 1;
+    let b = 0;
+    if (cameraProps.invertRawFrameCheck.checked === true) {
+        a = -1;
+        b = 255;
+    }
+    canvasElem.width = w;
+    canvasElem.height = h;
+    let ctx = canvasElem.getContext('2d');
+    let clampedArray = new Uint8ClampedArray(w * h * 4);
+    let j = 0
+    for (let i = 0; i < w * h; i++) {
+        clampedArray[j] = b + a * array[i];
+        clampedArray[j + 1] = b + a * array[i];
+        clampedArray[j + 2] = b + a * array[i];
+        clampedArray[j + 3] = 255;
+        j += 4;
+    }
+    let imageData = new ImageData(clampedArray, w, h);
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function placeUint8CbCrArrayInCanvas(canvasElemCb, canvasElemCr, array, w, h) {
+    canvasElemCb.width = w;
+    canvasElemCb.height = h;
+    canvasElemCr.width = w;
+    canvasElemCr.height = h;
+    var ctxCb = canvasElemCb.getContext('2d');
+    var ctxCr = canvasElemCr.getContext('2d');
+    var clampedArrayCb = new Uint8ClampedArray(w * h * 4);
+    var clampedArrayCr = new Uint8ClampedArray(w * h * 4);
+    let j = 0
+    for (let i = 0; i < 2 * w * h; i += 2) {
+        clampedArrayCb[j] = array[i];
+        clampedArrayCb[j + 1] = array[i];
+        clampedArrayCb[j + 2] = array[i];
+        clampedArrayCb[j + 3] = 255;
+        clampedArrayCr[j] = array[i + 1];
+        clampedArrayCr[j + 1] = array[i + 1];
+        clampedArrayCr[j + 2] = array[i + 1];
+        clampedArrayCr[j + 3] = 255;
+        j += 4;
+    }
+    var imageDataCb = new ImageData(clampedArrayCb, w, h);
+    ctxCb.putImageData(imageDataCb, 0, 0);
+    var imageDataCr = new ImageData(clampedArrayCr, w, h);
+    ctxCr.putImageData(imageDataCr, 0, 0);
+}
+
 module.exports = {
     stopNativeCamera,
     takePictureBase64NativeCamera,
@@ -259,6 +438,12 @@ module.exports = {
     getPreviewFrame,
     setPreferredColorSpaceNativeCamera,
     getRawFrame,
-    getCameraConfiguration
+    getCameraConfiguration,
+    startNativeCamera,
+    startNativeCameraWithConfig,
+    setRawCropRoi,
+    placeUint8RGBArrayInCanvas,
+    placeUint8GrayScaleArrayInCanvas,
+    placeUint8CbCrArrayInCanvas
 }
 

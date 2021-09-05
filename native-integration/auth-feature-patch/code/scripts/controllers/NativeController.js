@@ -1,215 +1,60 @@
 const {WebcController} = WebCardinal.controllers;
 
-
-const sessionPresetNames = [
-    "low",
-    "medium",
-    "high",
-    "inputPriority",
-    "hd1280x720",
-    "hd1920x1080",
-    "hd4K3840x2160",
-    "iFrame960x540",
-    "iFrame1280x720",
-    "vga640x480",
-    "cif352x288",
-    "photo"
-];
-
-const deviceTypeNames = [
-    "wideAngleCamera",
-    "tripleCamera",
-    "dualCamera",
-    "dualWideCamera",
-    "ultraWideAngleCamera",
-    "telephotoCamera",
-    "trueDepthCamera"
-]
-
-/** Class representing a raw interleaved RGB image */
-class PLRgbImage {
-    /**
-     * create a PLRgbImage
-     * @param  {ArrayBuffer} arrayBuffer contains interleaved RGB raw data
-     * @param  {Number} width image width
-     * @param  {Number} height image height
-     */
-    constructor(arrayBuffer, width, height) {
-        this.arrayBuffer = arrayBuffer;
-        this.width = width;
-        this.height = height;
-    }
-};
-
-/**Class representing a raw YCbCr 420 image. First chunck of size wxh is the Y plane. 2nd chunk of size wxh/2 is the interleaved CbCr plane */
-class PLYCbCrImage {
-    /** creates a PLYCbCrImage. The Y-plane and CbCr interpleaved plane are copied seperately.
-     * @param  {ArrayBuffer} arrayBuffer raw data
-     * @param  {Number} width image width, must be even
-     * @param  {Number} height image height, must be even
-     */
-    constructor(arrayBuffer, width, height) {
-        this.width = width;
-        this.height = height;
-        if (!Number.isInteger(this.width / 2) || !Number.isInteger(this.height / 2)) {
-            throw `Only even width and height is supported, got w=${this.width}, h=${this.height} `
-        }
-        this.yArrayBuffer = arrayBuffer.slice(0, this.width * this.height);
-        this.cbCrArrayBuffer = arrayBuffer.slice(this.width * this.height)
-    }
-}
-
-/** Class wrapping a camera configuration */
-class PLCameraConfig {
-
-    /** creates a camera configuration for use with function `startNativeCameraWithConfig`
-     * @param  {string} sessionPreset one of the session presets available in sessionPresetNames
-     * @param  {string} flashConfiguration="auto" can be `torch`, `flash`, or `off`, all other values will be treated as `auto`
-     * @param  {boolean} continuousFocus=true Defines the preferred [AVCaptureDevice.FocusMode](https://developer.apple.com/documentation/avfoundation/avcapturedevice/focusmode). If true, preferred focusmode will be set to **continuousAutoFocus**, otherwise the mode will switch between **autoFocus** and **locked**.
-     * @param  {boolean} autoOrientationEnabled=true If set to true, camera session will attempt to automatically adjust the preview and capture orientation based on the device orientation
-     * @param  {[String]} deviceTypes=["wideAngleCamera"] Additional criteria for selecting the camera. Supported values are **tripleCamera**, **dualCamera**, **dualWideCamera**, **wideAngleCamera**, **ultraWideAngleCamera**, **telephotoCamera** and **trueDepthCamera**. Device discovery session will prioritize device types in the array based on their array index.
-     * @param  {String} cameraPosition="back" "back" or "front". If not defined, this setting will default to "back"
-     * @param  {boolean} highResolutionCaptureEnabled=true If high resolution is enabled, the photo capture will be taken with the highest possible resolution available.
-     * @param  {string | undefined} preferredColorSpace=undefined Possible values are "sRGB", "P3_D65" or "HLG_BT2020".
-     * @param  {number} torchLevel=1.0 Float in the range of 0 to 1.0
-     * @param  {number} aspectRatio=4.0/3.0 This value will not be used
-     */
-    constructor(sessionPreset, flashConfiguration = "auto", continuousFocus = true, autoOrientationEnabled = true, deviceTypes = ["wideAngleCamera"], cameraPosition = "back", highResolutionCaptureEnabled = true, preferredColorSpace = undefined, torchLevel = 1.0, aspectRatio = 4.0 / 3.0) {
-        this.sessionPreset = sessionPreset;
-        this.flashConfiguration = flashConfiguration;
-        this.torchLevel = torchLevel;
-        this.continuousFocus = continuousFocus;
-        this.autoOrientationEnabled = autoOrientationEnabled;
-        this.deviceTypes = deviceTypes;
-        this.cameraPosition = cameraPosition;
-        this.highResolutionCaptureEnabled = highResolutionCaptureEnabled;
-        this.preferredColorSpace = preferredColorSpace;
-        this.aspectRatio = aspectRatio;
-    }
-}
-
-
-
-
-
 export default class NativeController extends WebcController{
-    constructor(element, history) {
-        super(element, history);
-        this.setModel({
-            data: '', hasCode: false, hasError: false, nativeSupport: false,
-            useScandit: false
-        });
-        if (window != undefined) {
-            window.onNativeCameraInitialized = this.onNativeCameraInitialized;
-            window.onPictureTaken = this.onPictureTaken;
-            window.getPreviewFrame = this.getPreviewFrame;
-            window.getRawFrame = this.getRawFrame;
-            window.getSnapshot = this.getSnapshot;
-            window.getPLRgbImageFromResponse = this.getPLRgbImageFromResponse;
-            window.onFrameGrabbed = this.onFrameGrabbed;
-            window.onFramePreview = this.onFramePreview;
-            window.onFramePreview = this.onFramePreview;
-            window.onCameraInitializedCallBack = this.onCameraInitializedCallBack;
-            window.placeUint8RGBArrayInCanvas = this.placeUint8RGBArrayInCanvas;
-            window.show = this.show;
-            window.hide = this.hide;
-        }
+    elements = {};
 
-        this.cameraProps = {};
-        this.cameraProps.previewWidth = 360;
-        this.cameraProps.previewHeight = Math.round(this.cameraProps.previewWidth * 16 / 9); // assume 16:9 portrait at start
-        this.cameraProps.targetPreviewFPS = 25;
-        this.cameraProps.fpsMeasurementInterval = 5;
-        this.cameraProps.previewFramesCounter = 0;
-        this.cameraProps.previewFramesElapsedSum = 0;
-        this.cameraProps.previewFramesMeasuredFPS = 0;
-        this.cameraProps.targetRawFPS = 10;
-        this.cameraProps.rawCrop_x = undefined;
-        this.cameraProps.rawCrop_y = undefined;
-        this.cameraProps.rawCrop_w = undefined;
-        this.cameraProps.rawCrop_h = undefined;
-        this.cameraProps.rawFramesCounter = 0;
-        this.cameraProps.rawFramesElapsedSum = 0;
-        this.cameraProps.rawFramesMeasuredFPS = 0;
-        this.cameraProps.bytePerChannel = 3;
-        // @ts-ignore
-        if (this.cameraProps.bytePerChannel === 4) {
-            // @ts-ignore
-            this.cameraProps.formatTexture = THREE.RGBAFormat;
-        } else if (this.cameraProps.bytePerChannel === 3) {
-            // @ts-ignore
-            this.cameraProps.formatTexture = THREE.RGBFormat;
-        }
-        this.cameraProps.flashMode = 'off'
-        this.cameraProps.usingMJPEG = false
+    _bindElements(){
+        this.elements.status_test = this.element.querySelector('#status_test');
+        this.elements.status_fps_preview = this.element.querySelector('#status_fps_preview');
+        this.elements.status_fps_raw = this.element.querySelector('#status_fps_raw');
+        this.elements.startCameraButtonGL = this.element.querySelector('#startCameraButtonGL');
+        this.elements.startCameraButtonMJPEG = this.element.querySelector('#startCameraButtonMJPEG');
+        this.elements.stopCameraButton = this.element.querySelector('#stopCameraButton');
+        this.elements.stopCameraButton.disabled = true
+        this.elements.takePictureButton1 = this.element.querySelector('#takePictureButton1');
+        this.elements.takePictureButton2 = this.element.querySelector('#takePictureButton2');
+        this.elements.flashButton = this.element.querySelector('#flashButton');
+        this.elements.torchLevelRangeLabel = this.element.querySelector('#torchLevelRangeLabel');
+        this.elements.torchRange = this.element.querySelector('#torchLevelRange');
+        this.elements.snapshotImage = this.element.querySelector('#snapshotImage');
+        this.elements.getConfigButton = this.element.querySelector('#getConfigButton');
+        this.elements.configInfo = this.element.querySelector('#configInfo');
+        this.elements.colorspaceButton = this.element.querySelector('#colorspaceButton');
+        this.elements.continuousAFButton = this.element.querySelector("#continuousAFButton");
+        this.elements.canvasgl = this.element.querySelector('#cameraCanvas');
+        this.elements.streamPreview = this.element.querySelector('#streamPreview');
+        this.elements.rawCropCanvas = this.element.querySelector('#rawCropCanvas');
+        this.elements.rawCropCbCanvas = this.element.querySelector('#rawCropCbCanvas');
+        this.elements.rawCropCrCanvas = this.element.querySelector('#rawCropCrCanvas');
+        this.elements.invertRawFrameCheck = this.element.querySelector('#invertRawFrameCheck');
+        this.elements.cropRawFrameCheck = this.element.querySelector('#cropRawFrameCheck');
+        this.elements.ycbcrCheck = this.element.querySelector('#ycbcrCheck');
+        this.elements.rawCropRoiInput = this.element.querySelector('#rawCropRoiInput');
+        this.elements.selectCameraButton = this.element.querySelector("#selectCameraButton");
+        this.elements.select_preset = this.element.querySelector('#select_preset');
+        this.elements.select_cameras = this.element.querySelector('#select_cameras');
 
-        this.cameraProps.afOn = true;
-        this.cameraProps.selectedCamera = "back";
-        this.cameraProps.selectedColorspace = undefined;
-
-        //START VARS FROM BRIDGE FILE 
-        this.cameraProps._previewHandle = undefined;
-        this.cameraProps._grabHandle = undefined;
-        this.cameraProps._onFramePreviewCallback = undefined;
-        this.cameraProps._targetPreviewFps = 20;
-        this.cameraProps._previewWidth = 0;
-        this.cameraProps._serverUrl = undefined;
-        this.cameraProps._cameraRunning = false;
-        this.cameraProps._onFrameGrabbedCallBack = undefined;
-        this.cameraProps._onCameraInitializedCallBack = undefined;
-        this.cameraProps._targetGrabFps = 10;
-        this.cameraProps._ycbcr = false;
-        this.cameraProps._x = undefined;
-        this.cameraProps._y = undefined;
-        this.cameraProps._w = undefined;
-        this.cameraProps._h = undefined;
-         //END  VARS FROM BRIDGE FILE 
-
-
-        window.cameraProps = this.cameraProps;
-
-        this.cameraProps.status_test = this.element.querySelector('#status_test');
-        this.cameraProps.status_fps_preview = this.element.querySelector('#status_fps_preview');
-        this.cameraProps.status_fps_raw = this.element.querySelector('#status_fps_raw');
-
-        this.cameraProps.startCameraButtonGL = this.element.querySelector('#startCameraButtonGL');
-        this.cameraProps.startCameraButtonMJPEG = this.element.querySelector('#startCameraButtonMJPEG');
-        this.cameraProps.stopCameraButton = this.element.querySelector('#stopCameraButton');
-        this.cameraProps.stopCameraButton.disabled = true
-
-        this.cameraProps.takePictureButton1 = this.element.querySelector('#takePictureButton1');
-        this.cameraProps.takePictureButton2 = this.element.querySelector('#takePictureButton2');
-        this.cameraProps.flashButton = this.element.querySelector('#flashButton');
-
-
-        this.cameraProps.torchLevelRangeLabel = this.element.querySelector('#torchLevelRangeLabel');
-
-        this.cameraProps.torchRange = this.element.querySelector('#torchLevelRange');
-        this.cameraProps.torchRange.addEventListener('change', () => {
-            let level = parseFloat(this.cameraProps.torchRange.value);
-            if (level != level) {
+    }
+    
+    _bindListeners(){
+        this.elements.torchRange.addEventListener('change', () => {
+            let level = parseFloat(this.elements.torchRange.value);
+            if (level === undefined) {
                 alert('failed to parse torch level value');
             } else {
-                this.setTorchLevelNativeCamera(level);
-                this.cameraProps.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.cameraProps.torchRange.value}`;
+                this.Camera.setTorchLevel(level);
+                this.elements.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.elements.torchRange.value}`;
             }
-        })
-
-        this.cameraProps.torchRange.value = "1.0";
-        this.cameraProps.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.cameraProps.torchRange.value}`;
-        this.cameraProps.snapshotImage = this.element.querySelector('#snapshotImage');
-        this.cameraProps.getConfigButton = this.element.querySelector('#getConfigButton');
-        this.cameraProps.getConfigButton.addEventListener("click", (e) => {
-            this.getCameraConfiguration()
+        });
+        this.elements.getConfigButton.addEventListener("click", (e) => {
+            this.Camera.getConstraints()
                 .then(data => {
-                    this.cameraProps.configInfo.innerHTML = JSON.stringify(data);
+                    this.elements.configInfo.innerHTML = JSON.stringify(data);
                 })
         });
-        this.cameraProps.configInfo = this.element.querySelector('#configInfo');
-        this.cameraProps.colorspaceButton = this.element.querySelector('#colorspaceButton');
-        this.cameraProps.colorspaceButton.addEventListener('click', (e) => {
+        this.elements.colorspaceButton.addEventListener('click', (e) => {
             let nextColorspace = '';
-            switch (this.cameraProps.colorspaceButton.innerHTML) {
+            switch (this.elements.colorspaceButton.innerHTML) {
                 case 'sRGB':
                     nextColorspace = 'HLG_BT2020';
                     break;
@@ -220,207 +65,146 @@ export default class NativeController extends WebcController{
                     nextColorspace = 'sRGB';
                     break;
             }
-            this.cameraProps.colorspaceButton.innerHTML = nextColorspace;
-            this.setPreferredColorSpaceNativeCamera(nextColorspace);
+            this.elements.colorspaceButton.innerHTML = nextColorspace;
+            this.Camera.setColorSpace(nextColorspace);
         });
-
-        this.cameraProps.continuousAFButton = this.element.querySelector("#continuousAFButton");
-        this.cameraProps.continuousAFButton.addEventListener('click', (e) => {
-            if (this.cameraProps.afOn === true) {
-                this.cameraProps.afOn = false;
-                this.cameraProps.continuousAFButton.innerHTML = "AF OFF";
-            } else {
-                this.cameraProps.afOn = true;
-                this.cameraProps.continuousAFButton.innerHTML = "AF ON";
-            }
+        this.elements.continuousAFButton.addEventListener('click', (e) => {
+            this.elements.continuousAFButton.innerHTML = `AF ${this.Camera.toggleContinuousAF() ? "ON" : "OFF"}`
         });
-        this.cameraProps.selectCameraButton = this.element.querySelector("#selectCameraButton");
-        this.cameraProps.selectCameraButton.addEventListener('click', (e) => {
-            if (this.cameraProps.selectedCamera === "back") {
-                this.cameraProps.selectedCamera = "front";
-                this.cameraProps.selectCameraButton.innerHTML = "Front Cam";
-            } else {
-                this.cameraProps.selectedCamera = "back";
-                this.cameraProps.selectCameraButton.innerHTML = "Back Cam";
-            }
+        this.elements.selectCameraButton.addEventListener('click', (e) => {
+            this.elements.selectCameraButton.innerHTML = `${this.Camera.switchCamera() === 'front' ? "Front" : "Back"} Cam`;
         });
-        this.cameraProps.canvasgl = this.element.querySelector('#cameraCanvas');
-        this.cameraProps.streamPreview = this.element.querySelector('#streamPreview');
-
-        this.cameraProps.rawCropCanvas = this.element.querySelector('#rawCropCanvas');
-        this.cameraProps.rawCropCbCanvas = this.element.querySelector('#rawCropCbCanvas');
-        this.cameraProps.rawCropCrCanvas = this.element.querySelector('#rawCropCrCanvas');
-
-        this.cameraProps.invertRawFrameCheck = this.element.querySelector('#invertRawFrameCheck');
-        this.cameraProps.cropRawFrameCheck = this.element.querySelector('#cropRawFrameCheck');
-
-
-        this.cameraProps.ycbcrCheck = this.element.querySelector('#ycbcrCheck');
-        this.cameraProps.rawCropRoiInput = this.element.querySelector('#rawCropRoiInput');
-        this.cameraProps.rawCropRoiInput.addEventListener("change", () => {
+        this.elements.rawCropRoiInput.addEventListener("change", () => {
             this.setCropCoords();
         });
-        this.cameraProps.cropRawFrameCheck.addEventListener("change", () => {
+        this.elements.cropRawFrameCheck.addEventListener("change", () => {
             if (this.checked) {
                 this.show(this.cameraProps.rawCropRoiInput);
             } else {
                 this.hide(this.cameraProps.rawCropRoiInput);
             }
         });
-        this.hide(this.cameraProps.rawCropRoiInput);
-        this.hide(this.cameraProps.rawCropCanvas);
-        this.hide(this.cameraProps.rawCropCbCanvas);
-        this.hide(this.cameraProps.rawCropCrCanvas);
-
-
-
-        this.cameraProps.select_preset = this.element.querySelector('#select_preset');
-
-        let i = 0
-        for (let presetName of sessionPresetNames) {
-            var p_i = new Option(presetName, presetName)
-            // @ts-ignore
-            this.cameraProps.select_preset.options.add(p_i);
-            i++;
-        }
-        // @ts-ignore
-        for (let i = 0; i < this.cameraProps.select_preset.options.length; i++) {
-            // @ts-ignore
-            if (this.cameraProps.select_preset.options[i].value === 'hd1920x1080') {
-                // @ts-ignore
-                this.cameraProps.select_preset.selectedIndex = i;
-                break;
-            }
-        }
-        // @ts-ignore
-        this.cameraProps.selectedPresetName = this.cameraProps.select_preset.options[this.cameraProps.select_preset.selectedIndex].value;
-        this.cameraProps.status_test.innerHTML = this.cameraProps.selectedPresetName;
-
-
-        this.cameraProps.select_cameras = this.element.querySelector('#select_cameras');
-        // hardcoded cameras list
-        for (let deviceTypeName of deviceTypeNames) {
-            // @ts-ignore
-            this.cameraProps.select_cameras.options.add(new Option(deviceTypeName, deviceTypeName));
-        }
-        // @ts-ignore
-        this.cameraProps.select_cameras.selectedIndex = 0;
-        this.cameraProps.selectedDevicesNames = [deviceTypeNames[0]]
-
-
-        this.cameraProps.startCameraButtonGL.addEventListener('click', (e) => {
-            this.cameraProps.usingMJPEG = false
-            this.cameraProps.select_preset.disabled = true;
-            this.cameraProps.startCameraButtonGL.disabled = true
-            this.cameraProps.startCameraButtonMJPEG.disabled = true
-            this.cameraProps.stopCameraButton.disabled = false
-            this.cameraProps.ycbcrCheck.disabled = true
-            this.cameraProps.continuousAFButton.disabled = true
-            this.cameraProps.selectCameraButton.disabled = true
-            this.cameraProps.select_cameras.disabled = true
-            this.setCropCoords();
-            this.show(this.cameraProps.canvasgl);
-            this.cameraProps.canvasgl.parentElement.style.display = "block";
-            this.hide(this.cameraProps.streamPreview);
-            this.cameraProps.streamPreview.parentElement.style.display = "none";
-            this.show(this.cameraProps.status_fps_preview);
-            this.show(this.cameraProps.status_fps_raw);
-            this.setupGLView(this.cameraProps.previewWidth, this.cameraProps.previewHeight);
-            const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange.value));
-            this.startNativeCameraWithConfig(
-                config,
-                "onFramePreview",
-                this.cameraProps.targetPreviewFPS,
-                this.cameraProps.previewWidth,
-                "onFrameGrabbed",
-                this.cameraProps.targetRawFPS,
-                undefined,
-                this.cameraProps.rawCrop_x,
-                this.cameraProps.rawCrop_y,
-                this.cameraProps.rawCrop_w,
-                this.cameraProps.rawCrop_h,
-                this.cameraProps.ycbcrCheck.checked);
-        })
-        this.cameraProps.startCameraButtonMJPEG.addEventListener('click', (e) => {
-            this.cameraProps.usingMJPEG = true
-            this.cameraProps.select_preset.disabled = true;
-            this.cameraProps.startCameraButtonGL.disabled = true
-            this.cameraProps.startCameraButtonMJPEG.disabled = true
-            this.cameraProps.stopCameraButton.disabled = false
-            this.cameraProps.ycbcrCheck.disabled = true
-            this.cameraProps.continuousAFButton.disabled = true
-            this.cameraProps.selectCameraButton.disabled = true
-            this.cameraProps.select_cameras.disabled = true
-            this.setCropCoords();
-            this.hide(this.cameraProps.canvasgl);
-            this.cameraProps.canvasgl.parentElement.style.display = "none";
-            this.show(this.cameraProps.streamPreview);
-            this.cameraProps.streamPreview.parentElement.style.display = "block";
-            this.hide(this.cameraProps.status_fps_preview);
-            this.show(this.cameraProps.status_fps_raw);
-            const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange.value));
-            this.startNativeCameraWithConfig(
-                config,
-                undefined,
-                this.cameraProps.targetPreviewFPS,
-                this.cameraProps.previewWidth,
-                "onFrameGrabbed",
-                this.cameraProps.targetRawFPS,
-                "onCameraInitializedCallBack",
-                this.cameraProps.rawCrop_x,
-                this.cameraProps.rawCrop_y,
-                this.cameraProps.rawCrop_w,
-                this.cameraProps.rawCrop_h,
-                this.cameraProps.ycbcrCheck.checked);
+        this.elements.startCameraButtonGL.addEventListener('click', async (e) => {
+            this.elements.select_preset.disabled = true;
+            this.elements.startCameraButtonGL.disabled = true
+            this.elements.startCameraButtonMJPEG.disabled = true
+            this.elements.stopCameraButton.disabled = false
+            this.elements.ycbcrCheck.disabled = true
+            this.elements.continuousAFButton.disabled = true
+            this.elements.selectCameraButton.disabled = true
+            this.elements.select_cameras.disabled = true
+            this.show(this.elements.canvasgl);
+            this.elements.canvasgl.parentElement.style.display = "block";
+            this.hide(this.elements.streamPreview);
+            this.elements.streamPreview.parentElement.style.display = "none";
+            this.show(this.elements.status_fps_preview);
+            this.show(this.elements.status_fps_raw);
+            await this.Camera.bindStreamToElement(this.elements.canvasgl,{ycbcrCheck: this.elements.ycbcrCheck.value});
         });
-        this.cameraProps.stopCameraButton.addEventListener('click', () => {
+        this.elements.startCameraButtonMJPEG.addEventListener('click', async (e) => {
+            this.elements.select_preset.disabled = true;
+            this.elements.startCameraButtonGL.disabled = true
+            this.elements.startCameraButtonMJPEG.disabled = true
+            this.elements.stopCameraButton.disabled = false
+            this.elements.ycbcrCheck.disabled = true
+            this.elements.continuousAFButton.disabled = true
+            this.elements.selectCameraButton.disabled = true
+            this.elements.select_cameras.disabled = true
+            this.hide(this.elements.canvasgl);
+            this.elements.canvasgl.parentElement.style.display = "none";
+            this.show(this.elements.streamPreview);
+            this.elements.streamPreview.parentElement.style.display = "block";
+            this.hide(this.elements.status_fps_preview);
+            this.show(this.elements.status_fps_raw);
+            await this.Camera.bindStreamToElement(this.elements.streamPreview, {mode: "mjpeg", ycbcrCheck: this.elements.ycbcrCheck.value});
+        });
+        this.elements.stopCameraButton.addEventListener('click', () => {
             window.close();
-            this.stopNativeCamera();
-            this.cameraProps.select_preset.disabled = false;
-            this.cameraProps.startCameraButtonGL.disabled = false
-            this.cameraProps.startCameraButtonMJPEG.disabled = false
-            this.cameraProps.stopCameraButton.disabled = true
-            this.cameraProps.ycbcrCheck.disabled = false
-            this.cameraProps.continuousAFButton.disabled = false
-            this.cameraProps.selectCameraButton.disabled = false
-            this.cameraProps.select_cameras.disabled = false
+            this.Camera.closeCameraStream();
+            this.elements.select_preset.disabled = false;
+            this.elements.startCameraButtonGL.disabled = false
+            this.elements.startCameraButtonMJPEG.disabled = false
+            this.elements.stopCameraButton.disabled = true
+            this.elements.ycbcrCheck.disabled = false
+            this.elements.continuousAFButton.disabled = false
+            this.elements.selectCameraButton.disabled = false
+            this.elements.select_cameras.disabled = false
         });
-        this.cameraProps.takePictureButton1.addEventListener('click', () => {
-            this.takePictureBase64NativeCamera(this.onPictureTaken)
+        this.elements.takePictureButton1.addEventListener('click', async () => {
+            await this.Camera.takePicture();
         });
-        this.cameraProps.takePictureButton2.addEventListener('click', () => {
-            this.getSnapshot().then(b => {
-                this.cameraProps.snapshotImage.src = URL.createObjectURL(b);
-            });
+        this.elements.takePictureButton2.addEventListener('click', async  () => {
+            await this.Camera.takePicture("mjpeg");
         });
+        this.elements.flashButton.addEventListener('click', () => {
+            const newMode = this.Camera.toggleTorch();
+            switch (newMode) {
 
-        this.cameraProps.flashButton.addEventListener('click', () => {
-            switch (this.cameraProps.flashMode) {
-                case 'off':
-                    this.cameraProps.flashMode = 'flash';
-                    break;
                 case 'flash':
-                    this.cameraProps.flashMode = 'torch';
-                    this.cameraProps.torchRange.disabled = false;
+                    this.elements.torchRange.disabled = false;
                     break;
                 case 'torch':
-                    this.cameraProps.flashMode = 'off';
-                    this.cameraProps.torchRange.disabled = true;
+                    this.elements.torchRange.disabled = true;
                     break;
                 default:
                     break;
             }
-            this.cameraProps.flashButton.innerHTML = `T ${this.cameraProps.flashMode}`;
-            this.setFlashModeNativeCamera(this.cameraProps.flashMode);
+            this.elements.flashButton.innerHTML = `T ${newMode}`;
         });
+    }
+    
+    _initializeValues(){
+        this.elements.torchRange.value = "1.0";
+        this.elements.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.elements.torchRange.value}`;
+        let i = 0
+        for (let presetName of sessionPresetNames) {
+            var p_i = new Option(presetName, presetName)
+            // @ts-ignore
+            this.elements.select_preset.options.add(p_i);
+            i++;
+        }
+        for (let i = 0; i < this.cameraProps.elements.options.length; i++) {
+            if (this.cameraProps.elements.options[i].value === 'hd1920x1080') {
+                this.cameraProps.elements.selectedIndex = i;
+                break;
+            }
+        }
+        this.cameraProps.selectedPresetName = this.elements.select_preset.options[this.elements.select_preset.selectedIndex].value;
+        this.elements.status_test.innerHTML = this.cameraProps.selectedPresetName;
+        // hardcoded cameras list
+        for (let deviceTypeName of this.Camera.getDeviceTypes()) {
+            // @ts-ignore
+            this.elements.select_cameras.options.add(new Option(deviceTypeName, deviceTypeName));
+        }
+        this.elements.select_cameras.selectedIndex = 0;
+        this.cameraProps.selectedDevicesNames = [this.Camera.getDeviceTypes()[0]]
+        
+    }
+    
+    constructor(element, history) {
+        super(element, history);
+        this.setModel({
+            data: '',
+            hasCode: false,
+            hasError: false,
+            nativeSupport: false,
+            useScandit: false
+        });
+
+        this.Camera = window.Native.Camera;
+        this._bindElements();
+        this._initializeValues();
+        this._bindListeners();
+
+        this.hide(this.elements.rawCropRoiInput);
+        this.hide(this.elements.rawCropCanvas);
+        this.hide(this.elements.rawCropCbCanvas);
+        this.hide(this.elements.rawCropCrCanvas);
 
         this.hide(this.cameraProps.canvasgl);
         this.hide(this.cameraProps.streamPreview);
         this.hide(this.cameraProps.status_fps_preview);
         this.hide(this.cameraProps.status_fps_raw);
-    }
-    onCameraInitializedCallBack() {
-        this.cameraProps.streamPreview.src = `${this.cameraProps._serverUrl}/mjpeg`;
     }
 
     ChangeDesiredCamerasList() {
@@ -432,100 +216,41 @@ export default class NativeController extends WebcController{
         }
     }
 
-    setupGLView(w, h) {
-        this.cameraProps.scene = new THREE.Scene();
-        this.cameraProps.camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 10000);
-        this.cameraProps.renderer = new THREE.WebGLRenderer({ canvas: this.cameraProps.canvasgl, antialias: true });
-
-        let cameraHeight = h / 2 / Math.tan(this.cameraProps.camera.fov / 2 * (Math.PI / 180));
-        this.cameraProps.camera.position.set(0, 0, cameraHeight);
-        let clientHeight = Math.round(h / w * this.cameraProps.canvasgl.clientWidth);
-        this.cameraProps.renderer.setSize(this.cameraProps.canvasgl.clientWidth, clientHeight);
-
-        this.cameraProps.controls = new THREE.OrbitControls(this.cameraProps.camera, this.cameraProps.renderer.domElement);
-        this.cameraProps.controls.enablePan = false;
-        this.cameraProps.controls.enableZoom = false;
-        this.cameraProps.controls.enableRotate = false;
-        const dataTexture = new Uint8Array(w * h * this.cameraProps.bytePerChannel);
-        for (let i = 0; i < w * h * this.cameraProps.bytePerChannel; i++)
-            dataTexture[i] = 255;
-        const frameTexture = new THREE.DataTexture(dataTexture, w, h, this.cameraProps.formatTexture, THREE.UnsignedByteType);
-        frameTexture.needsUpdate = true;
-        const planeGeo = new THREE.PlaneBufferGeometry(w, h);
-        this.cameraProps.material = new THREE.MeshBasicMaterial({
-            map: frameTexture,
-        });
-
-        this.cameraProps.material.map.flipY = true;
-        const plane = new THREE.Mesh(planeGeo, this.cameraProps.material);
-        this.cameraProps.scene.add(plane);
-        this.animate();
-    }
-
-    animate() {
-        window.requestAnimationFrame(() => this.animate());
-        this.cameraProps.renderer.render(this.cameraProps.scene, this.cameraProps.camera);
-    }
-
     ChangePresetList() {
         let selectedPresetName = this.cameraProps.select_preset.options[this.cameraProps.select_preset.selectedIndex].value;
         this.cameraProps.status_test.innerHTML = selectedPresetName;
     }
 
     setCropCoords() {
-        if (this.cameraProps.cropRawFrameCheck.checked) {
-            const coords = this.cameraProps.rawCropRoiInput.value.split(",");
-            this.cameraProps.rawCrop_x = parseInt(coords[0]);
-            this.cameraProps.rawCrop_y = parseInt(coords[1]);
-            this.cameraProps.rawCrop_w = parseInt(coords[2]);
-            this.cameraProps.rawCrop_h = parseInt(coords[3]);
-            if (this.cameraProps.rawCrop_x != this.cameraProps.rawCrop_x ||
-                this.cameraProps.rawCrop_y != this.cameraProps.rawCrop_y ||
-                this.cameraProps.rawCrop_w != this.cameraProps.rawCrop_w ||
-                this.cameraProps.rawCrop_h != this.cameraProps.rawCrop_h) {
+        let rawCrop = {
+            x: undefined,
+            y: undefined,
+            w: undefined,
+            h: undefined
+        }
+        
+        let result = Object.assign({}, rawCrop);
+        if (this.elements.cropRawFrameCheck.checked) {
+            const coords = this.elements.rawCropRoiInput.value.split(",");
+            let rawCrop = {
+                x: parseInt(coords[0]),
+                y: parseInt(coords[1]),
+                w: parseInt(coords[2]),
+                h: parseInt(coords[3])
+            }
+           
+            if (!Object.keys(rawCrop).every(k => rawCrop[k] !== undefined)) {
                 alert("failed to parse coords");
-                this.cameraProps.cropRawFrameCheck.checked = false;
-                this.hide(rawCropRoiInput);
-                this.cameraProps.rawCrop_x = undefined;
-                this.cameraProps.rawCrop_y = undefined;
-                this.cameraProps.rawCrop_w = undefined;
-                this.cameraProps.rawCrop_h = undefined;
+                this.elements.cropRawFrameCheck.checked = false;
+                
+                this.hide(this.elements.rawCropRoiInput);
+                
+                result = rawCrop;
             }
         } else {
-            this.cameraProps.rawCrop_x = undefined;
-            this.cameraProps.rawCrop_y = undefined;
-            this.cameraProps.rawCrop_w = undefined;
-            this.cameraProps.rawCrop_h = undefined;
+            result = rawCrop;
         }
-        this.setRawCropRoi(this.cameraProps.rawCrop_x, this.cameraProps.rawCrop_y, this.cameraProps.rawCrop_w, this.cameraProps.rawCrop_h);
-    }
-
-
-    /**
-     * @param {PLRgbImage} buffer preview data coming from native camera. Can be used to create a new Uint8Array
-     * @param {number} elapsedTime time in ms elapsed to get the preview frame
-     */
-    onFramePreview(rgbImage, elapsedTime) {
-        var frame = new Uint8Array(rgbImage.arrayBuffer);
-        if (rgbImage.width !== this.cameraProps.previewWidth || rgbImage.height !== this.cameraProps.previewHeight) {
-            this.cameraProps.previewWidth = rgbImage.width;
-            this.cameraProps.previewHeight = rgbImage.height;
-            this.setupGLView(this.cameraProps.previewWidth, this.cameraProps.previewHeight);
-        }
-        this.cameraProps.material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, this.cameraProps.formatTexture, THREE.UnsignedByteType);
-        this.cameraProps.material.map.flipY = true;
-        this.cameraProps.material.needsUpdate = true;
-
-
-        if (this.cameraProps.previewFramesCounter !== 0 && this.cameraProps.previewFramesCounter % (this.cameraProps.fpsMeasurementInterval - 1) === 0) {
-            this.cameraProps.previewFramesMeasuredFPS = 1000 / this.cameraProps.previewFramesElapsedSum * this.cameraProps.fpsMeasurementInterval;
-            this.cameraProps.previewFramesCounter = 0;
-            this.cameraProps.previewFramesElapsedSum = 0;
-        } else {
-            this.cameraProps.previewFramesCounter += 1;
-            this.cameraProps.previewFramesElapsedSum += elapsedTime;
-        }
-        this.cameraProps.status_fps_preview.innerHTML = `preview ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.cameraProps.previewFramesMeasuredFPS)})`;
+        this.Camera.setCrop(result.x, result.y, result.w, result.h);
     }
 
     /**
@@ -566,10 +291,6 @@ export default class NativeController extends WebcController{
             this.cameraProps.rawFramesElapsedSum += elapsedTime;
         }
         this.cameraProps.status_fps_raw.innerHTML = `raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.cameraProps.rawFramesMeasuredFPS)})`;
-    }
-
-    onPictureTaken(base64ImageData) {
-        this.cameraProps.snapshotImage.src = base64ImageData;
     }
 
     hide(element) {
@@ -651,221 +372,6 @@ export default class NativeController extends WebcController{
         ctxCb.putImageData(imageDataCb, 0, 0);
         var imageDataCr = new ImageData(clampedArrayCr, w, h);
         ctxCr.putImageData(imageDataCr, 0, 0);
-    }
-
-    /**
-     *   
-     * METHODS FROM BRIDGE FILE
-     * 
-     */
-
-
-
-    callNative(api, args, callback) {
-        // @ts-ignore
-        let handle = window.webkit.messageHandlers[api]
-        let payload = {}
-        if (args !== undefined) {
-            payload["args"] = args
-        }
-        if (callback !== undefined) {
-            payload["callback"] = callback.name
-        }
-        handle.postMessage(payload)
-    }
-
-
-
-
-    /**
-     * Starts the native camera frame grabber
-     * @param  {string} sessionPresetName one of the session presets available in sessionPresetNames
-     * @param  {string} flashMode can be `torch`, `flash`, or `off`, all other values will be treated as `auto`
-     * @param  {function} onFramePreviewCallback callBack for each preview frame. Data are received as PLRgbImage. Can be undefined if you want to call 'getPreviewFrame' yourself
-     * @param {number} targetPreviewFps fps for the preview
-     * @param {number} previewWidth width for the preview data
-     * @param {function} onFrameGrabbedCallBack callBack for each raw frame. Data are received as PLRgbImage or PLYCbCrImage. Can be undefined if you want to call 'getRawFrame' or 'getRawFrameYCbCr' yourself
-     * @param {number} targetGrabFps fps for the full resolution raw frame
-     * @param {boolean} [auto_orientation_enabled=false] set to true to rotate image feed with respect to device orientation
-     * @param {function} onCameraInitializedCallBack called after camera initilaization is finished
-     * @param  {number} [x=undefined] RGB/YCbCr raw frame ROI top-left x-coord
-     * @param  {number} [y=undefined] RGB/YCbCr raw frame ROI top-left y-coord
-     * @param  {number} [w=undefined] RGB/YCbCr raw frame ROI width
-     * @param  {number} [h=undefined] RGB/YCbCr raw frame ROI height
-     * @param  {boolean} [ycbcr=false] set to true to receive data as YCbCr 420 in 'onFrameGrabbedCallBack'
-     */
-    startNativeCamera(sessionPresetName, flashMode, onFramePreviewCallback = undefined, targetPreviewFps = 25, previewWidth = 640, onFrameGrabbedCallBack = undefined, targetGrabFps = 10, auto_orientation_enabled = false, onCameraInitializedCallBack = undefined, x = undefined, y = undefined, w = undefined, h = undefined, ycbcr = false) {
-        this.cameraProps._targetPreviewFps = targetPreviewFps
-        this.cameraProps._previewWidth = previewWidth
-        this.cameraProps._onFramePreviewCallback = onFramePreviewCallback;
-        this.cameraProps._onFrameGrabbedCallBack = onFrameGrabbedCallBack;
-        this.cameraProps._onCameraInitializedCallBack = onCameraInitializedCallBack;
-        this.cameraProps._ycbcr = ycbcr;
-        this.cameraProps._targetGrabFps = targetGrabFps
-        this.setRawCropRoi(x, y, w, h);
-        let params = {
-            "onInitializedJsCallback": this.onNativeCameraInitialized.name,
-            "sessionPreset": sessionPresetName,
-            "flashMode": flashMode,
-            "previewWidth": previewWidth,
-            "auto_orientation_enabled": auto_orientation_enabled
-        }
-        this.callNative("StartCamera", params);
-    }
-
-    /**
-     * @param  {PLCameraConfig} config
-     * @param  {function} onFramePreviewCallback callBack for each preview frame. Data are received as PLRgbImage. Can be undefined if you want to call 'getPreviewFrame' yourself
-     * @param  {number} targetPreviewFps=25 fps for the preview
-     * @param  {number} previewWidth=640 width for the preview data
-     * @param  {function} onFrameGrabbedCallBack=undefined callBack for each raw frame. Data are received as PLRgbImage or PLYCbCrImage. Can be undefined if you want to call 'getRawFrame' or 'getRawFrameYCbCr' yourself
-     * @param  {number} targetGrabFps=10 fps for the full resolution raw frame
-     * @param  {function} onCameraInitializedCallBack=undefined called after camera initilaization is finished
-     * @param  {number} x=undefined RGB/YCbCr raw frame ROI top-left x-coord
-     * @param  {number} y=undefined RGB/YCbCr raw frame ROI top-left y-coord
-     * @param  {number} w=undefined RGB/YCbCr raw frame ROI width
-     * @param  {number} h=undefined RGB/YCbCr raw frame ROI height
-     * @param  {boolean} ycbcr=false set to true to receive data as YCbCr 420 in 'onFrameGrabbedCallBack'
-     */
-    startNativeCameraWithConfig(config, onFramePreviewCallback = undefined, targetPreviewFps = 25, previewWidth = 640, onFrameGrabbedCallBack = undefined, targetGrabFps = 10, onCameraInitializedCallBack = undefined, x = undefined, y = undefined, w = undefined, h = undefined, ycbcr = false) {
-        this.cameraProps._targetPreviewFps = targetPreviewFps
-        this.cameraProps._previewWidth = previewWidth
-        this.cameraProps._onFramePreviewCallback = onFramePreviewCallback;
-        this.cameraProps._onFrameGrabbedCallBack = onFrameGrabbedCallBack;
-        this.cameraProps._onCameraInitializedCallBack = onCameraInitializedCallBack;
-        this.cameraProps._ycbcr = ycbcr;
-        this.cameraProps._targetGrabFps = targetGrabFps
-        this.setRawCropRoi(x, y, w, h);
-        let params = {
-            "onInitializedJsCallback": this.onNativeCameraInitialized.name,
-            "previewWidth": previewWidth,
-            "config": config
-        }
-        this.callNative("StartCameraWithConfig", params);
-    }
-
-    /**
-     * Sets the raw crop to a new position
-     * @param  {number} x
-     * @param  {number} y
-     * @param  {number} w
-     * @param  {number} h
-     */
-    setRawCropRoi(x, y, w, h) {
-        this.cameraProps._x = x;
-        this.cameraProps._y = y;
-        this.cameraProps._w = w;
-        this.cameraProps._h = h;
-    }
-
-    /**
-     * Stops the native camera
-     */
-    stopNativeCamera() {
-        clearInterval(this.cameraProps._previewHandle)
-        this.cameraProps._previewHandle = undefined
-        clearInterval(this.cameraProps._grabHandle)
-        this.cameraProps._grabHandle = undefined
-        this.callNative("StopCamera")
-    }
-
-    /**
-     * Takes a photo and return it as base64 string ImageData in callback function
-     * @param  {function} onCaptureCallback callback reached when the picture is taken. The callback receives the picture as base64 string
-     */
-    takePictureBase64NativeCamera(onCaptureCallbackname) {
-        this.callNative("TakePicture", { "onCaptureJsCallback": onCaptureCallbackname.name });
-    }
-
-    /**
-     * Gets a JPEG snapshot, corresponds to endpoint /snapshot
-     * @returns {Promise<void | Blob>} JPEG snapshot
-     */
-    getSnapshot() {
-        return fetch(`${this.cameraProps._serverUrl}/snapshot`)
-            .then(response => {
-                return response.blob();
-            })
-            .catch(error => {
-                console.log(error);
-            })
-    }
-
-    /**
-     * Control camera flash mode
-     * @param  {string} mode can be `torch`, `flash`, or `off`, all other values will be treated as `auto`
-     */
-    setFlashModeNativeCamera(mode) {
-        this.callNative("SetFlashMode", { "mode": mode })
-    }
-
-    /**
-     * Control camera torch level
-     * @param  {number} level torch level between (0.0, 1.0]
-     */
-    setTorchLevelNativeCamera(level) {
-        this.callNative("SetTorchLevel", { "level": level })
-    }
-
-    /**
-     * Control preferred colorspace. The call may not succeed if the colorspace is not available.
-     * In this case the colorspace is reverted to undefined.
-     * @param  {string} colorspace 'sRGB', 'HLG_BT2020', 'P3_D65'
-     */
-    setPreferredColorSpaceNativeCamera(colorspace) {
-        this.callNative("SetPreferredColorSpace", { "colorspace": colorspace })
-    }
-
-    onNativeCameraInitialized(wsPort) {
-        this.cameraProps._serverUrl = `http://localhost:${wsPort}`
-        if (this.cameraProps._onFramePreviewCallback !== undefined) {
-            this.cameraProps._previewHandle = setInterval(() => {
-                let t0 = performance.now();
-                this.getPreviewFrame().then(image => {
-                    if (image instanceof PLRgbImage) {
-                        this.onFramePreview(image, performance.now() - t0)
-                    }
-                });
-            }, 1000 / this.cameraProps._targetPreviewFps);
-        }
-        if (this.cameraProps._onFrameGrabbedCallBack !== undefined) {
-            this.cameraProps._grabHandle = setInterval(() => {
-                let t0 = performance.now();
-                if (this.cameraProps._ycbcr) {
-                    this.getRawFrameYCbCr(this.cameraProps._x, this.cameraProps._y, this.cameraProps._w, this.cameraProps._h).then(image => {
-                        if (image instanceof PLYCbCrImage) {
-                            this.onFrameGrabbed(image, performance.now() - t0);
-                        }
-                    })
-                } else {
-                    this.getRawFrame(this.cameraProps._x, this.cameraProps._y, this.cameraProps._w, this.cameraProps._h).then(image => {
-                        if (image instanceof PLRgbImage) {
-                            this.onFrameGrabbed(image, performance.now() - t0);
-                        }
-                    })
-                }
-            }, 1000 / this.cameraProps._targetGrabFps)
-        }
-        if (this.cameraProps._onCameraInitializedCallBack !== undefined) {
-            setTimeout(() => {
-                this.onCameraInitializedCallBack();
-            }, 500);
-        }
-    }
-
-    /**
-     * Gets a downsampled RGB frame for preview, corresponds to endpoint /previewframe
-     * @returns  {Promise<void | PLRgbImage>} Downsampled RGB frame for preview
-     */
-    getPreviewFrame() {
-        return fetch(`${this.cameraProps._serverUrl}/previewframe`)
-            .then(response => {
-                let image = this.getPLRgbImageFromResponse(response);
-                return image;
-            })
-            .catch(error => {
-                console.log(error);
-            })
     }
 
     /**
