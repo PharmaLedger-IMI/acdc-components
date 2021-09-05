@@ -1072,8 +1072,16 @@
                     }
                 },
                 {
+                    "type": "copy",
+                    "src": "pdm-web-components/dist/pdm-web-components",
+                    "target": "leaflet-ssapp/code/assets/pdm-web-components",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
                     "type": "execute",
-                    "cmd": "cd leaflet-ssapp && npm run build build"
+                    "cmd": "cd leaflet-ssapp && npm run build"
                 }
             ]
         },
