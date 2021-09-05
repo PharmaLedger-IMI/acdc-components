@@ -1,4 +1,4 @@
-const THREE = require('three');
+const THREE = require('../../../node_modules/three/build/three');
 
 class CameraProps {
     previewWidth = 360;
