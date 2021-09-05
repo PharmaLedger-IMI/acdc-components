@@ -1,9 +1,6 @@
 {
   "camera": {
     "deps": "../../../native-integration/src/ios:camera",
-    "transform": [
-      "browserify-shim"
-    ],
     "autoLoad":  true,
     "bundleExternal": false,
     "exclude": "fs"

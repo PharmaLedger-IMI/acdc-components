@@ -1,5 +1,4 @@
-const THREE = require('../../node_modules/three/build/three');
-require('../../node_modules/three/examples/js/controls/OrbitControls');
+const {THREE} = require('./lib/lib');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {CameraProps} = require("./util/CameraProps");
 const {deviceTypeNames} = require('./util/constants');
