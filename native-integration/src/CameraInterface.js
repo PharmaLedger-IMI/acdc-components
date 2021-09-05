@@ -10,7 +10,9 @@ const {CameraCapabilities} = require('./CameraCapabilities');
 class CameraInterface {
 
     getCapabilities(){
-        return new CameraCapabilities();
+        return new CameraCapabilities({
+            cameraEnv: 'default'
+        });
     }
 
     async isAvailable(){

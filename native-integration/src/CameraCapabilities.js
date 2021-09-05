@@ -1,5 +1,5 @@
 class CameraCapabilities {
-    cameraType = undefined;
+    cameraEnv = undefined;
     getConstraints = true;
     bindStreamToElement = true;
     getCameraStream = true;
@@ -20,7 +20,7 @@ class CameraCapabilities {
             for(let prop in props)
                 if (props.hasOwnProperty(prop))
                     this[prop] = props[prop];
-        if (!this.cameraType)
+        if (!this.cameraEnv)
             throw new Error(`Missing camera environment - 'ios', 'android' or 'default'`)
     }
 }
