@@ -1,3 +1,6 @@
+const {PLRgbImage} = require('./PLRgbImage');
+const {PLYCbCRImage} = require('./PLYCbCrImage');
+
 
 /**
  *
@@ -350,7 +353,7 @@ function onNativeCameraInitialized(cameraProps){
         }
         if (cameraProps._onCameraInitializedCallBack !== undefined) {
             setTimeout(() => {
-                this.onCameraInitializedCallBack();
+                this._onCameraInitializedCallBack();
             }, 500);
         }
     }

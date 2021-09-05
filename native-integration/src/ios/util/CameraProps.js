@@ -1,3 +1,5 @@
+const THREE = require('three');
+
 class CameraProps {
     previewWidth = 360;
     previewHeight = Math.round(this.previewWidth * 16 / 9); // assume 16:9 portrait at start

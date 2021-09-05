@@ -11,5 +11,8 @@
   "license": "MIT",
   "devDependencies": {
     "octopus": "git+http://github.com/privatesky/octopus.git"
+  },
+  "dependencies": {
+    "three": "^0.132.2"
   }
 }
