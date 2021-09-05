@@ -1035,7 +1035,7 @@
             "actions": [
                 {
                     "type": "execute",
-                    "cmd": "npm run clean && npm run build-all"
+                    "cmd": "npm run build-all"
                 }
             ]
         },
@@ -1164,8 +1164,7 @@
             ]
         }
     ],
-
-    "build-mobile" : [
+    "build-android-app": [
         {
             "name": "build android app",
             "actions": [
@@ -1224,6 +1223,27 @@
                     }
                 }
             ]
+        }
+    ],
+
+    "build-mobile" : [
+        {
+            "name": "Erase History... using this goal disables mobile access to predefined content",
+            "actions":[
+                {
+                    "type": "execute",
+                    "cmd": "npm run clean"
+                }
+            ]
+        },
+        {
+            "name": "build-android-app",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "npm run build-android-app"
+                }
+            ]
         },
         {
             "name": "build-ios-app",
@@ -1236,7 +1256,3 @@
         }
     ]
 }
-
-
-
-

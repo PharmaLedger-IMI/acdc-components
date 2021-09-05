@@ -31,7 +31,8 @@
     "start-backoffice-frontend": "cd backoffice-frontend && npm run start",
     "build-use-case": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case\"",
     "build-use-case-mobile": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case-mobile\"",
-    "build-ios-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-ios-app\""
+    "build-ios-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-ios-app\"",
+    "build-android-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-android-app\""
   },
   "repository": {
     "type": "git",
