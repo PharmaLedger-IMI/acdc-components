@@ -84,6 +84,30 @@
          compatible with modern browsers (both desktop and mobile , >2016).
         </p>
 
+        <div id="credentials" style="display: none;">
+            <p>Below are the available Authentication Features SSIs::</p>
+            <table id="credentials-table" style="width: 100%;">
+                <tr>
+                    <th></th>
+                    <th>Marketing Authorization Holder</th>
+                    <th>Wholesaler</th>
+                    <th>Pharmacy</th>
+                </tr>
+                <tr>
+                    <th>Id</th>
+                    <td style="border-style: solid;" id="id-mah"></td>
+                    <td style="border-style: solid;" id="id-whs"></td>
+                    <td style="border-style: solid;" id="id-pha"></td>
+                </tr>
+                <tr style="word-break: break-all;">
+                    <th>KeySSI</th>
+                    <td style="border-style: solid;" id="key-mah"></td>
+                    <td style="border-style: solid;" id="key-whs"></td>
+                    <td style="border-style: solid;" id="key-pha"></td>
+                </tr>
+            </table>
+        </div>
+
 
         <h2>v0.5.12 - Release notes 2021-07-19</h2>
         <ul>
@@ -257,6 +281,50 @@
 
         <p>PDM welcomes technical contributions at <a href="https://github.com/PharmaLedger-IMI/ctr-workspace">https://github.com/PharmaLedger-IMI/acdc-workspace</a></p>
     </div>
+
+
+    <script type="application/javascript">
+
+        const displayCredentials = function(credentials){
+
+            const getProvider = function(name, ssi){
+                return `
+<tr>
+    <td style="border-style: solid;">${name}</td>
+    <td style="border-style: solid;">${ssi}</td>
+</tr>`
+            }
+            const getHeader = function(){
+                return `
+<tr>
+    <th>Provider</th>
+    <th>KeySSI</th>
+</tr>
+`;
+            }
+
+            document.getElementById('credentials-table').innerHTML = `\
+            ${getHeader()}
+            ${Object.keys(credentials).map(key => getProvider(key, credentials[key])).join('\n')}
+            `
+            document.getElementById('credentials').style.display = "block";
+
+
+        }
+
+        const getCredentials = function(){
+            const credentialsFile = new XMLHttpRequest();
+            credentialsFile.open("GET", './auth-features.json', true);
+            credentialsFile.send();
+            credentialsFile.onreadystatechange = function() {
+                if (credentialsFile.readyState === 4 && credentialsFile.status === 200)
+                    displayCredentials(JSON.parse(credentialsFile.responseText));
+            }
+        }
+
+        getCredentials();
+    </script>
+
     <footer>
         v<!-- VERSION_START -->0.5.12-g4425c64<!-- VERSION_END --> &copy;&nbsp;2021 <a href="http://pharmaledger.eu">Pharmaledger.eu</a> - All Rights Reserved. 
     </footer>
