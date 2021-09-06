@@ -1,4 +1,6 @@
 const {THREE} = require('./lib/lib');
+const {PLRgbImage} = require('./util/PLRgbImage');
+const {PLYCbCrImage} = require('./util/PLYCbCrImage');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {CameraProps} = require("./util/CameraProps");
 const {PLCameraConfig} = require("./util/PLCameraConfig");
