@@ -159,30 +159,31 @@ export default class NativeController extends WebcController{
         this.elements.torchRange.value = "1.0";
         this.elements.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.elements.torchRange.value}`;
 
-        let i = 0;
-        for (let presetName of this.Camera.getDeviceTypes()) {
-            var p_i = new Option(presetName, presetName)
-            // @ts-ignore
-            this.elements.select_preset.options.add(p_i);
-            i++;
-        }
-        for (let i = 0; i < this.cameraProps.elements.options.length; i++) {
-            if (this.cameraProps.elements.options[i].value === 'hd1920x1080') {
-                this.cameraProps.elements.selectedIndex = i;
-                break;
+        const presetNames = this.Camera.getCapabilities().sessionPresetNames
+        if (presetNames){
+            let i = 0;
+            for (let presetName of presetNames) {
+                var p_i = new Option(presetName, presetName)
+                // @ts-ignore
+                this.elements.select_preset.options.add(p_i);
+                i++;
+            }
+            for (let i = 0; i < this.elements.select_preset.options.length; i++) {
+                if (this.elements.select_preset.options[i].value === 'hd1920x1080') {
+                    this.elements.select_preset.selectedIndex = i;
+                    break;
+                }
             }
         }
+
         this.cameraProps.selectedPresetName = this.elements.select_preset.options[this.elements.select_preset.selectedIndex].value;
         this.elements.status_test.innerHTML = this.cameraProps.selectedPresetName;
         // hardcoded cameras list
-        for (let deviceTypeName of this.Camera.getDeviceTypes()) {
-            // @ts-ignore
+        for (let deviceTypeName of this.Camera.getDeviceTypes())
             this.elements.select_cameras.options.add(new Option(deviceTypeName, deviceTypeName));
-        }
 
         this.elements.select_cameras.selectedIndex = 0;
         this.cameraProps.selectedDevicesNames = [this.Camera.getDeviceTypes()[0]]
-        
     }
     
     constructor(element, history) {

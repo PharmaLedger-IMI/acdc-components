@@ -1,7 +1,7 @@
 const {THREE} = require('./lib/lib');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {CameraProps} = require("./util/CameraProps");
-const {deviceTypeNames} = require('./util/constants');
+const {deviceTypeNames, sessionPresetNames} = require('./util/constants');
 const {setTorchLevelNativeCamera,
     getCameraConfiguration,
     setPreferredColorSpaceNativeCamera,
@@ -317,7 +317,8 @@ class CameraApi extends CameraInterface{
     getCapabilities(){
         return new CameraCapabilities({
             cameraEnv: 'ios',
-            getCameraStream: false
+            getCameraStream: false,
+            sessionPresetNames: sessionPresetNames
         });
     }
 }
