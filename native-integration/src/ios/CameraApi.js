@@ -2,6 +2,7 @@ const {THREE} = require('./lib/lib');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {PLCameraConfig} = require('./util/PLCameraConfig');
 const {CameraProps} = require("./util/CameraProps");
+const {PLCameraConfig} = require("./util/PLCameraConfig");
 const {deviceTypeNames, sessionPresetNames} = require('./util/constants');
 const {setTorchLevelNativeCamera,
     getCameraConfiguration,
@@ -15,7 +16,8 @@ const {setTorchLevelNativeCamera,
     setRawCropRoi,
     placeUint8RGBArrayInCanvas,
     placeUint8GrayScaleArrayInCanvas,
-    placeUint8CbCrArrayInCanvas
+    placeUint8CbCrArrayInCanvas,
+    onNativeCameraInitialized
 } = require('./util/bridge');
 const {CameraCapabilities} = require("../CameraCapabilities");
 
@@ -32,6 +34,7 @@ class CameraApi extends CameraInterface{
     __camera;
     __renderer;
     __material;
+
 
     _status;
     __statusHandler;
@@ -134,6 +137,9 @@ class CameraApi extends CameraInterface{
         this._updateStatus("New Picture taken");
     }
 
+    _onNativeCameraInitialized(...args){
+        return onNativeCameraInitialized(...args);
+    }
     _onCameraInitializedCallBack() {
         this.cameraProps.streamPreview.src = `${this.cameraProps._serverUrl}/mjpeg`;
         this._updateStatus("Camera Initialized");
@@ -192,7 +198,7 @@ class CameraApi extends CameraInterface{
         this.__canvas = canvas;
         const {_x, _y, _w, _h} = this.cameraProps;
         this.setCrop(_x, _y, _w, _h);
-        const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange.value));
+        const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
         const isGL = cfg.mode === MODE.GL;
         if (isGL)
             this._setupGLView(this.cameraProps.previewWidth, this.cameraProps.previewHeight);
@@ -202,9 +208,9 @@ class CameraApi extends CameraInterface{
             undefined,
             cfg.targetPreviewFPS ||this.cameraProps.targetPreviewFPS,
             cfg.previewWidth || this.cameraProps.previewWidth,
-            isGl ? this._onFramePreview.name : this._onFrameGrabbed.name,
+            isGL ? this._onFramePreview.name : this._onFrameGrabbed.name,
             cfg.targetRawFPS || this.cameraProps.targetRawFPS,
-            isGl ? this._onFrameGrabbed.name : this._onCameraInitializedCallBack.name,
+            isGL ? this._onFrameGrabbed.name : this._onCameraInitializedCallBack.name,
             _x,
             _y,
             _w,

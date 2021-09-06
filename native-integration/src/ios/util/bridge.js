@@ -282,7 +282,7 @@ function startNativeCamera(cameraProps, sessionPresetName, flashMode, onFramePre
     cameraProps._targetGrabFps = targetGrabFps
     setRawCropRoi(cameraProps, x, y, w, h);
     let params = {
-        "onInitializedJsCallback": onNativeCameraInitialized.name,
+        "onInitializedJsCallback": "_onNativeCameraInitialized",
         "sessionPreset": sessionPresetName,
         "flashMode": flashMode,
         "previewWidth": previewWidth,
@@ -316,14 +316,16 @@ function startNativeCameraWithConfig(cameraProps, config, onFramePreviewCallback
     cameraProps._targetGrabFps = targetGrabFps
     setRawCropRoi(cameraProps, x, y, w, h);
     let params = {
-        "onInitializedJsCallback": this.onNativeCameraInitialized.name,
+        "onInitializedJsCallback": "_onNativeCameraInitialized",
         "previewWidth": previewWidth,
         "config": config
     }
     callNative("StartCameraWithConfig", params);
 }
 
-function onNativeCameraInitialized(cameraProps){
+function onNativeCameraInitialized(camera){
+    const {cameraProps} = camera;
+    
     return function(wsPort){
         cameraProps._serverUrl = `http://localhost:${wsPort}`
         if (cameraProps._onFramePreviewCallback !== undefined) {
@@ -331,7 +333,7 @@ function onNativeCameraInitialized(cameraProps){
                 let t0 = performance.now();
                 getPreviewFrame(cameraProps).then(image => {
                     if (image instanceof PLRgbImage)
-                        this.onFramePreview(image, performance.now() - t0)
+                        camera.onFramePreview(image, performance.now() - t0)
                 });
             }, 1000 / cameraProps._targetPreviewFps);
         }
@@ -341,19 +343,19 @@ function onNativeCameraInitialized(cameraProps){
                 if (cameraProps._ycbcr) {
                     getRawFrameYCbCr(cameraProps, cameraProps._x, cameraProps._y, cameraProps._w, cameraProps._h).then(image => {
                         if (image instanceof PLYCbCrImage)
-                            this.onFrameGrabbed(image, performance.now() - t0);
+                            camera.onFrameGrabbed(image, performance.now() - t0);
                     });
                 } else {
                     getRawFrame(cameraProps, cameraProps._x, cameraProps._y, cameraProps._w, cameraProps._h).then(image => {
                         if (image instanceof PLRgbImage)
-                            this.onFrameGrabbed(image, performance.now() - t0);
+                            camera.onFrameGrabbed(image, performance.now() - t0);
                     });
                 }
             }, 1000 / cameraProps._targetGrabFps);
         }
         if (cameraProps._onCameraInitializedCallBack !== undefined) {
             setTimeout(() => {
-                this._onCameraInitializedCallBack();
+                camera._onCameraInitializedCallBack();
             }, 500);
         }
     }

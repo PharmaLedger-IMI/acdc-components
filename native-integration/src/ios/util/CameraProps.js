@@ -28,6 +28,7 @@ class CameraProps {
     selectedColorspace = undefined;
 
     selectedPresetName = undefined;
+    torchRange = 1.0;
 
     //START VARS FROM BRIDGE FILE 
     _previewHandle = undefined;
