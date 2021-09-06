@@ -136,9 +136,8 @@ class CameraApi extends CameraInterface{
         this._updateStatus("New Picture taken");
     }
 
-    _onNativeCameraInitialized(...args){
-        return onNativeCameraInitialized(this.__camera)(...args);
-    }
+    _onNativeCameraInitialized = onNativeCameraInitialized(this.__camera)
+
     _onCameraInitializedCallBack() {
         this.cameraProps.streamPreview.src = `${this.cameraProps._serverUrl}/mjpeg`;
         this._updateStatus("Camera Initialized");
