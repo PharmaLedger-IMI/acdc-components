@@ -323,9 +323,7 @@ function startNativeCameraWithConfig(cameraProps, config, onFramePreviewCallback
     callNative("StartCameraWithConfig", params);
 }
 
-function onNativeCameraInitialized(camera){
-    const {cameraProps} = camera;
-    
+function onNativeCameraInitialized(camera, cameraProps){
     return function(wsPort){
         cameraProps._serverUrl = `http://localhost:${wsPort}`
         if (cameraProps._onFramePreviewCallback !== undefined) {
