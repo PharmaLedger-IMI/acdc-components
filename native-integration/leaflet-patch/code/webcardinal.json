@@ -27,6 +27,12 @@
       "tag": "native"
     },
     {
+      "name": "Wkcamera",
+      "path": "./wkcamera",
+      "src": "wkcamera.html",
+      "tag": "wkcamera"
+    },
+    {
       "name": "History",
       "tag": "history",
       "path": "./history"
