@@ -137,8 +137,7 @@ class CameraApi extends CameraInterface{
     }
 
     _onNativeCameraInitialized(...args){
-        const bound = onNativeCameraInitialized(this.__camera, this.cameraProps);
-        return bound(...args);
+        return onNativeCameraInitialized(this)(...args);
     }
 
     _onCameraInitializedCallBack() {
