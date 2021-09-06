@@ -332,7 +332,7 @@ function onNativeCameraInitialized(camera){
                 let t0 = performance.now();
                 getPreviewFrame(cameraProps).then(image => {
                     if (image instanceof PLRgbImage)
-                        camera.onFramePreview(image, performance.now() - t0)
+                        camera._onFramePreview(image, performance.now() - t0)
                 });
             }, 1000 / cameraProps._targetPreviewFps);
         }
@@ -342,12 +342,12 @@ function onNativeCameraInitialized(camera){
                 if (cameraProps._ycbcr) {
                     getRawFrameYCbCr(cameraProps, cameraProps._x, cameraProps._y, cameraProps._w, cameraProps._h).then(image => {
                         if (image instanceof PLYCbCrImage)
-                            camera.onFrameGrabbed(image, performance.now() - t0);
+                            camera._onFrameGrabbed(image, performance.now() - t0);
                     });
                 } else {
                     getRawFrame(cameraProps, cameraProps._x, cameraProps._y, cameraProps._w, cameraProps._h).then(image => {
                         if (image instanceof PLRgbImage)
-                            camera.onFrameGrabbed(image, performance.now() - t0);
+                            camera._onFrameGrabbed(image, performance.now() - t0);
                     });
                 }
             }, 1000 / cameraProps._targetGrabFps);
