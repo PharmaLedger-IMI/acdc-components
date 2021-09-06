@@ -449,7 +449,6 @@ module.exports = {
     setRawCropRoi,
     placeUint8RGBArrayInCanvas,
     placeUint8GrayScaleArrayInCanvas,
-    placeUint8CbCrArrayInCanvas,
-    onNativeCameraInitialized
+    placeUint8CbCrArrayInCanvas
 }
 
