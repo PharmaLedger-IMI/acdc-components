@@ -176,14 +176,15 @@ export default class NativeController extends WebcController{
             }
         }
 
-        this.cameraProps.selectedPresetName = this.elements.select_preset.options[this.elements.select_preset.selectedIndex].value;
-        this.elements.status_test.innerHTML = this.cameraProps.selectedPresetName;
+        const selected = this.elements.select_preset.options[this.elements.select_preset.selectedIndex].value;
+
+        this.Camera.selectPreset(selected);
+        this.elements.status_test.innerHTML = selected;
         // hardcoded cameras list
         for (let deviceTypeName of this.Camera.getDeviceTypes())
             this.elements.select_cameras.options.add(new Option(deviceTypeName, deviceTypeName));
 
         this.elements.select_cameras.selectedIndex = 0;
-        this.cameraProps.selectedDevicesNames = [this.Camera.getDeviceTypes()[0]]
     }
     
     constructor(element, history) {
@@ -206,23 +207,22 @@ export default class NativeController extends WebcController{
         this.hide(this.elements.rawCropCbCanvas);
         this.hide(this.elements.rawCropCrCanvas);
 
-        this.hide(this.cameraProps.canvasgl);
-        this.hide(this.cameraProps.streamPreview);
-        this.hide(this.cameraProps.status_fps_preview);
-        this.hide(this.cameraProps.status_fps_raw);
+        this.hide(this.elements.canvasgl);
+        this.hide(this.elements.streamPreview);
+        this.hide(this.elements.status_fps_preview);
+        this.hide(this.elements.status_fps_raw);
     }
 
     ChangeDesiredCamerasList() {
-        this.cameraProps.selectedDevicesNames = [];
         for (let i = 0; i < this.elements.select_cameras.options.length; i++) {
             if (this.elements.select_cameras.options[i].selected) {
-                this.cameraProps.selectedDevicesNames.push(this.elements.select_cameras.options[i].value);
+                this.elements.selectedDevicesNames.push(this.elements.select_cameras.options[i].value);
             }
         }
     }
 
     ChangePresetList() {
-        let selectedPresetName = this.elements.select_preset.options[this.cameraProps.select_preset.selectedIndex].value;
+        let selectedPresetName = this.elements.select_preset.options[this.elements.select_preset.selectedIndex].value;
         this.elements.status_test.innerHTML = selectedPresetName;
     }
 
