@@ -81,6 +81,10 @@ class CameraInterface {
         throw new Error(`Not implemented`);
     }
 
+    selectPreset(...args){
+        throw new Error(`Not implemented`);
+    }
+
 }
 
 module.exports = {

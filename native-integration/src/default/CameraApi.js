@@ -157,6 +157,10 @@ class CameraApi extends CameraInterface{
     async getDeviceTypes(){
         return await navigator.mediaDevices.enumerateDevices();
     }
+
+    selectPreset(...args){
+        console.log(`Not implemented`);
+    }
 }
 
 module.exports = {

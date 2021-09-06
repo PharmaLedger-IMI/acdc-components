@@ -321,6 +321,10 @@ class CameraApi extends CameraInterface{
             sessionPresetNames: sessionPresetNames
         });
     }
+
+    selectPreset(preset){
+        this.cameraProps.selectedPresetName = preset;
+    }
 }
 
 module.exports = {

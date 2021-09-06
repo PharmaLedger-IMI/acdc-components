@@ -27,6 +27,8 @@ class CameraProps {
     selectedCamera = "back";
     selectedColorspace = undefined;
 
+    selectedPresetName = undefined;
+
     //START VARS FROM BRIDGE FILE 
     _previewHandle = undefined;
     _grabHandle = undefined;
