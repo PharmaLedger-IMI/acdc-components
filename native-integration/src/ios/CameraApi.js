@@ -1,5 +1,6 @@
 const {THREE} = require('./lib/lib');
 const {STATUS, CameraInterface} = require('../CameraInterface');
+const {PLCameraConfig} = require('./util/PLCameraConfig');
 const {CameraProps} = require("./util/CameraProps");
 const {deviceTypeNames, sessionPresetNames} = require('./util/constants');
 const {setTorchLevelNativeCamera,
