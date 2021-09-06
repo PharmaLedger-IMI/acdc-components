@@ -1,5 +1,5 @@
 const {PLRgbImage} = require('./PLRgbImage');
-const {PLYCbCRImage} = require('./PLYCbCrImage');
+const {PLYCbCrImage} = require('./PLYCbCrImage');
 
 
 /**
@@ -386,7 +386,7 @@ function placeUint8RGBArrayInCanvas(cameraProps, canvasElem, array, w, h) {
 function placeUint8GrayScaleArrayInCanvas(cameraProps, canvasElem, array, w, h) {
     let a = 1;
     let b = 0;
-    if (cameraProps.invertRawFrameCheck.checked === true) {
+    if (cameraProps.invertRawFrameCheck) {
         a = -1;
         b = 255;
     }
