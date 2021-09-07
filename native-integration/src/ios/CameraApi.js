@@ -6,6 +6,7 @@ const {PLCameraConfig} = require("./util/PLCameraConfig");
 const {deviceTypeNames, sessionPresetNames} = require('./util/constants');
 const {CameraCapabilities} = require("../CameraCapabilities");
 const {TORCH_MODE, CAMERA_TYPE} = require('../constants');
+const bridge = require('./util/bridge');
 
 const MODE = {
     GL: "gl",
@@ -14,7 +15,7 @@ const MODE = {
 
 class CameraApi extends CameraInterface{
     cameraProps;
-    nativeBridge = require('./util/bridge');
+    nativeBridge = bridge;
 
     __canvas;
     __scene;
@@ -149,7 +150,7 @@ class CameraApi extends CameraInterface{
      * Otherwise handler will be called on status update
      * @returns {*}
      */
-    getStatus(handler){
+    getStatus(handler, ...args){
         if (!handler)
             return this._status;
         this.__statusHandler = handler;
