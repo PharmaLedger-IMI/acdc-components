@@ -80,7 +80,14 @@ class CameraApi extends CameraInterface{
     }
 
     _onCameraInitializedCallBack() {
-        this.__streamElement.src = `${this.cameraProps._serverUrl}/mjpeg`;
+        switch(this.__streamElement.tag){
+            case "video":
+                this.__streamElement.srcObject = `${this.cameraProps._serverUrl}/mjpeg`;
+                break;
+            default:
+                this.__streamElement.src = `${this.cameraProps._serverUrl}/mjpeg`;
+        }
+
         this._updateStatus("Camera Initialized");
     }
 
