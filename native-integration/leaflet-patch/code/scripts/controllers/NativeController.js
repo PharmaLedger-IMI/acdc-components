@@ -101,11 +101,10 @@ export default class NativeController extends WebcController{
             this.elements.streamPreview.parentElement.style.display = "block";
             this.show(this.elements.status_fps_preview);
             this.show(this.elements.status_fps_raw);
-            await this.Camera.bindStreamToElement(this.elements.streamPreview);
-            // await this.Camera.bindStreamToElement(this.elements.canvasgl, {
-            //     mode: 'gl',
-            //     ycbcrCheck: this.elements.ycbcrCheck.value
-            // });
+            await this.Camera.bindStreamToElement(this.elements.canvasgl, {
+                mode: 'gl',
+                ycbcrCheck: this.elements.ycbcrCheck.value
+            });
         });
         this.elements.startCameraButtonMJPEG.addEventListener('click', async (e) => {
             this.elements.select_preset.disabled = true;
