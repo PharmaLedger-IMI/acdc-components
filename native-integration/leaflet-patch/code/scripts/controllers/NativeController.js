@@ -81,9 +81,9 @@ export default class NativeController extends WebcController{
         });
         this.elements.cropRawFrameCheck.addEventListener("change", () => {
             if (this.checked) {
-                this.show(this.cameraProps.rawCropRoiInput);
+                this.show(this.elements.rawCropRoiInput);
             } else {
-                this.hide(this.cameraProps.rawCropRoiInput);
+                this.hide(this.elements.rawCropRoiInput);
             }
         });
         this.elements.startCameraButtonGL.addEventListener('click', async (e) => {
@@ -101,7 +101,11 @@ export default class NativeController extends WebcController{
             this.elements.streamPreview.parentElement.style.display = "none";
             this.show(this.elements.status_fps_preview);
             this.show(this.elements.status_fps_raw);
-            await this.Camera.bindStreamToElement(this.elements.canvasgl,{ycbcrCheck: this.elements.ycbcrCheck.value});
+            await this.Camera.bindStreamToElement(this.elements.streamPreview);
+            // await this.Camera.bindStreamToElement(this.elements.canvasgl, {
+            //     mode: 'gl',
+            //     ycbcrCheck: this.elements.ycbcrCheck.value
+            // });
         });
         this.elements.startCameraButtonMJPEG.addEventListener('click', async (e) => {
             this.elements.select_preset.disabled = true;

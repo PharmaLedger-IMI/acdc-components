@@ -26,12 +26,15 @@ class CameraApi extends CameraInterface{
     _status;
     __statusHandler;
 
+    __streamElement;
+
     constructor(cameraProps){
         super();
         this.cameraProps = cameraProps || new CameraProps();
     }
 
-    async _startNativeCamera(){
+    async _startNativeCamera(element){
+        this.__streamElement = element;
         const {sessionPresetName, flashMode, targetPreviewFps, previewWidth, targetGrabFps} = this.cameraProps;
         const {_x, _y, _w, _h} = this.cameraProps;
         this.setCrop(_x, _y, _w, _h);
@@ -77,7 +80,7 @@ class CameraApi extends CameraInterface{
     }
 
     _onCameraInitializedCallBack() {
-        this.elements.streamPreview.src = `${this.cameraProps._serverUrl}/mjpeg`;
+        this.__streamElement.src = `${this.cameraProps._serverUrl}/mjpeg`;
         this._updateStatus("Camera Initialized");
     }
 
@@ -94,33 +97,37 @@ class CameraApi extends CameraInterface{
     async getConstraints(){
         return this.nativeBridge.getCameraConfiguration(this.cameraProps);
     }
-
-    async bindStreamToElement(canvas, cfg){
-        if (!cfg)
-            return this._startNativeCamera();
-        if (!cfg.mode)
-            cfg = Object.assign( {mode: MODE.GL}, cfg);
-        this.__canvas = canvas;
-        const {_x, _y, _w, _h} = this.cameraProps;
-        this.setCrop(_x, _y, _w, _h);
-        const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
-        const isGL = cfg.mode === MODE.GL;
-        if (isGL)
-            this.nativeBridge.setupGLView.call(this, this.cameraProps.previewWidth, this.cameraProps.previewHeight);
-        this.nativeBridge.startNativeCameraWithConfig(
-            this.cameraProps,
-            config,
-            undefined,
-            cfg.targetPreviewFPS ||this.cameraProps.targetPreviewFPS,
-            cfg.previewWidth || this.cameraProps.previewWidth,
-            isGL ? this._onFramePreview.name : this._onFrameGrabbed.name,
-            cfg.targetRawFPS || this.cameraProps.targetRawFPS,
-            isGL ? this._onFrameGrabbed.name : this._onCameraInitializedCallBack.name,
-            _x,
-            _y,
-            _w,
-            _h,
-            cfg.ycbcrCheck);
+    //
+    // async bindStreamToElement(canvas, cfg){
+    //     // if (!cfg)
+    //     //     return this._startNativeCamera();
+    //     // if (!cfg.mode)
+    //     //     cfg = Object.assign( {mode: MODE.GL}, cfg);
+    //     // this.__canvas = canvas;
+    //     // const {_x, _y, _w, _h} = this.cameraProps;
+    //     // this.setCrop(_x, _y, _w, _h);
+    //     // const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
+    //     // const isGL = cfg.mode === MODE.GL;
+    //     // if (isGL)
+    //     //     this.nativeBridge.setupGLView.call(this, this.cameraProps.previewWidth, this.cameraProps.previewHeight);
+    //     // this.nativeBridge.startNativeCameraWithConfig(
+    //     //     this.cameraProps,
+    //     //     config,
+    //     //     undefined,
+    //     //     cfg.targetPreviewFPS ||this.cameraProps.targetPreviewFPS,
+    //     //     cfg.previewWidth || this.cameraProps.previewWidth,
+    //     //     isGL ? this._onFramePreview.name : this._onFrameGrabbed.name,
+    //     //     cfg.targetRawFPS || this.cameraProps.targetRawFPS,
+    //     //     isGL ? this._onFrameGrabbed.name : this._onCameraInitializedCallBack.name,
+    //     //     _x,
+    //     //     _y,
+    //     //     _w,
+    //     //     _h,
+    //     //     cfg.ycbcrCheck);
+    // }
+    //
+    async bindStreamToElement(element){
+        return this._startNativeCamera(element);
     }
 
     async getCameraStream(...args){
