@@ -355,7 +355,7 @@ function onNativeCameraInitialized(camera){
         }
         if (cameraProps._onCameraInitializedCallBack !== undefined) {
             setTimeout(() => {
-                camera.onCameraInitializedCallBack();
+                cameraProps._onCameraInitializedCallBack();
             }, 500);
         }
     }
