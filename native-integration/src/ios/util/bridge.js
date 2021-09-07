@@ -353,10 +353,11 @@ function onNativeCameraInitialized(camera){
                 }
             }, 1000 / cameraProps._targetGrabFps);
         }
-
-        setTimeout(() => {
-            camera.onCameraInitializedCallBack();
-        }, 500);
+        if (cameraProps._onCameraInitializedCallBack !== undefined) {
+            setTimeout(() => {
+                camera.onCameraInitializedCallBack();
+            }, 500);
+        }
     }
 }
 

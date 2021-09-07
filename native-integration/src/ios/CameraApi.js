@@ -134,6 +134,7 @@ class CameraApi extends CameraInterface{
     // }
     //
     async bindStreamToElement(element){
+        this.cameraProps._onCameraInitializedCallBack = this._onCameraInitializedCallBack.bind(this);
         return this._startNativeCamera(element);
     }
 
