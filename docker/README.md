@@ -95,7 +95,8 @@ In this example, removed all seeds related to leaflet-ssapp from a file named se
 pharmaledger@acdc-dev-pl:~$ docker cp seedsBackup.edited acdc-workspace:/acdc-workspace/apihub-root/seedsBackup
 pharmaledger@acdc-dev-pl:~$ docker exec -it acdc-workspace /bin/bash
 root@acdc-workspace:/# cd acdc-workspace/
-root@acdc-workspace:/acdc-workspace# node bin/seedsBackupTool.js
+root@acdc-workspace:/acdc-workspace# node bin/seedsBackupTool.js # WRONG - REMOVE
+root@acdc-workspace:/acdc-workspace# npm run build-all
 ```
 
 After deploy
