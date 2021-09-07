@@ -98,7 +98,7 @@ export default class NativeController extends WebcController{
             this.show(this.elements.canvasgl);
             this.elements.canvasgl.parentElement.style.display = "block";
             this.hide(this.elements.streamPreview);
-            this.elements.streamPreview.parentElement.style.display = "none";
+            this.elements.streamPreview.parentElement.style.display = "block";
             this.show(this.elements.status_fps_preview);
             this.show(this.elements.status_fps_raw);
             await this.Camera.bindStreamToElement(this.elements.streamPreview);
@@ -117,7 +117,7 @@ export default class NativeController extends WebcController{
             this.elements.selectCameraButton.disabled = true
             this.elements.select_cameras.disabled = true
             this.hide(this.elements.canvasgl);
-            this.elements.canvasgl.parentElement.style.display = "none";
+            this.elements.canvasgl.parentElement.style.display = "block";
             this.show(this.elements.streamPreview);
             this.elements.streamPreview.parentElement.style.display = "block";
             this.hide(this.elements.status_fps_preview);
