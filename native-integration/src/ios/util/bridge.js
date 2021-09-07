@@ -293,7 +293,7 @@ function startNativeCamera(cameraProps, sessionPresetName, flashMode, onFramePre
 }
 
 /**
- * @param {cameraProps} cameraProps
+ * @param {CameraProps} cameraProps
  * @param  {PLCameraConfig} config
  * @param  {function} onFramePreviewCallback callBack for each preview frame. Data are received as PLRgbImage. Can be undefined if you want to call 'getPreviewFrame' yourself
  * @param  {number} targetPreviewFps=25 fps for the preview
@@ -465,7 +465,8 @@ function setupGLView(w, h){
 }
 
 function animate() {
-    window.requestAnimationFrame(() => this._animate());
+    const self = this;
+    window.requestAnimationFrame(() => animate.call(self));
     this.__renderer.render(this.__scene, this.__camera);
 }
 
@@ -517,7 +518,7 @@ function onFrameGrabbed(camera, plImage, elapsedTime) {
         placeUint8RGBArrayInCanvas(cameraProps, camera.__canvas, new Uint8Array(plImage.arrayBuffer), plImage.width, plImage.height);
     } else if (plImage instanceof PLYCbCrImage) {
         rawframeLengthMB = Math.round(10 * (plImage.yArrayBuffer.byteLength + plImage.cbCrArrayBuffer.byteLength) / 1024 / 1024) / 10;
-        placeUint8GrayScaleArrayInCanvas(cameraProps, this.__canvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
+        placeUint8GrayScaleArrayInCanvas(cameraProps, camera.__canvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
         // bridge.placeUint8CbCrArrayInCanvas(this.elements.rawCropCbCanvas, this.cameraProps.rawCropCrCanvas, new Uint8Array(plImage.cbCrArrayBuffer), plImage.width / 2, plImage.height / 2);
     } else {
         rawframeLengthMB = -1
