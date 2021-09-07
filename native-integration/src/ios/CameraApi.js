@@ -1,26 +1,11 @@
-const {THREE} = require('./lib/lib');
 const {PLRgbImage} = require('./util/PLRgbImage');
 const {PLYCbCrImage} = require('./util/PLYCbCrImage');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {CameraProps} = require("./util/CameraProps");
 const {PLCameraConfig} = require("./util/PLCameraConfig");
 const {deviceTypeNames, sessionPresetNames} = require('./util/constants');
-const {setTorchLevelNativeCamera,
-    getCameraConfiguration,
-    setPreferredColorSpaceNativeCamera,
-    startNativeCameraWithConfig,
-    startNativeCamera,
-    takePictureBase64NativeCamera,
-    setFlashModeNativeCamera,
-    getSnapshot,
-    stopNativeCamera,
-    setRawCropRoi,
-    placeUint8RGBArrayInCanvas,
-    placeUint8GrayScaleArrayInCanvas,
-    placeUint8CbCrArrayInCanvas,
-    onNativeCameraInitialized
-} = require('./util/bridge');
 const {CameraCapabilities} = require("../CameraCapabilities");
+const {TORCH_MODE, CAMERA_TYPE} = require('../constants');
 
 const MODE = {
     GL: "gl",
@@ -29,13 +14,13 @@ const MODE = {
 
 class CameraApi extends CameraInterface{
     cameraProps;
+    nativeBridge = require('./util/bridge');
 
     __canvas;
     __scene;
     __camera;
     __renderer;
     __material;
-
 
     _status;
     __statusHandler;
@@ -45,11 +30,11 @@ class CameraApi extends CameraInterface{
         this.cameraProps = cameraProps || new CameraProps();
     }
 
-    _startNativeCamera(){
+    async _startNativeCamera(){
         const {sessionPresetName, flashMode, targetPreviewFps, previewWidth, targetGrabFps} = this.cameraProps;
         const {_x, _y, _w, _h} = this.cameraProps;
         this.setCrop(_x, _y, _w, _h);
-        startNativeCamera(this.cameraProps,
+        this.nativeBridge.startNativeCamera(this.cameraProps,
             sessionPresetName,
             flashMode,
             undefined,
@@ -64,36 +49,12 @@ class CameraApi extends CameraInterface{
         )
     }
 
-    _animate() {
-        window.requestAnimationFrame(() => this._animate());
-        this.__renderer.render(this.__scene, this.__camera);
-    }
-
     /**
      * @param {PLRgbImage} rgbImage preview data coming from native camera. Can be used to create a new Uint8Array
      * @param {number} elapsedTime time in ms elapsed to get the preview frame
      */
     _onFramePreview(rgbImage, elapsedTime) {
-        var frame = new Uint8Array(rgbImage.arrayBuffer);
-        if (rgbImage.width !== this.cameraProps.previewWidth || rgbImage.height !== this.cameraProps.previewHeight) {
-            this.cameraProps.previewWidth = rgbImage.width;
-            this.cameraProps.previewHeight = rgbImage.height;
-            this._setupGLView(cameraProps.previewWidth, cameraProps.previewHeight);
-        }
-        this.__material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, this.cameraProps.formatTexture, THREE.UnsignedByteType);
-        this.__material.map.flipY = true;
-        this.__material.needsUpdate = true;
-
-
-        if (this.cameraProps.previewFramesCounter !== 0 && this.cameraProps.previewFramesCounter % (this.cameraProps.fpsMeasurementInterval - 1) === 0) {
-            this.cameraProps.previewFramesMeasuredFPS = 1000 / this.cameraProps.previewFramesElapsedSum * this.cameraProps.fpsMeasurementInterval;
-            this.cameraProps.previewFramesCounter = 0;
-            this.cameraProps.previewFramesElapsedSum = 0;
-        } else {
-            this.cameraProps.previewFramesCounter += 1;
-            this.cameraProps.previewFramesElapsedSum += elapsedTime;
-        }
-        this._updateStatus(`preview ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.cameraProps.previewFramesMeasuredFPS)})`);
+       return this.nativeBridge.onFramePreview(this, rgbImage, elapsedTime);
     }
 
     /**
@@ -101,36 +62,7 @@ class CameraApi extends CameraInterface{
      * @param {number} elapsedTime time in ms elapsed to get the raw frame
      */
     _onFrameGrabbed(plImage, elapsedTime) {
-        var pSizeText = "";
-        if (this.cameraProps.usingMJPEG === false) {
-            pSizeText = `, p(${this.cameraProps.previewWidth}x${this.cameraProps.previewHeight}), p FPS:${this.cameraProps.targetPreviewFPS}`;
-        }
-        let rawframeLengthMB = undefined
-        if (plImage instanceof PLRgbImage) {
-            rawframeLengthMB = Math.round(10 * plImage.arrayBuffer.byteLength / 1024 / 1024) / 10;
-            placeUint8RGBArrayInCanvas(this.__canvas, new Uint8Array(plImage.arrayBuffer), plImage.width, plImage.height);
-        } else if (plImage instanceof PLYCbCrImage) {
-            rawframeLengthMB = Math.round(10 * (plImage.yArrayBuffer.byteLength + plImage.cbCrArrayBuffer.byteLength) / 1024 / 1024) / 10;
-            placeUint8GrayScaleArrayInCanvas(this.__canvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
-            // placeUint8CbCrArrayInCanvas(this.cameraProps.rawCropCbCanvas, this.cameraProps.rawCropCrCanvas, new Uint8Array(plImage.cbCrArrayBuffer), plImage.width / 2, plImage.height / 2);
-            // this.show(this.cameraProps.rawCropCbCanvas);
-            // this.show(this.cameraProps.rawCropCrCanvas);
-        } else {
-            rawframeLengthMB = -1
-        }
-
-        this._updateStatus(`${this.cameraProps.selectedPresetName}${pSizeText}, raw FPS:${this.cameraProps.targetRawFPS}<br/> raw frame length: ${rawframeLengthMB}MB, ${plImage.width}x${plImage.height}`);
-
-        if (this.cameraProps.rawFramesCounter !== 0 && this.cameraProps.rawFramesCounter % (this.cameraProps.fpsMeasurementInterval - 1) === 0) {
-            this.cameraProps.rawFramesMeasuredFPS = 1000 / this.cameraProps.rawFramesElapsedSum * this.cameraProps.fpsMeasurementInterval;
-            this.cameraProps.rawFramesCounter = 0;
-            this.cameraProps.rawFramesElapsedSum = 0;
-        } else {
-            this.cameraProps.rawFramesCounter += 1;
-            this.cameraProps.rawFramesElapsedSum += elapsedTime;
-        }
-
-        this._updateStatus(`raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.cameraProps.rawFramesMeasuredFPS)})`);
+        return this.nativeBridge.onFrameGrabbed(this, plImage, elapsedTime);
     }
 
     _onPictureTaken(base64ImageData) {
@@ -139,7 +71,8 @@ class CameraApi extends CameraInterface{
     }
 
     _onNativeCameraInitialized(...args){
-        return onNativeCameraInitialized(this)(...args);
+        this._updateStatus("Native Camera Initialized");
+        return this.nativeBridge.onNativeCameraInitialized(this)(...args);
     }
 
     _onCameraInitializedCallBack() {
@@ -153,43 +86,12 @@ class CameraApi extends CameraInterface{
             this.__statusHandler(message);
     }
 
-    _setupGLView(w, h){
-        this.__scene = new THREE.Scene();
-        this.__camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 10000);
-        this.__renderer = new THREE.WebGLRenderer({ canvas: this.__canvas, antialias: true });
-
-        let cameraHeight = h / 2 / Math.tan(this.__camera.fov / 2 * (Math.PI / 180));
-        this.__camera.position.set(0, 0, cameraHeight);
-        let clientHeight = Math.round(h / w * this.__canvas.clientWidth);
-        this.__renderer.setSize(this.__canvas.clientWidth, clientHeight);
-
-        const controls = new THREE.OrbitControls(this.__camera, this.__renderer.domElement);
-        controls.enablePan = false;
-        controls.enableZoom = false;
-        controls.enableRotate = false;
-        const dataTexture = new Uint8Array(w * h * this.cameraProps.bytePerChannel);
-        for (let i = 0; i < w * h * this.cameraProps.bytePerChannel; i++)
-            dataTexture[i] = 255;
-        const frameTexture = new THREE.DataTexture(dataTexture, w, h, this.cameraProps.formatTexture, THREE.UnsignedByteType);
-        frameTexture.needsUpdate = true;
-        const planeGeo = new THREE.PlaneBufferGeometry(w, h);
-        this.__material = new THREE.MeshBasicMaterial({
-            map: frameTexture,
-        });
-
-        this.__material.map.flipY = true;
-        const plane = new THREE.Mesh(planeGeo, this.__material);
-        this.__scene.add(plane);
-        this._animate();
-    }
-
     async isAvailable(){
         return true;
     }
 
-    async getConstraints(...args){
-        const config = await getCameraConfiguration(this.cameraProps);
-        return config;
+    async getConstraints(){
+        return this.nativeBridge.getCameraConfiguration(this.cameraProps);
     }
 
     async bindStreamToElement(canvas, cfg){
@@ -203,8 +105,8 @@ class CameraApi extends CameraInterface{
         const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
         const isGL = cfg.mode === MODE.GL;
         if (isGL)
-            this._setupGLView(this.cameraProps.previewWidth, this.cameraProps.previewHeight);
-        startNativeCameraWithConfig(
+            this.nativeBridge.setupGLView.call(this, this.cameraProps.previewWidth, this.cameraProps.previewHeight);
+        this.nativeBridge.startNativeCameraWithConfig(
             this.cameraProps,
             config,
             undefined,
@@ -225,19 +127,19 @@ class CameraApi extends CameraInterface{
     }
 
     closeCameraStream(){
-        stopNativeCamera(this.cameraProps);
+        this.nativeBridge.stopNativeCamera(this.cameraProps);
         this._updateStatus("Camera Stopped");
     }
 
     switchCamera(...args){
-        if (this.cameraProps.selectedCamera === "back") {
-            this.cameraProps.selectedCamera = "front";
+        if (this.cameraProps.selectedCamera === CAMERA_TYPE.BACK) {
+            this.cameraProps.selectedCamera = CAMERA_TYPE.FRONT;
             this._updateStatus("Front Cam");
-            return "front";
+            return CAMERA_TYPE.FRONT;
         } else {
-            this.cameraProps.selectedCamera = "back";
+            this.cameraProps.selectedCamera = CAMERA_TYPE.BACK;
             this._updateStatus("Back Cam");
-            return "back";
+            return CAMERA_TYPE.BACK;
         }
     }
 
@@ -260,39 +162,39 @@ class CameraApi extends CameraInterface{
     async takePicture(mode = MODE.GL){
         switch(mode){
             case MODE.GL:
-                takePictureBase64NativeCamera(this._onPictureTaken.name);
+                this.nativeBridge.takePictureBase64NativeCamera(this._onPictureTaken.name);
                 break;
             case MODE.MJPEG:
-                await getSnapshot(this.cameraProps).then(b => this._onPictureTaken(URL.createObjectURL(b)))
+                await this.nativeBridge.getSnapshot(this.cameraProps).then(b => this._onPictureTaken(URL.createObjectURL(b)))
         }
     }
 
     toggleTorch(){
         switch (this.cameraProps.flashMode) {
-            case 'off':
-                this.cameraProps.flashMode = 'flash';
+            case TORCH_MODE.OFF:
+                this.cameraProps.flashMode = TORCH_MODE.FLASH;
                 break;
-            case 'flash':
-                this.cameraProps.flashMode = 'torch';
+            case TORCH_MODE.FLASH:
+                this.cameraProps.flashMode = TORCH_MODE.ON;
                 break;
-            case 'torch':
-                this.cameraProps.flashMode = 'off';
+            case TORCH_MODE.ON:
+                this.cameraProps.flashMode = TORCH_MODE.OFF;
                 break;
             default:
                 break;
         }
-        setFlashModeNativeCamera(this.cameraProps.flashMode);
+        this.nativeBridge.setFlashModeNativeCamera(this.cameraProps.flashMode);
         this._updateStatus(`FLASH MODE: ${this.cameraProps.flashMode}`);
         return this.cameraProps.flashMode;
     }
 
     setTorchLevel(level){
-        setTorchLevelNativeCamera(level);
+        this.nativeBridge.setTorchLevelNativeCamera(level);
         this._updateStatus(`Torch Level: ${level}`);
     }
 
     setColorSpace(nextColorSpace){
-        setPreferredColorSpaceNativeCamera(nextColorSpace);
+        this.nativeBridge.setPreferredColorSpaceNativeCamera(nextColorSpace);
         this._updateStatus(`Colorspace: ${nextColorSpace}`);
     }
 
@@ -304,7 +206,7 @@ class CameraApi extends CameraInterface{
      * @param  {number} h
      */
     setCrop(x, y, w, h){
-        setRawCropRoi(this.cameraProps, x, y, w, h);
+        this.nativeBridge.setRawCropRoi(this.cameraProps, x, y, w, h);
     }
 
     toggleContinuousAF(){

@@ -1,5 +1,6 @@
 const {PLRgbImage} = require('./PLRgbImage');
 const {PLYCbCrImage} = require('./PLYCbCrImage');
+const {THREE} = require("./../lib/lib");
 
 
 /**
@@ -433,6 +434,109 @@ function placeUint8CbCrArrayInCanvas(canvasElemCb, canvasElemCr, array, w, h) {
     ctxCr.putImageData(imageDataCr, 0, 0);
 }
 
+function setupGLView(camera, w, h){
+    this.__scene = new THREE.Scene();
+    this.__camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 10000);
+    this.__renderer = new THREE.WebGLRenderer({ canvas: this.__canvas, antialias: true });
+
+    let cameraHeight = h / 2 / Math.tan(this.__camera.fov / 2 * (Math.PI / 180));
+    this.__camera.position.set(0, 0, cameraHeight);
+    let clientHeight = Math.round(h / w * this.__canvas.clientWidth);
+    this.__renderer.setSize(this.__canvas.clientWidth, clientHeight);
+
+    const controls = new THREE.OrbitControls(this.__camera, this.__renderer.domElement);
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.enableRotate = false;
+    const dataTexture = new Uint8Array(w * h * this.cameraProps.bytePerChannel);
+    for (let i = 0; i < w * h * this.cameraProps.bytePerChannel; i++)
+        dataTexture[i] = 255;
+    const frameTexture = new THREE.DataTexture(dataTexture, w, h, this.cameraProps.formatTexture, THREE.UnsignedByteType);
+    frameTexture.needsUpdate = true;
+    const planeGeo = new THREE.PlaneBufferGeometry(w, h);
+    this.__material = new THREE.MeshBasicMaterial({
+        map: frameTexture,
+    });
+
+    this.__material.map.flipY = true;
+    const plane = new THREE.Mesh(planeGeo, this.__material);
+    this.__scene.add(plane);
+    animate.call(this);
+}
+
+function animate() {
+    window.requestAnimationFrame(() => this._animate());
+    this.__renderer.render(this.__scene, this.__camera);
+}
+
+/**
+ * @param {CameraApi} camera
+ * @param {PLRgbImage} rgbImage preview data coming from native camera. Can be used to create a new Uint8Array
+ * @param {number} elapsedTime time in ms elapsed to get the preview frame
+ * @return {number} elapsed time in miliseconds
+ */
+function onFramePreview(camera, rgbImage, elapsedTime) {
+    const {cameraProps} = camera;
+    var frame = new Uint8Array(rgbImage.arrayBuffer);
+    if (rgbImage.width !== cameraProps.previewWidth || rgbImage.height !== cameraProps.previewHeight) {
+        cameraProps.previewWidth = rgbImage.width;
+        cameraProps.previewHeight = rgbImage.height;
+        setupGLView.call(camera, cameraProps.previewWidth, cameraProps.previewHeight);
+    }
+    camera.__material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, cameraProps.formatTexture, THREE.UnsignedByteType);
+    camera.__material.map.flipY = true;
+    camera.__material.needsUpdate = true;
+
+
+    if (cameraProps.previewFramesCounter !== 0 && cameraProps.previewFramesCounter % (cameraProps.fpsMeasurementInterval - 1) === 0) {
+        cameraProps.previewFramesMeasuredFPS = 1000 / cameraProps.previewFramesElapsedSum * cameraProps.fpsMeasurementInterval;
+        cameraProps.previewFramesCounter = 0;
+        cameraProps.previewFramesElapsedSum = 0;
+    } else {
+        cameraProps.previewFramesCounter += 1;
+        cameraProps.previewFramesElapsedSum += elapsedTime;
+    }
+
+    camera._updateStatus(`preview ${Math.round(elapsedTime)} ms (max FPS=${Math.round(cameraProps.previewFramesMeasuredFPS)})`);
+}
+
+/**
+ * @param {CameraApi} camera
+ * @param {PLRgbImage | PLYCbCrImage} plImage raw data coming from native camera
+ * @param {number} elapsedTime time in ms elapsed to get the raw frame
+ */
+function onFrameGrabbed(camera, plImage, elapsedTime) {
+    const {cameraProps} = camera;
+    var pSizeText = "";
+    if (cameraProps.usingMJPEG === false) {
+        pSizeText = `, p(${cameraProps.previewWidth}x${cameraProps.previewHeight}), p FPS:${cameraProps.targetPreviewFPS}`;
+    }
+    let rawframeLengthMB = undefined
+    if (plImage instanceof PLRgbImage) {
+        rawframeLengthMB = Math.round(10 * plImage.arrayBuffer.byteLength / 1024 / 1024) / 10;
+        placeUint8RGBArrayInCanvas(cameraProps, camera.__canvas, new Uint8Array(plImage.arrayBuffer), plImage.width, plImage.height);
+    } else if (plImage instanceof PLYCbCrImage) {
+        rawframeLengthMB = Math.round(10 * (plImage.yArrayBuffer.byteLength + plImage.cbCrArrayBuffer.byteLength) / 1024 / 1024) / 10;
+        placeUint8GrayScaleArrayInCanvas(cameraProps, this.__canvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
+        // bridge.placeUint8CbCrArrayInCanvas(this.elements.rawCropCbCanvas, this.cameraProps.rawCropCrCanvas, new Uint8Array(plImage.cbCrArrayBuffer), plImage.width / 2, plImage.height / 2);
+    } else {
+        rawframeLengthMB = -1
+    }
+
+    camera._updateStatus(`${cameraProps.selectedPresetName}${pSizeText}, raw FPS:${cameraProps.targetRawFPS}<br/> raw frame length: ${rawframeLengthMB}MB, ${plImage.width}x${plImage.height}`);
+
+    if (cameraProps.rawFramesCounter !== 0 && cameraProps.rawFramesCounter % (cameraProps.fpsMeasurementInterval - 1) === 0) {
+        cameraProps.rawFramesMeasuredFPS = 1000 / cameraProps.rawFramesElapsedSum * cameraProps.fpsMeasurementInterval;
+        cameraProps.rawFramesCounter = 0;
+        cameraProps.rawFramesElapsedSum = 0;
+    } else {
+        cameraProps.rawFramesCounter += 1;
+        cameraProps.rawFramesElapsedSum += elapsedTime;
+    }
+
+    camera._updateStatus(`raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(cameraProps.rawFramesMeasuredFPS)})`);
+}
+
 module.exports = {
     stopNativeCamera,
     takePictureBase64NativeCamera,
@@ -449,6 +553,9 @@ module.exports = {
     placeUint8RGBArrayInCanvas,
     placeUint8GrayScaleArrayInCanvas,
     placeUint8CbCrArrayInCanvas,
-    onNativeCameraInitialized
+    onNativeCameraInitialized,
+    onFramePreview,
+    onFrameGrabbed,
+    setupGLView
 }
 
