@@ -104,38 +104,34 @@ class CameraApi extends CameraInterface{
     async getConstraints(){
         return this.nativeBridge.getCameraConfiguration(this.cameraProps);
     }
-    //
-    // async bindStreamToElement(canvas, cfg){
-    //     // if (!cfg)
-    //     //     return this._startNativeCamera();
-    //     // if (!cfg.mode)
-    //     //     cfg = Object.assign( {mode: MODE.GL}, cfg);
-    //     // this.__canvas = canvas;
-    //     // const {_x, _y, _w, _h} = this.cameraProps;
-    //     // this.setCrop(_x, _y, _w, _h);
-    //     // const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
-    //     // const isGL = cfg.mode === MODE.GL;
-    //     // if (isGL)
-    //     //     this.nativeBridge.setupGLView.call(this, this.cameraProps.previewWidth, this.cameraProps.previewHeight);
-    //     // this.nativeBridge.startNativeCameraWithConfig(
-    //     //     this.cameraProps,
-    //     //     config,
-    //     //     undefined,
-    //     //     cfg.targetPreviewFPS ||this.cameraProps.targetPreviewFPS,
-    //     //     cfg.previewWidth || this.cameraProps.previewWidth,
-    //     //     isGL ? this._onFramePreview.name : this._onFrameGrabbed.name,
-    //     //     cfg.targetRawFPS || this.cameraProps.targetRawFPS,
-    //     //     isGL ? this._onFrameGrabbed.name : this._onCameraInitializedCallBack.name,
-    //     //     _x,
-    //     //     _y,
-    //     //     _w,
-    //     //     _h,
-    //     //     cfg.ycbcrCheck);
-    // }
-    //
-    async bindStreamToElement(element){
+
+    async bindStreamToElement(canvas, cfg){
+        if (!cfg)
+            return this._startNativeCamera();
+        if (!cfg.mode)
+            cfg = Object.assign( {mode: MODE.GL}, cfg);
         this.cameraProps._onCameraInitializedCallBack = this._onCameraInitializedCallBack.bind(this);
-        return this._startNativeCamera(element);
+        this.__canvas = canvas;
+        const {_x, _y, _w, _h} = this.cameraProps;
+        this.setCrop(_x, _y, _w, _h);
+        const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
+        const isGL = cfg.mode === MODE.GL;
+        if (isGL)
+            this.nativeBridge.setupGLView.call(this, this.cameraProps.previewWidth, this.cameraProps.previewHeight);
+        this.nativeBridge.startNativeCameraWithConfig(
+            this.cameraProps,
+            config,
+            undefined,
+            cfg.targetPreviewFPS ||this.cameraProps.targetPreviewFPS,
+            cfg.previewWidth || this.cameraProps.previewWidth,
+            isGL ? this._onFramePreview.name : this._onFrameGrabbed.name,
+            cfg.targetRawFPS || this.cameraProps.targetRawFPS,
+            isGL ? this._onFrameGrabbed.name : this._onCameraInitializedCallBack.name,
+            _x,
+            _y,
+            _w,
+            _h,
+            cfg.ycbcrCheck);
     }
 
     async getCameraStream(...args){
