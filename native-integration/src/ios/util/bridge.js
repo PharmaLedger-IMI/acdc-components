@@ -434,7 +434,7 @@ function placeUint8CbCrArrayInCanvas(canvasElemCb, canvasElemCr, array, w, h) {
     ctxCr.putImageData(imageDataCr, 0, 0);
 }
 
-function setupGLView(camera, w, h){
+function setupGLView(w, h){
     this.__scene = new THREE.Scene();
     this.__camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 10000);
     this.__renderer = new THREE.WebGLRenderer({ canvas: this.__canvas, antialias: true });
