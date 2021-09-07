@@ -18,6 +18,8 @@ class CameraProps {
     rawFramesMeasuredFPS = 0;
     bytePerChannel = 3;
 
+    stream
+
     formatTexture = undefined;
 
     flashMode = 'off'
