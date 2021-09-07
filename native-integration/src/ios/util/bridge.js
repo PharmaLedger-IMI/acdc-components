@@ -289,7 +289,7 @@ function startNativeCamera(cameraProps, sessionPresetName, flashMode, onFramePre
         "previewWidth": previewWidth,
         "auto_orientation_enabled": auto_orientation_enabled
     }
-    this.callNative("StartCamera", params);
+    callNative("StartCamera", params);
 }
 
 /**
