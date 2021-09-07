@@ -284,7 +284,7 @@ function startNativeCamera(cameraProps, sessionPresetName, flashMode, onFramePre
     setRawCropRoi(cameraProps, x, y, w, h);
     let params = {
         "onInitializedJsCallback": "_onNativeCameraInitialized",
-        "sessionPreset": sessionPresetName,
+        "sessionPreset": sessionPresetName || "hd1920x1080",
         "flashMode": flashMode,
         "previewWidth": previewWidth,
         "auto_orientation_enabled": auto_orientation_enabled
