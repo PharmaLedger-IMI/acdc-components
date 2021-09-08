@@ -13,7 +13,7 @@ in another shell:
 npm run build-all
 ```
 
-in the browser (use CHROME!) go to the Enterprise Wallet. Create a new Account (you only need to do this once), and login.
+in the browser (use CHROME in anonymous!) go to localhost:8080 and enter the Enterprise Wallet. Create a new Account (you only need to do this once), and login.
 ```
 MAH as issuer
  - generate an Identifier (use the default values)
@@ -46,9 +46,9 @@ Batches
      - click manage serial numbers/ update Valid and input any comma separated number value list (uniques);
      - click enablhe authentication feature and input the keySSI present in the splash page (localhost:8080);
      - Click Add Batch;
-    - click view 2d data matrix in the batch list item and take a picture of the valid qr code;
+     - click view 2d data matrix in the batch list item and take a picture of the valid qr code;
 
-in the browser (use CHROME!) go to the Patient Wallet.
+in the browser (use CHROME in anonymous mode!) go to the Patient Wallet.
  - click scan and scan the qr code from before. you should see a details screen aying there's an authentication feature available.
  - click verify package. THis will launch the Authentication Feature;
  - click scan and scan the same qr code again. You should be sent back to details page with the confirmation that the package is valid;

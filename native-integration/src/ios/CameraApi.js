@@ -113,41 +113,63 @@ class CameraApi extends CameraInterface{
         return this.nativeBridge.getCameraConfiguration(this.cameraProps);
     }
 
-    async bindStreamToElement(canvas, cfg){
-        if (!cfg)
-            return this._startNativeCamera();
-        if (!cfg.mode)
-            cfg = Object.assign( {mode: MODE.GL}, cfg);
-        this.cameraProps._onCameraInitializedCallBack = this._onCameraInitializedCallBack.bind(this);
-        this.__canvas = canvas;
-        const {_x, _y, _w, _h} = this.cameraProps;
-        this.setCrop(_x, _y, _w, _h);
-        const config = new PLCameraConfig(this.cameraProps.selectedPresetName, this.cameraProps.flashMode, this.cameraProps.afOn, true, this.cameraProps.selectedDevicesNames, this.cameraProps.selectedCamera, true, this.cameraProps.selectedColorspace, parseFloat(this.cameraProps.torchRange));
-        const isGL = cfg.mode === MODE.GL;
-        if (isGL)
-            this.nativeBridge.setupGLView.call(this, this.cameraProps.previewWidth, this.cameraProps.previewHeight);
-        this.nativeBridge.startNativeCameraWithConfig(
-            this.cameraProps,
-            config,
-            undefined,
-            cfg.targetPreviewFPS ||this.cameraProps.targetPreviewFPS,
-            cfg.previewWidth || this.cameraProps.previewWidth,
-            isGL ? this._onFramePreview: this._onFrameGrabbed,
-            cfg.targetRawFPS || this.cameraProps.targetRawFPS,
-            isGL ? this._onFrameGrabbed : this._onCameraInitializedCallBack,
-            _x,
-            _y,
-            _w,
-            _h,
-            cfg.ycbcrCheck);
+    async bindStreamToElement(element, cfg){
+
+        this.cameraProps.previewWidth = element.width;
+        this.cameraProps.previewHeight = element.height;
+
+        const getBindingProp = function(tag){
+            switch (element.tag){
+                case 'img':
+                    return 'src';
+                case 'video':
+                    return 'srcObject';
+                case 'canvas':
+                    return 'src';
+                default:
+                    throw new Error("element Not supported");
+            }
+        }
+
+        this.getCameraStream((err, stream) => {
+            const prop = getBindingProp(element.tag);
+            element[prop] = stream;
+        });
     }
 
-    async getCameraStream(...args){
-        throw new Error(`Not implemented`);
+    getCameraStream(options, callback){
+        if (!callback){
+            callback = options;
+            options = undefined;
+        }
+
+        const {selectedPresetName, flashMode, afOn, selectedCamera, selectedColorspace, torchRange} = this.cameraProps;
+
+        const config = new PLCameraConfig(selectedPresetName,
+            flashMode, afOn, true,
+            this.selectedDevicesNames, selectedCamera,
+            true, selectedColorspace,
+            torchRange);
+
+        this.Camera.nativeBridge.startNativeCameraWithConfig(
+            config,
+            undefined,
+            this.cameraProps.targetPreviewFPS,
+            this.cameraProps.previewWidth,
+            undefined,
+            this.cameraProps.targetRawFPS,
+            () => {
+                callback(undefined, `${this.Camera.cameraProps._serverUrl}/mjpeg`);
+            },
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            true);
     }
 
     closeCameraStream(){
-        this.nativeBridge.stopNativeCamera(this.cameraProps);
+        this.nativeBridge.stopNativeCamera();
         this._updateStatus("Camera Stopped");
     }
 
