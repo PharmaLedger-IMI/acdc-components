@@ -24,7 +24,14 @@ const deviceTypeNames = [
     "trueDepthCamera"
 ]
 
+const colorSpaces = {
+    sRGB: 'sRGB',
+    HLG_BT2020: 'HLG_BT2020',
+    P3_D65: 'P3_D65'
+}
+
 module.exports = {
     sessionPresetNames,
-    deviceTypeNames
+    deviceTypeNames,
+    colorSpaces
 }

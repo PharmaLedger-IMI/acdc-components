@@ -4,7 +4,7 @@ Setup the environment (Node 14 and 16 Tested):
 
 ```shell
 npm install
-npm run install-mobile (if not in mac, tehre will be an error at the end, but that's ok')
+npm run install-mobile (if not in mac, tehre will be an error at the end (```carthage: not found```), but that's ok')
 npm run server
 ```
 
@@ -44,7 +44,7 @@ Batches
      - add expiry date and select the product code;
      - click add EPI and add the same leaflet files as before;
      - click manage serial numbers/ update Valid and input any comma separated number value list (uniques);
-     - click enablhe authentication feature and input the keySSI present in the splash page;
+     - click enablhe authentication feature and input the keySSI present in the splash page (localhost:8080);
      - Click Add Batch;
     - click view 2d data matrix in the batch list item and take a picture of the valid qr code;
 

@@ -1,4 +1,5 @@
 const {WebcController} = WebCardinal.controllers;
+const {constants} = window.Native.Camera;
 
 export default class NativeController extends WebcController{
     elements = {};
@@ -11,6 +12,7 @@ export default class NativeController extends WebcController{
         this.elements.startCameraButtonMJPEG = this.element.querySelector('#startCameraButtonMJPEG');
         this.elements.stopCameraButton = this.element.querySelector('#stopCameraButton');
         this.elements.stopCameraButton.disabled = true
+
         this.elements.takePictureButton1 = this.element.querySelector('#takePictureButton1');
         this.elements.takePictureButton2 = this.element.querySelector('#takePictureButton2');
         this.elements.flashButton = this.element.querySelector('#flashButton');
@@ -55,14 +57,14 @@ export default class NativeController extends WebcController{
         this.elements.colorspaceButton.addEventListener('click', (e) => {
             let nextColorspace = '';
             switch (this.elements.colorspaceButton.innerHTML) {
-                case 'sRGB':
-                    nextColorspace = 'HLG_BT2020';
+                case constants.colorSpaces.sRGB:
+                    nextColorspace = constants.colorSpaces.HLG_BT2020;
                     break;
-                case 'HLG_BT2020':
-                    nextColorspace = 'P3_D65';
+                case constants.colorSpaces.HLG_BT2020:
+                    nextColorspace = constants.colorSpaces.P3_D65;
                     break;
                 default:
-                    nextColorspace = 'sRGB';
+                    nextColorspace = constants.colorSpaces.sRGB;
                     break;
             }
             this.Camera.setColorSpace(nextColorspace);

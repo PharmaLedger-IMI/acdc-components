@@ -3,7 +3,8 @@ const {PLYCbCrImage} = require('./util/PLYCbCrImage');
 const {STATUS, CameraInterface} = require('../CameraInterface');
 const {CameraProps} = require("./util/CameraProps");
 const {PLCameraConfig} = require("./util/PLCameraConfig");
-const {deviceTypeNames, sessionPresetNames} = require('./util/constants');
+const constants = require('./util/constants');
+const {deviceTypeNames, sessionPresetNames} = constants;
 const {CameraCapabilities} = require("../CameraCapabilities");
 const {TORCH_MODE, CAMERA_TYPE} = require('../constants');
 const bridge = require('./util/bridge');
@@ -16,17 +17,10 @@ const MODE = {
 class CameraApi extends CameraInterface{
     cameraProps;
     nativeBridge = bridge;
-
-    __canvas;
-    __scene;
-    __camera;
-    __renderer;
-    __material;
+    constants = constants;
 
     _status;
     __statusHandler;
-
-    __streamElement;
 
     constructor(cameraProps){
         super();
@@ -218,7 +212,9 @@ class CameraApi extends CameraInterface{
      * @param  {number} h
      */
     setCrop(x, y, w, h){
-        this.nativeBridge.setRawCropRoi(this.cameraProps, x, y, w, h);
+        const {rawCrop_x, rawCrop_y, rawCrop_w, rawCrop_h} = this.cameraProps;
+        this.nativeBridge.setRawCropRoi(rawCrop_x, rawCrop_y, rawCrop_w, rawCrop_h);
+        return true;
     }
 
     toggleContinuousAF(){

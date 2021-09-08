@@ -1,8 +1,13 @@
 const {THREE} = require('../lib/lib');
 
 class CameraProps {
+    renderer;
+    camera;
+    scene;
+    canvasgl;
+    material;
     previewWidth = 360;
-    previewHeight = Math.round(this.previewWidth * 16 / 9); // assume 16:9 portrait at start
+    previewHeight = 0; // assume 16:9 portrait at start
     targetPreviewFPS = 25;
     fpsMeasurementInterval = 5;
     previewFramesCounter = 0;
@@ -16,38 +21,29 @@ class CameraProps {
     rawFramesCounter = 0;
     rawFramesElapsedSum = 0;
     rawFramesMeasuredFPS = 0;
+    controls;
     bytePerChannel = 3;
 
-    stream
-
-    formatTexture = undefined;
-
+    formatTexture;
     flashMode = 'off'
     usingMJPEG = false
-
+    status_test;
+    status_fps_preview;
+    status_fps_raw;
+    configInfo;
     afOn = true;
     selectedCamera = "back";
     selectedColorspace = undefined;
-
-    selectedPresetName = undefined;
-    torchRange = 1.0;
-
-    //START VARS FROM BRIDGE FILE 
-    _previewHandle = undefined;
-    _grabHandle = undefined;
-    _onFramePreviewCallback = undefined;
-    _targetPreviewFps = 20;
-    _previewWidth = 0;
-    _serverUrl = undefined;
-    _cameraRunning = false;
-    _onFrameGrabbedCallBack = undefined;
-    _onCameraInitializedCallBack = undefined;
-    _targetGrabFps = 10;
-    _ycbcr = false;
-    _x = undefined;
-    _y = undefined;
-    _w = undefined;
-    _h = undefined;
+    torchRange;
+    snapshotImage;
+    invertRawFrameCheck;
+    cropRawFrameCheck;
+    ycbcrCheck;
+    rawCropRoiInput;
+    select_preset;
+    selectedPresetName;
+    select_cameras;
+    selectedDevicesNames;
     
     constructor(props){
         if (typeof props === 'object')
@@ -55,11 +51,12 @@ class CameraProps {
                 if (props.hasOwnProperty(key))
                     this[key] = props[key];
 
+        this.previewHeight= Math.round(this.previewWidth * 16 / 9);
+
         if (this.bytePerChannel === 4)
             this.formatTexture = THREE.RGBAFormat;
         else if (this.bytePerChannel === 3)
             this.formatTexture = THREE.RGBFormat;
-
     }
 }
 
