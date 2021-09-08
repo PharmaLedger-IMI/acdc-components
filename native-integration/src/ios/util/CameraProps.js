@@ -1,4 +1,5 @@
 const {THREE} = require('../lib/lib');
+const {deviceTypeNames, colorSpaces} = require('../util/constants')
 
 class CameraProps {
     renderer;
