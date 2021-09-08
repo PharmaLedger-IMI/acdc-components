@@ -37,9 +37,9 @@
         }
     </style>
     <psk-mobile disable-sidebar enable-back class="noPadding">
-        <webc-container controller="NativeController">
+        <webc-container controller="CameraController">
             <psk-label class="fullwidth" label="SM 18-08-2021- 005 - Only for iOS devices."></psk-label>
-          
+
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-">
@@ -52,8 +52,7 @@
                 </div>
                 <div class="row top-buffer">
                     <label for="select_cameras">Desired Cameras</label>
-                    <select class="form-control form-control-sm" id="select_cameras" multiple
-                        onchange="ChangeDesiredCamerasList()"></select>
+                    <select data-tag="cycleCameras" class="form-control form-control-sm" id="select_cameras" multiple></select>
                 </div>
                 <div class="row top-buffer">
                     <div class="col">
@@ -90,7 +89,7 @@
                     </div>
                     <div class="col">
                         <button type="button" class="btn btn-primary btn-sm"
-                            id='startCameraButtonMJPEG'>Start(MJPEG)</button>
+                                id='startCameraButtonMJPEG'>Start(MJPEG)</button>
                     </div>
                 </div>
                 <div class="row top-buffer">
@@ -105,7 +104,7 @@
                 </div>
                 <div class="row top-buffer">
                     <input class="col form-control" type="text" id="rawCropRoiInput"
-                        placeholder="enter roi as x,y,w,h" />
+                           placeholder="enter roi as x,y,w,h" />
                 </div>
                 <div class="row">
                     <div class="col custom-control custom-switch">
@@ -126,7 +125,7 @@
                         <canvas id='cameraCanvas'></canvas>
                     </div>
                     <div class="col">
-                        <video id='streamPreview' muted autoplay playsinline="true"/>
+                        <img id='streamPreview'/>
                     </div>
                     <div class="col">
                         <canvas id='rawCropCanvas'></canvas>
