@@ -369,53 +369,6 @@ function getPLYCbCrImageFromResponse(response) {
 
 
 
-function setupGLView(cameraProps, w, h) {
-    cameraProps.scene = new THREE.Scene();
-    // @ts-ignore
-    cameraProps.camera = new THREE.PerspectiveCamera(75, w/h, 0.1, 10000);
-    // @ts-ignore
-    cameraProps.renderer = new THREE.WebGLRenderer({ canvas: cameraProps.canvasgl, antialias: true });
-
-    const {scene, camera, renderer, canvasgl, bytePerChannel, formatTexture} = cameraProps;
-
-    let cameraHeight = h/2/Math.tan(camera.fov/2*(Math.PI/180))
-    camera.position.set(0,0,cameraHeight);
-    let clientHeight = Math.round(h/w * canvasgl.clientWidth);
-    renderer.setSize(canvasgl.clientWidth, clientHeight);
-
-    // @ts-ignore
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enablePan = false;
-    controls.enableZoom = false;
-    controls.enableRotate = false;
-
-    cameraProps.controls = controls;
-
-    const dataTexture = new Uint8Array(w * h * bytePerChannel);
-    for (let i=0; i<w * h* bytePerChannel; i++)
-        dataTexture[i] = 255;
-    // @ts-ignore
-    const frameTexture = new THREE.DataTexture(dataTexture, w, h, formatTexture, THREE.UnsignedByteType);
-    frameTexture.needsUpdate = true;
-    // @ts-ignore
-    const planeGeo = new THREE.PlaneBufferGeometry(w, h);
-    // @ts-ignore
-    const material = new THREE.MeshBasicMaterial({
-        map: frameTexture,
-    });
-    material.map.flipY = true;
-    cameraProps.material = material;
-    const plane = new THREE.Mesh(planeGeo, material);
-    scene.add(plane);
-    animate(cameraProps);
-}
-
-function animate(cameraProps) {
-    window.requestAnimationFrame(() => animate(cameraProps));
-    cameraProps.renderer.render(cameraProps.scene, cameraProps.camera);
-}
-
-
 module.exports = {
     startNativeCamera,
     startNativeCameraWithConfig,

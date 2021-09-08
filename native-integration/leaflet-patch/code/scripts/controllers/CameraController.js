@@ -1,3 +1,5 @@
+const {THREE} = require("./../lib/lib");
+
 const {WebcController} = WebCardinal.controllers;
 const {constants} = window.Native.Camera;
 
@@ -66,6 +68,27 @@ export default class NativeController extends WebcController{
     _initializeValues(){
         this.elements.torchRange.value = "1.0";
         this.elements.torchLevelRangeLabel.innerHTML = `Torch Level: ${this.elements.torchRange.value}`;
+        this.renderer = undefined;
+        this.camera = undefined;
+        this.scene = undefined;
+        this.material = undefined;
+        this.previewWidth = 360;
+        this.previewHeight = Math.round(this.previewWidth * 16 / 9); // assume 16:9 portrait at start
+        this.targetPreviewFPS = 25;
+        this.fpsMeasurementInterval = 5;
+        this.previewFramesCounter = 0;
+        this.previewFramesElapsedSum = 0;
+        this.previewFramesMeasuredFPS = 0;
+        this.targetRawFPS = 10;
+
+        this.rawCrop_x = undefined;
+        this.rawCrop_y = undefined;
+        this.rawCrop_w = undefined;
+        this.rawCrop_h = undefined;
+        this.rawFramesCounter = 0;
+        this.rawFramesElapsedSum = 0;
+        this.rawFramesMeasuredFPS = 0;
+        this.controls = undefined;
 
         const presetNames = this.Camera.getCapabilities().sessionPresetNames
         if (presetNames){
@@ -130,42 +153,43 @@ export default class NativeController extends WebcController{
     }
 
     async startCamera(mode){
-        switch (mode){
-            case 'gl':
-                this.elements.select_preset.disabled = true;
-                this.elements.startCameraButtonGL.disabled = true
-                this.elements.startCameraButtonMJPEG.disabled = true
-                this.elements.stopCameraButton.disabled = false
-                this.elements.ycbcrCheck.disabled = true
-                this.elements.continuousAFButton.disabled = true
-                this.elements.selectCameraButton.disabled = true
-                this.elements.select_cameras.disabled = true
-                this.show(this.elements.canvasgl);
-                this.elements.canvasgl.parentElement.style.display = "block";
-                this.hide(this.elements.streamPreview);
-                this.elements.streamPreview.parentElement.style.display = "block";
-                this.show(this.elements.status_fps_preview);
-                this.show(this.elements.status_fps_raw);
-                break;
-            default:
-                mode = 'mjpeg'
-                this.elements.select_preset.disabled = true;
-                this.elements.startCameraButtonGL.disabled = true
-                this.elements.startCameraButtonMJPEG.disabled = true
-                this.elements.stopCameraButton.disabled = false
-                this.elements.ycbcrCheck.disabled = true
-                this.elements.continuousAFButton.disabled = true
-                this.elements.selectCameraButton.disabled = true
-                this.elements.select_cameras.disabled = true
-                this.hide(this.elements.canvasgl);
-                this.elements.canvasgl.parentElement.style.display = "block";
-                this.show(this.elements.streamPreview);
-                this.elements.streamPreview.parentElement.style.display = "block";
-                this.hide(this.elements.status_fps_preview);
-                this.show(this.elements.status_fps_raw);
-        }
+        mode = 'mjpeg'
+        this.elements.select_preset.disabled = true;
+        this.elements.startCameraButtonGL.disabled = true
+        this.elements.startCameraButtonMJPEG.disabled = true
+        this.elements.stopCameraButton.disabled = false
+        this.elements.ycbcrCheck.disabled = true
+        this.elements.continuousAFButton.disabled = true
+        this.elements.selectCameraButton.disabled = true
+        this.elements.select_cameras.disabled = true
+        this.hide(this.elements.canvasgl);
+        this.elements.canvasgl.parentElement.style.display = "block";
+        this.show(this.elements.streamPreview);
+        this.elements.streamPreview.parentElement.style.display = "block";
+        this.hide(this.elements.status_fps_preview);
+        this.show(this.elements.status_fps_raw);
+        setCropCoords();
+        const config = new PLCameraConfig(this.selectedPresetName,
+            this.flashMode, this.afOn, true,
+            this.selectedDevicesNames, this.selectedCamera,
+            true, this.selectedColorspace,
+            parseFloat(this.elements.torchRange.value));
 
-        await this.Camera.bindStreamToElement(this.elements.streamPreview, {mode: mode, ycbcrCheck: this.elements.ycbcrCheck.value});
+        this.Camera.nativeBridge.startNativeCameraWithConfig(
+            config,
+            undefined,
+            this.targetPreviewFPS,
+            this.previewWidth,
+            onFrameGrabbed,
+            this.targetRawFPS,
+            () => {
+                this.elements.streamPreview.src = `${this._serverUrl}/mjpeg`;
+            },
+            this.rawCrop_x,
+            this.rawCrop_y,
+            this.rawCrop_w,
+            this.rawCrop_h,
+            this.elements.ycbcrCheck.checked);
     }
 
     stopCamera(){
@@ -219,6 +243,35 @@ export default class NativeController extends WebcController{
         }
     }
 
+    setCropCoords(){
+        let rawCrop_x, rawCrop_y, rawCrop_w, rawCrop_h;
+        if (this.elements.cropRawFrameCheck.checked) {
+
+            const coords = this.elements.rawCropRoiInput.value.split(",");
+            rawCrop_x = parseInt(coords[0]);
+            rawCrop_y = parseInt(coords[1]);
+            rawCrop_w = parseInt(coords[2]);
+            rawCrop_h = parseInt(coords[3]);
+            if (rawCrop_x != rawCrop_x || rawCrop_y != rawCrop_y || rawCrop_w != rawCrop_w || rawCrop_h != rawCrop_h) {
+                alert("failed to parse coords");
+                this.elements.cropRawFrameCheck.checked = false;
+                hide(this.elements.rawCropRoiInput);
+                rawCrop_x = undefined;
+                rawCrop_y = undefined;
+                rawCrop_w = undefined;
+                rawCrop_h = undefined;
+            }
+            this.Camera.cameraProps.cropRawFrameCheck = true;
+        } else {
+            rawCrop_x = undefined;
+            rawCrop_y = undefined;
+            rawCrop_w = undefined;
+            rawCrop_h = undefined;
+            this.Camera.cameraProps.cropRawFrameCheck = false;
+        }
+        this.Camera.setCrop(rawCrop_x, rawCrop_y, rawCrop_w, rawCrop_h);
+    }
+
     switchCamera(){
         this.Camera.switchCamera()
         this.elements.selectCameraButton.innerHTML = this.Camera.getStatus();
@@ -265,5 +318,258 @@ export default class NativeController extends WebcController{
 
     show(element) {
         element.style.display = "block";
+    }
+
+    setupGLView(w, h) {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, w/h, 0.1, 10000);
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.elements.canvasgl, antialias: true });
+
+        let cameraHeight = h/2/Math.tan(this.camera.fov/2*(Math.PI/180))
+        this.camera.position.set(0,0,cameraHeight);
+        let clientHeight = Math.round(h/w * this.elements.canvasgl.clientWidth);
+        this.renderer.setSize(this.elements.canvasgl.clientWidth, clientHeight);
+
+        this.controls = new THREE.OrbitControls(camera, renderer.domElement);
+        this.controls.enablePan = false;
+        this.controls.enableZoom = false;
+        this.controls.enableRotate = false;
+
+        const {bytePerChannel, formatTexture} = this.Camera.cameraProps.bytePerChannel
+
+        const dataTexture = new Uint8Array(w * h * bytePerChannel);
+        for (let i=0; i < w * h * bytePerChannel; i++)
+            dataTexture[i] = 255;
+        const frameTexture = new THREE.DataTexture(dataTexture, w, h, formatTexture, THREE.UnsignedByteType);
+        frameTexture.needsUpdate = true;
+        const planeGeo = new THREE.PlaneBufferGeometry(w, h);
+        this.material = new THREE.MeshBasicMaterial({
+            map: frameTexture,
+        });
+        this.material.map.flipY = true;
+        const plane = new THREE.Mesh(planeGeo, this.material);
+        this.scene.add(plane);
+
+        animate();
+    }
+
+    animate() {
+        window.requestAnimationFrame(() => animate());
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    /**
+     * @param {PLRgbImage} rgbImage preview data coming from native camera
+     * @param {number} elapsedTime time in ms elapsed to get the preview frame
+     */
+    onFramePreview(rgbImage, elapsedTime) {
+        const {previewHeight, previewWidth} = this.Camera.cameraProps;
+        let frame = new Uint8Array(rgbImage.arrayBuffer);
+        if (rgbImage.width !== previewWidth || rgbImage.height !== previewHeight) {
+            this.previewWidth = rgbImage.width;
+            this.previewHeight = rgbImage.height;
+            this.setupGLView(previewWidth, previewHeight);
+        }
+        this.material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, formatTexture, THREE.UnsignedByteType);
+        this.material.map.flipY = true;
+        this.material.needsUpdate = true;
+
+        if (this.elements.previewFramesCounter !== 0 && this.previewFramesCounter%(this.fpsMeasurementInterval-1) === 0) {
+            this.previewFramesMeasuredFPS = 1000/this.previewFramesElapsedSum * this.fpsMeasurementInterval;
+            this.previewFramesCounter = 0;
+            this.previewFramesElapsedSum = 0;
+        } else {
+            this.previewFramesCounter += 1;
+            this.previewFramesElapsedSum += elapsedTime;
+        }
+        this.elements.status_fps_preview.innerHTML = `preview ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.previewFramesMeasuredFPS)})`;
+    }
+
+    /**
+     * @param {PLRgbImage | PLYCbCrImage} plImage raw data coming from native camera
+     * @param {number} elapsedTime time in ms elapsed to get the raw frame
+     */
+    onFrameGrabbed(plImage, elapsedTime) {
+        let pSizeText = "";
+        if (this.usingMJPEG === false) {
+            pSizeText = `, p(${this.previewWidth}x${this.previewHeight}), p FPS:${this.targetPreviewFPS}`
+        }
+
+        const {PLRgbImage, PLYCbCrImage} = this.Camera.imageTypes;
+
+        let rawframeLengthMB = undefined
+        if (plImage instanceof PLRgbImage) {
+            rawframeLengthMB = Math.round(10*plImage.arrayBuffer.byteLength/1024/1024)/10;
+            this.placeUint8RGBArrayInCanvas(this.elements.rawCropCanvas, new Uint8Array(plImage.arrayBuffer), plImage.width, plImage.height);
+            show(this.elements.rawCropCanvas);
+            hide(this.elements.rawCropCbCanvas);
+            hide(this.elements.rawCropCrCanvas);
+        } else if (plImage instanceof PLYCbCrImage) {
+            rawframeLengthMB = Math.round(10*(plImage.yArrayBuffer.byteLength + plImage.cbCrArrayBuffer.byteLength)/1024/1024)/10;
+            this.placeUint8GrayScaleArrayInCanvas(this.elements.rawCropCanvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
+            show(this.elements.rawCropCanvas);
+            this.placeUint8CbCrArrayInCanvas(this.elements.rawCropCbCanvas, this.elements.rawCropCrCanvas, new Uint8Array(plImage.cbCrArrayBuffer), plImage.width/2, plImage.height/2);
+            show(this.elements.rawCropCbCanvas);
+            show(this.elements.rawCropCrCanvas);
+        } else {
+            rawframeLengthMB = -1;
+        }
+
+        this.elements.status_test.innerHTML = `${this.selectedPresetName}${pSizeText}, raw FPS:${this.targetRawFPS}<br/> raw frame length: ${rawframeLengthMB}MB, ${plImage.width}x${plImage.height}`
+
+        if (this.rawFramesCounter !== 0 && this.rawFramesCounter%(this.fpsMeasurementInterval-1) === 0) {
+            this.rawFramesMeasuredFPS = 1000/this.rawFramesElapsedSum * this.fpsMeasurementInterval;
+            this.rawFramesCounter = 0;
+            this.rawFramesElapsedSum = 0;
+        } else {
+            this.rawFramesCounter += 1;
+            this.rawFramesElapsedSum += elapsedTime;
+        }
+        this.elements.status_fps_raw.innerHTML = `raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.rawFramesMeasuredFPS)})`
+    }
+
+    onFramePreview(rgbImage, elapsedTime) {
+        var frame = new Uint8Array(rgbImage.arrayBuffer);
+        if (rgbImage.width !== this.previewWidth || rgbImage.height !== this.previewHeight) {
+            this.previewWidth = rgbImage.width;
+            this.previewHeight = rgbImage.height;
+            this.setupGLView(this.previewWidth, this.previewHeight);
+        }
+        // @ts-ignore
+        this.material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, this.formatTexture, THREE.UnsignedByteType);
+        this.material.map.flipY = true;
+        this.material.needsUpdate = true;
+
+        if (this.previewFramesCounter !== 0 && this.previewFramesCounter%(this.fpsMeasurementInterval-1) === 0) {
+            this.previewFramesMeasuredFPS = 1000/this.previewFramesElapsedSum * this.fpsMeasurementInterval;
+            this.previewFramesCounter = 0;
+            this.previewFramesElapsedSum = 0;
+        } else {
+            this.previewFramesCounter += 1;
+            this.previewFramesElapsedSum += elapsedTime;
+        }
+        this.elements.status_fps_preview.innerHTML = `preview ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.previewFramesMeasuredFPS)})`;
+    }
+
+    /**
+     * @param {PLRgbImage | PLYCbCrImage} plImage raw data coming from native camera
+     * @param {number} elapsedTime time in ms elapsed to get the raw frame
+     */
+    onFrameGrabbed(plImage, elapsedTime) {
+        let pSizeText = "";
+        if (this.usingMJPEG === false) {
+            pSizeText = `, p(${this.previewWidth}x${this.previewHeight}), p FPS:${this.targetPreviewFPS}`
+        }
+
+        const {PLRgbImage, PLYCbCrImage} = this.Camera.imageTypes;
+
+        let rawframeLengthMB = undefined
+        if (plImage instanceof PLRgbImage) {
+            rawframeLengthMB = Math.round(10*plImage.arrayBuffer.byteLength/1024/1024)/10;
+            this.placeUint8RGBArrayInCanvas(this.elements.rawCropCanvas, new Uint8Array(plImage.arrayBuffer), plImage.width, plImage.height);
+            show(this.elements.rawCropCanvas);
+            hide(this.elements.rawCropCbCanvas);
+            hide(this.elements.rawCropCrCanvas);
+        } else if (plImage instanceof PLYCbCrImage) {
+            rawframeLengthMB = Math.round(10*(plImage.yArrayBuffer.byteLength + plImage.cbCrArrayBuffer.byteLength)/1024/1024)/10;
+            this.placeUint8GrayScaleArrayInCanvas(this.elements.rawCropCanvas, new Uint8Array(plImage.yArrayBuffer), plImage.width, plImage.height);
+            show(this.elements.rawCropCanvas);
+            this.placeUint8CbCrArrayInCanvas(this.elements.rawCropCbCanvas, this.elements.rawCropCrCanvas, new Uint8Array(plImage.cbCrArrayBuffer), plImage.width/2, plImage.height/2);
+            show(this.elements.rawCropCbCanvas);
+            show(this.elements.rawCropCrCanvas);
+        } else {
+            rawframeLengthMB = -1
+        }
+
+        this.elements.status_test.innerHTML = `${this.selectedPresetName}${pSizeText}, raw FPS:${this.targetRawFPS}<br/> raw frame length: ${rawframeLengthMB}MB, ${plImage.width}x${plImage.height}`
+
+        if (this.rawFramesCounter !== 0 && this.rawFramesCounter%(this.fpsMeasurementInterval-1) === 0) {
+            this.rawFramesMeasuredFPS = 1000/this.rawFramesElapsedSum * this.fpsMeasurementInterval;
+            this.rawFramesCounter = 0;
+            this.rawFramesElapsedSum = 0;
+        } else {
+            this.rawFramesCounter += 1;
+            this.rawFramesElapsedSum += elapsedTime;
+        }
+        this.elements.status_fps_raw.innerHTML = `raw ${Math.round(elapsedTime)} ms (max FPS=${Math.round(this.rawFramesMeasuredFPS)})`
+    }
+
+    onPictureTaken(base64ImageData) {
+        console.log(`Inside onPictureTaken`)
+        this.elements.snapshotImage.src = base64ImageData
+    }
+
+
+    placeUint8RGBArrayInCanvas(canvasElem, array, w, h) {
+        let a = 1;
+        let b = 0;
+        if (this.elements.invertRawFrameCheck.checked === true){
+            a = -1;
+            b = 255;
+        }
+        canvasElem.width = w;
+        canvasElem.height = h;
+        var ctx = canvasElem.getContext('2d');
+        var clampedArray = new Uint8ClampedArray(w*h*4);
+        let j = 0
+        for (let i = 0; i < 3*w*h; i+=3) {
+            clampedArray[j] = b+a*array[i];
+            clampedArray[j+1] = b+a*array[i+1];
+            clampedArray[j+2] = b+a*array[i+2];
+            clampedArray[j+3] = 255;
+            j += 4;
+        }
+        var imageData = new ImageData(clampedArray, w, h);
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    placeUint8GrayScaleArrayInCanvas(canvasElem, array, w, h) {
+        let a = 1;
+        let b = 0;
+        if (this.elements.invertRawFrameCheck.checked === true){
+            a = -1;
+            b = 255;
+        }
+        canvasElem.width = w;
+        canvasElem.height = h;
+        var ctx = canvasElem.getContext('2d');
+        var clampedArray = new Uint8ClampedArray(w*h*4);
+        let j = 0
+        for (let i = 0; i < w*h; i++) {
+            clampedArray[j] = b+a*array[i];
+            clampedArray[j+1] = b+a*array[i];
+            clampedArray[j+2] = b+a*array[i];
+            clampedArray[j+3] = 255;
+            j += 4;
+        }
+        var imageData = new ImageData(clampedArray, w, h);
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    placeUint8CbCrArrayInCanvas(canvasElemCb, canvasElemCr, array, w, h) {
+        canvasElemCb.width = w;
+        canvasElemCb.height = h;
+        canvasElemCr.width = w;
+        canvasElemCr.height = h;
+        var ctxCb = canvasElemCb.getContext('2d');
+        var ctxCr = canvasElemCr.getContext('2d');
+        var clampedArrayCb = new Uint8ClampedArray(w*h*4);
+        var clampedArrayCr = new Uint8ClampedArray(w*h*4);
+        let j = 0
+        for (let i = 0; i < 2*w*h; i+=2) {
+            clampedArrayCb[j] = array[i];
+            clampedArrayCb[j+1] = array[i];
+            clampedArrayCb[j+2] = array[i];
+            clampedArrayCb[j+3] = 255;
+            clampedArrayCr[j] = array[i+1];
+            clampedArrayCr[j+1] = array[i+1];
+            clampedArrayCr[j+2] = array[i+1];
+            clampedArrayCr[j+3] = 255;
+            j += 4;
+        }
+        var imageDataCb = new ImageData(clampedArrayCb, w, h);
+        ctxCb.putImageData(imageDataCb, 0, 0);
+        var imageDataCr = new ImageData(clampedArrayCr, w, h);
+        ctxCr.putImageData(imageDataCr, 0, 0);
     }
 }

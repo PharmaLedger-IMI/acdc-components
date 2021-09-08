@@ -18,6 +18,10 @@ class CameraApi extends CameraInterface{
     cameraProps;
     nativeBridge = bridge;
     constants = constants;
+    imageTypes = {
+        PLYCbCrImage,
+        PLRgbImage
+    }
 
     _status;
     __statusHandler;
