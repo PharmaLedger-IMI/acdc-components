@@ -114,6 +114,8 @@ There are 3 main relevant sections in these files: 'dependencies', 'build', and 
 Notice all entries regarding 'authentication-feature-template':
     these should be replicated for your fork on both files;
 
+NOTE: If you keep the folder for Authentication features consistent: 'authentication-feature-xxx' the build script will automatically present those credentials in the splash page (localhost:8080)
+
 
 IMPORTANT!!! in oder to ensure the ```npm install``` properly handles dependencies it will revert the repo back the last commit of that file.
 this means whenever you want to test from scratch, you need to ensure the ```octopus-freeze.json``` was changed in your last commit (we add/remove withe lines at the end)
