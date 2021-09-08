@@ -8,6 +8,7 @@ const {deviceTypeNames, sessionPresetNames} = constants;
 const {CameraCapabilities} = require("../CameraCapabilities");
 const {TORCH_MODE, CAMERA_TYPE} = require('../constants');
 const bridge = require('./util/bridge');
+const {THREE} = require('./lib/lib')
 
 const MODE = {
     GL: "gl",
@@ -21,14 +22,32 @@ class CameraApi extends CameraInterface{
     imageTypes = {
         PLYCbCrImage,
         PLRgbImage
-    }
+    };
+    THREE = THREE;
+    PLCameraConfig = PLCameraConfig;
 
     _status;
     __statusHandler;
 
+    _handlers = {
+        onFramePreview: undefined,
+        onFrameGrabbed: undefined,
+        onPictureTaken: undefined,
+        onCameraInitialized: () => console.log(`Camera Initialized`)
+    }
+
     constructor(cameraProps){
         super();
         this.cameraProps = cameraProps || new CameraProps();
+    }
+
+    registerHandlers(onFramePreview, onFrameGrabbed, onPictureTaken, onCameraInitialized){
+        this._handlers = {
+            onFramePreview: onFramePreview,
+            onFrameGrabbed: onFrameGrabbed,
+            onPictureTaken: onPictureTaken,
+            onCameraInitialized: onCameraInitialized || this._handlers.onCameraInitialized
+        }
     }
 
     async _startNativeCamera(element){
@@ -56,7 +75,7 @@ class CameraApi extends CameraInterface{
      * @param {number} elapsedTime time in ms elapsed to get the preview frame
      */
     _onFramePreview(rgbImage, elapsedTime) {
-       return this.nativeBridge.onFramePreview(this, rgbImage, elapsedTime);
+       return this._handlers.onFramePreview(rgbImage, elapsedTime);
     }
 
     /**
@@ -64,29 +83,20 @@ class CameraApi extends CameraInterface{
      * @param {number} elapsedTime time in ms elapsed to get the raw frame
      */
     _onFrameGrabbed(plImage, elapsedTime) {
-        return this.nativeBridge.onFrameGrabbed(this, plImage, elapsedTime);
+        return this._handlers.onFrameGrabbed(plImage, elapsedTime);
     }
 
     _onPictureTaken(base64ImageData) {
-        this.__canvas.src = base64ImageData;
-        this._updateStatus("New Picture taken");
+        return this._handlers.onPictureTaken(base64ImageData);
     }
 
     _onNativeCameraInitialized(...args){
         this._updateStatus("Native Camera Initialized");
-        return this.nativeBridge.onNativeCameraInitialized(this)(...args);
+        this.nativeBridge.onNativeCameraInitialized(...args);
     }
 
     _onCameraInitializedCallBack() {
-        switch(this.__streamElement.tag){
-            case "video":
-                this.__streamElement.srcObject = `${this.cameraProps._serverUrl}/mjpeg`;
-                break;
-            default:
-                this.__streamElement.src = `${this.cameraProps._serverUrl}/mjpeg`;
-        }
-
-        this._updateStatus("Camera Initialized");
+        return this._handlers.onCameraInitialized();
     }
 
     _updateStatus(message){

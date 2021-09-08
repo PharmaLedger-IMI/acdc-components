@@ -1,6 +1,5 @@
 const {PLRgbImage} = require('./PLRgbImage');
 const {PLYCbCrImage} = require('./PLYCbCrImage');
-const {THREE} = require("./../lib/lib");
 
 var _previewHandle = undefined;
 var _grabHandle = undefined;
@@ -91,7 +90,7 @@ function startNativeCameraWithConfig(config, onFramePreviewCallback = undefined,
     _targetGrabFps = targetGrabFps
     setRawCropRoi(x, y, w, h);
     let params = {
-        "onInitializedJsCallback": onNativeCameraInitialized.name,
+        "onInitializedJsCallback": window.Native.Camera._onNativeCameraInitialized.name,
         "previewWidth": _previewWidth,
         "config": config
     }
@@ -367,6 +366,78 @@ function getPLYCbCrImageFromResponse(response) {
     })
 }
 
+function placeUint8RGBArrayInCanvas(canvasElem, invert, array, w, h) {
+    let a = 1;
+    let b = 0;
+    if (invert){
+        a = -1;
+        b = 255;
+    }
+    canvasElem.width = w;
+    canvasElem.height = h;
+    const ctx = canvasElem.getContext('2d');
+    const clampedArray = new Uint8ClampedArray(w*h*4);
+    let j = 0
+    for (let i = 0; i < 3*w*h; i+=3) {
+        clampedArray[j] = b+a*array[i];
+        clampedArray[j+1] = b+a*array[i+1];
+        clampedArray[j+2] = b+a*array[i+2];
+        clampedArray[j+3] = 255;
+        j += 4;
+    }
+    const imageData = new ImageData(clampedArray, w, h);
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function placeUint8GrayScaleArrayInCanvas(canvasElem, invert, array, w, h) {
+    let a = 1;
+    let b = 0;
+    if (invert){
+        a = -1;
+        b = 255;
+    }
+    canvasElem.width = w;
+    canvasElem.height = h;
+    const ctx = canvasElem.getContext('2d');
+    const clampedArray = new Uint8ClampedArray(w*h*4);
+    let j = 0
+    for (let i = 0; i < w*h; i++) {
+        clampedArray[j] = b+a*array[i];
+        clampedArray[j+1] = b+a*array[i];
+        clampedArray[j+2] = b+a*array[i];
+        clampedArray[j+3] = 255;
+        j += 4;
+    }
+    const imageData = new ImageData(clampedArray, w, h);
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function placeUint8CbCrArrayInCanvas(canvasElemCb, canvasElemCr, array, w, h) {
+    canvasElemCb.width = w;
+    canvasElemCb.height = h;
+    canvasElemCr.width = w;
+    canvasElemCr.height = h;
+    const ctxCb = canvasElemCb.getContext('2d');
+    const ctxCr = canvasElemCr.getContext('2d');
+    const clampedArrayCb = new Uint8ClampedArray(w*h*4);
+    const clampedArrayCr = new Uint8ClampedArray(w*h*4);
+    let j = 0
+    for (let i = 0; i < 2*w*h; i+=2) {
+        clampedArrayCb[j] = array[i];
+        clampedArrayCb[j+1] = array[i];
+        clampedArrayCb[j+2] = array[i];
+        clampedArrayCb[j+3] = 255;
+        clampedArrayCr[j] = array[i+1];
+        clampedArrayCr[j+1] = array[i+1];
+        clampedArrayCr[j+2] = array[i+1];
+        clampedArrayCr[j+3] = 255;
+        j += 4;
+    }
+    const imageDataCb = new ImageData(clampedArrayCb, w, h);
+    ctxCb.putImageData(imageDataCb, 0, 0);
+    const imageDataCr = new ImageData(clampedArrayCr, w, h);
+    ctxCr.putImageData(imageDataCr, 0, 0);
+}
 
 
 module.exports = {
@@ -387,7 +458,7 @@ module.exports = {
     getDeviceInfo,
     getPLRgbImageFromResponse,
     getPLYCbCrImageFromResponse,
-    setupGLView,
-    animate,
-
+    placeUint8RGBArrayInCanvas,
+    placeUint8GrayScaleArrayInCanvas,
+    placeUint8CbCrArrayInCanvas
 }
