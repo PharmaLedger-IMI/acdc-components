@@ -387,7 +387,8 @@ export default class NativeController extends WebcController{
     }
 
     animate() {
-        window.requestAnimationFrame(() => animate());
+        const self = this;
+        window.requestAnimationFrame(self.animate.bind(self));
         this.renderer.render(this.scene, this.camera);
     }
 
