@@ -320,6 +320,21 @@ function getDeviceInfo() {
     })
 }
 
+function getDimensionsFromResponse(response){
+    let {previewWidth, previewHeight} = window.Native.Camera.cameraProps;
+    if (response.headers.has("image-width")) {
+        previewWidth = parseInt(response.headers.get("image-width"));
+    }
+    if (response.headers.has("image-height")) {
+        previewHeight = parseInt(response.headers.get("image-height"));
+    }
+
+    return {
+        frame_w: previewWidth,
+        frame_h: previewHeight
+    }
+}
+
 /**
  * Packs a response from endpoints providing raw rgb buffer as octet-stream and image size in headers
  * 
@@ -327,14 +342,7 @@ function getDeviceInfo() {
  * @returns {Promise<PLRgbImage>} the image in a promise
  */
 function getPLRgbImageFromResponse(response) {
-    let frame_w = 0
-    let frame_h = 0
-    if (response.headers.has("image-width")) {
-        frame_w = parseInt(response.headers.get("image-width"));
-    }
-    if (response.headers.has("image-height")) {
-        frame_h = parseInt(response.headers.get("image-height"));
-    }
+    const {frame_w, frame_h} = getDimensionsFromResponse(response);
     return response.blob().then( b => {
         return b.arrayBuffer().then(a => {
             let image = new PLRgbImage(a, frame_w, frame_h);
@@ -350,14 +358,7 @@ function getPLRgbImageFromResponse(response) {
  * @returns {Promise<PLYCbCrImage>} the image in a promise
  */
 function getPLYCbCrImageFromResponse(response) {
-    let frame_w = 0
-    let frame_h = 0
-    if (response.headers.has("image-width")) {
-        frame_w = parseInt(response.headers.get("image-width"));
-    }
-    if (response.headers.has("image-height")) {
-        frame_h = parseInt(response.headers.get("image-height"));
-    }
+    const {frame_w, frame_h} = getDimensionsFromResponse(response);
     return response.blob().then( b => {
         return b.arrayBuffer().then(a => {
             let image = new PLYCbCrImage(a, frame_w, frame_h);
