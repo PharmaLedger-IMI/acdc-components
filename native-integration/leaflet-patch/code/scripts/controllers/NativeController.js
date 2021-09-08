@@ -203,7 +203,7 @@ export default class NativeController extends WebcController{
         }
 
 
-        const config = new PLCameraConfig(this.selectedPresetName,
+        const config = new PLCameraConfig(this.Camera.cameraProps.selectedPresetName,
             this.flashMode, this.afOn, true,
             this.selectedDevicesNames, this.selectedCamera,
             true, this.selectedColorspace,
@@ -217,7 +217,7 @@ export default class NativeController extends WebcController{
             this.onFrameGrabbed.bind(this),
             this.targetRawFPS,
             () => {
-                this.elements.streamPreview.src = `${window.Native.Camera.cameraProps._serverUrl}/mjpeg`;
+                this.elements.streamPreview.src = `${this.Camera.cameraProps._serverUrl}/mjpeg`;
             },
             this.rawCrop_x,
             this.rawCrop_y,
