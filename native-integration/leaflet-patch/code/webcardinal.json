@@ -27,12 +27,6 @@
       "tag": "native"
     },
     {
-      "name": "Camera",
-      "path": "./camera",
-      "src": "camera.html",
-      "tag": "camera"
-    },
-    {
       "name": "History",
       "tag": "history",
       "path": "./history"
