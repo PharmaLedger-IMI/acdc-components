@@ -214,7 +214,7 @@ export default class NativeController extends WebcController{
             onFramePreviewCallback,
             this.targetPreviewFPS,
             this.previewWidth,
-            this.onFrameGrabbed,
+            this.onFrameGrabbed.bind(this),
             this.targetRawFPS,
             () => {
                 this.elements.streamPreview.src = `${this._serverUrl}/mjpeg`;
@@ -368,7 +368,7 @@ export default class NativeController extends WebcController{
         this.controls.enableZoom = false;
         this.controls.enableRotate = false;
 
-        const {bytePerChannel, formatTexture} = this.Camera.cameraProps.bytePerChannel
+        const {bytePerChannel, formatTexture} = this.Camera.cameraProps;
 
         const dataTexture = new Uint8Array(w * h * bytePerChannel);
         for (let i=0; i < w * h * bytePerChannel; i++)
@@ -387,8 +387,7 @@ export default class NativeController extends WebcController{
     }
 
     animate() {
-        const self = this;
-        window.requestAnimationFrame(self.animate.bind(self));
+        window.requestAnimationFrame(this.animate.bind(this));
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -404,7 +403,7 @@ export default class NativeController extends WebcController{
             this.previewHeight = rgbImage.height;
             this.setupGLView(previewWidth, previewHeight);
         }
-        this.material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, formatTexture, THREE.UnsignedByteType);
+        this.material.map = new THREE.DataTexture(frame, rgbImage.width, rgbImage.height, this.Camera.cameraProps.formatTexture, THREE.UnsignedByteType);
         this.material.map.flipY = true;
         this.material.needsUpdate = true;
 
