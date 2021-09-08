@@ -205,7 +205,7 @@ export default class NativeController extends WebcController{
 
         const config = new PLCameraConfig(this.Camera.cameraProps.selectedPresetName,
             this.Camera.cameraProps.flashMode, this.Camera.cameraProps.afOn, true,
-            this.selectedDevicesNames, this.Camera.cameraProps.selectedCamera,
+            this.Camera.cameraProps.selectedDevicesNames, this.Camera.cameraProps.selectedCamera,
             true, this.Camera.cameraProps.selectedColorspace,
             parseFloat(this.elements.torchRange.value));
 
