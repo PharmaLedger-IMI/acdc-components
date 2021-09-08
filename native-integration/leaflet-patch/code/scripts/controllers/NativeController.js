@@ -217,7 +217,7 @@ export default class NativeController extends WebcController{
             this.onFrameGrabbed.bind(this),
             this.targetRawFPS,
             () => {
-                this.elements.streamPreview.src = `${this._serverUrl}/mjpeg`;
+                this.elements.streamPreview.src = `${window.Native.Camera.cameraProps._serverUrl}/mjpeg`;
             },
             this.rawCrop_x,
             this.rawCrop_y,

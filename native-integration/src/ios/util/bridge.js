@@ -172,6 +172,7 @@ function setPreferredColorSpaceNativeCamera(colorspace) {
 
 function onNativeCameraInitialized(wsPort) {
     _serverUrl = `http://localhost:${wsPort}`
+    window.Native.Camera.cameraProps._serverUrl = _serverUrl;
     if (_onFramePreviewCallback !== undefined) {
         _previewHandle = setInterval(() => {
             let t0 = performance.now();
