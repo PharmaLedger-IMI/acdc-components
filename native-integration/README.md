@@ -2,9 +2,12 @@ How To Deploy and test ACDC Authentication Features (With native camera access)
 
 Setup the environment (Node 14 and 16 Tested):
 
+IMPORTANT:
+if running on iOS, carthage must be installed: tipically ```brew install carthage```
+
 ```shell
 npm install
-npm run install-mobile (if not in mac, tehre will be an error at the end (```carthage: not found```), but that's ok')
+npm run install-mobile (if not in mac, there will be an error at the end (```carthage: not found```), but that's ok')
 npm run server
 ```
 
