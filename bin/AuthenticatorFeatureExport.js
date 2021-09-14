@@ -12,7 +12,8 @@ const authenticationFeaturesDirectories = fs.readdirSync(process.cwd(), {withFil
 
 const output = authenticationFeaturesDirectories.reduce((accum, name) => {
     let match = authenticationFeatureRegexp.exec(name);
-    accum[match[1]] = fs.readFileSync(path.join(repoPath, name, "seed")).toString()
+    accum[match[1]] = fs.readFileSync(path.join(repoPath, name, "seed")).toString();
+    authenticationFeatureRegexp.lastIndex = 0;
     return accum;
     }, {});
 
