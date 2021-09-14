@@ -1,6 +1,9 @@
 import {ApiProperty} from "@nestjs/swagger";
 
 export class EventOuputDataDto {
+    @ApiProperty({description: "Event unique identifier"})
+    eventId: string;
+
     @ApiProperty({description: "Authentication status"})
     snCheckResult: string = 'Unsure'
 

@@ -40,7 +40,8 @@ export class ScanService {
             eventInputs: [eventInput],
             eventOutputs: [eventOutput]
         })
-        await this.eventRepository.add(event)
+        const {eventId} = await this.eventRepository.add(event);
+        eventOutputData.eventId = eventId;
 
         return eventOutputData
     }
