@@ -1,9 +1,23 @@
 How To Deploy and test ACDC Authentication Features (With native camera access)
-
+​
 Setup the environment (Node 14 and 16 Tested):
+​
+Update mobile/scan-app/ios/PSKNodeServer/PSDKNodeServer/nodejsProject/apihub-root/external-volume/config/bdns.hosts:line 14
+```
+  "epi": {
+    "replicas": [],
+    "brickStorages": [
+      "http://<Your-Local-IP>:8080"
+    ],
+    "anchoringServices": [
+      "http://<Your-Local-IP>:8080"
+    ]
+```
+
+This will ensure fast development passes
 
 IMPORTANT:
-if running on iOS, carthage must be installed: tipically ```brew install carthage```
+if running on iOS, carthage must be installed: typically ```brew install carthage```
 
 ```shell
 npm install
@@ -20,11 +34,11 @@ in the browser (use CHROME in anonymous!) go to localhost:8080 and enter the Ent
 ```
 MAH as issuer
  - generate an Identifier (use the default values)
-
+ 
 User as Holder
  - generate an Identifier (use default values);
  - copy generated identity;
-
+ 
 MAH as issuer
 - paste the generated identity;
 - click generate credential;
@@ -50,7 +64,7 @@ Batches
      - click enablhe authentication feature and input the keySSI present in the splash page (localhost:8080);
      - Click Add Batch;
      - click view 2d data matrix in the batch list item and take a picture of the valid qr code;
-
+     
 in the browser (use CHROME in anonymous mode!) go to the Patient Wallet.
  - click scan and scan the qr code from before. you should see a details screen aying there's an authentication feature available.
  - click verify package. THis will launch the Authentication Feature;
@@ -81,6 +95,11 @@ scan the code, click verify package;
 inspect the variable 'window.Native.Camera'. it will present the same api as the browser version,
 but will also have a property called nativeBridge exposing all the native camera API;
 
+For any subsequent builds, you can do as follows
+- npm run build authentication-feature-<your-feature-name>
+- Close the app on your phone (to prevent caching)
+- Open the app and scan your batch code again
+ 
 Relevant folders:
 ```shell
   authentication-feature-template
@@ -96,28 +115,30 @@ Relevant folders:
        but all the native API is exposed via the 'nativeBridge' object;
      - This basic Camera API (not the native one) in not closed will benefit from you input and adaptation to your needs.\
        Our focus was not to implement but to expose.
-
+ 
 Relevant files:
 ```shell
   octopus.json
   octopus.freeze.json
 ```
-
+ 
 these are the build script files. handle with extreme care or the build process might/WILL be broken.
 These files must always be in sync apart from some commit hashes that MUST not be changed!! (backups for those hashes can be found in octopus-freeze.json.bck);
-
+ 
 There are 3 main relevant sections in these files: 'dependencies', 'build', and 'build-ios-app':
     - the dependencies is run when you run 'npm install';
     - build when you run 'npm run build-all';
     - build-ios-app ...
-
+ 
 Notice all entries regarding 'authentication-feature-template':
     these should be replicated for your fork on both files;
-
+ 
 NOTE: If you keep the folder for Authentication features consistent: 'authentication-feature-xxx' the build script will automatically present those credentials in the splash page (localhost:8080)
-
-
+ 
 IMPORTANT!!! in oder to ensure the ```npm install``` properly handles dependencies it will revert the repo back the last commit of that file.
 this means whenever you want to test from scratch, you need to ensure the ```octopus-freeze.json``` was changed in your last commit (we add/remove withe lines at the end)
-
-
+ 
+In the event that the app runs slow:
+- delete authentication-feature-<your-feature-name>/seed
+- In ACDC root: run build authentication-feature-<your-feature-name>
+- Update batch to newly generated SSI so that authentication still works
