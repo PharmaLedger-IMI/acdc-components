@@ -968,6 +968,10 @@
                 {
                     "type": "execute",
                     "cmd": "cd mobile/scan-app/ios/PSKNodeServer/ && carthage update"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd mobile/scan-app/ios/pharmaledger-camera/PharmaLedger Camera/PharmaLedger Camera/ && ./carthage.sh"
                 }
             ]
         }
