@@ -73,7 +73,7 @@ export default class AuthFeatureController extends WebcController {
 
     report(authResponse, callback){
         const evt = this.acdc.createScanEvent(Object.assign({}, this.model.gs1Fields, {
-            previousScan: this.model.acdc.eventId,
+            previousScan: this.model.acdc ? this.model.acdc.eventId : undefined,
             authResponse: authResponse
         }));
         evt.report((err) => {
