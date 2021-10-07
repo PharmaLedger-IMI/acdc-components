@@ -1043,6 +1043,15 @@
 
     "build-ios-app": [
         {
+            "name": "native integration rebuild",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd native-integration && npm install && npm run prebuild"
+                }
+            ]
+        },
+        {
             "name": "patch auth feature ssapp",
             "actions": [
                 {
