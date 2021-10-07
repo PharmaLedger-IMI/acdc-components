@@ -21,7 +21,8 @@ if running on iOS, carthage must be installed: typically ```brew install carthag
 
 ```shell
 npm install
-npm run install-mobile (if not in mac, there will be an error at the end (```carthage: not found```), but that's ok')
+npm run install-mobile (if not in mac, there will be an error at the end (```carthage: not found```), but that's ok', if in mac and you get an error like 'A shell task (/usr/bin/xcrun xcodebuild -project /Users/tvenceslau/workspace/acdc/acdc-workspace/mobile/scan-app/ios/pharmaledger-camera/PharmaLedger\ Camera/Carthage/Checkouts/GCDWebServer/GCDWebServer.xcodeproj CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= CARTHAGE=YES -list) failed with exit code 72:
+xcrun: error: unable to find utility "xcodebuild", not a developer tool or in PATH' then in the xcode preferences under 'Locations', set the 'Command Line Tools' to the xcode you are using)
 npm run server
 ```
 

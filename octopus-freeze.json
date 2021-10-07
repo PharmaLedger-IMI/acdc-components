@@ -971,7 +971,7 @@
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd mobile/scan-app/ios/pharmaledger-camera/PharmaLedger Camera/PharmaLedger Camera/ && ./carthage.sh"
+                    "cmd": "cd 'mobile/scan-app/ios/pharmaledger-camera/PharmaLedger Camera/' && ./carthage.sh"
                 }
             ]
         }
