@@ -2,6 +2,7 @@ How To Deploy and test ACDC Authentication Features (With native camera access)
 ​
 Setup the environment (Node 14 and 16 Tested):
 ​
+For local development:
 Update mobile/scan-app/ios/PSKNodeServer/PSDKNodeServer/nodejsProject/apihub-root/external-volume/config/bdns.hosts:line 14
 ```
   "epi": {
@@ -14,7 +15,7 @@ Update mobile/scan-app/ios/PSKNodeServer/PSDKNodeServer/nodejsProject/apihub-roo
     ]
 ```
 
-This will ensure fast development passes
+This allows for faster development passes since the app does not need to be rebuilt in Xcode. Also make sure that the iPhone and Macbook are on the same wi-fi connection, otherwise this will not work.
 
 IMPORTANT:
 if running on iOS, carthage must be installed: typically ```brew install carthage```

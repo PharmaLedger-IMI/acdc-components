@@ -465,6 +465,21 @@
                     "cmd": "cd authentication-feature-template && npm install"
                 }
             ]
+        },
+        {
+            "name": "authentication-feature-truemed",
+            "src": "https://github.com/TrueMedHemmo/acdc-authentication-feature-template.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-truemed && npm install"
+                }
+            ]
         }
 
     ],
@@ -802,6 +817,16 @@
                 {
                     "type": "execute",
                     "cmd": "cd authentication-feature-template && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "Build acdc Authentication Feature TrueMed",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-truemed && npm run build"
                 }
             ]
         },
