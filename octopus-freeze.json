@@ -480,6 +480,21 @@
                     "cmd": "cd authentication-feature-truemed && npm install"
                 }
             ]
+        },
+        {
+            "name": "authentication-feature-59k3",
+            "src": "https://github.com/delayv/acdc-authentication-feature-59k3",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-59k3 && npm install"
+                }
+            ]
         }
 
     ],
@@ -827,6 +842,16 @@
                 {
                     "type": "execute",
                     "cmd": "cd authentication-feature-truemed && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "Build acdc Authentication Feature 59k3",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-59k3 && npm run build"
                 }
             ]
         },
