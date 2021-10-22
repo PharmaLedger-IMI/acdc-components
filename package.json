@@ -1,6 +1,6 @@
 {
   "name": "acdc-workspace",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "",
   "scripts": {
     "dev-install": "node ./bin/mkDevEnv.js && npm install",
