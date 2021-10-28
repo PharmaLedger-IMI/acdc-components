@@ -2,6 +2,7 @@ const {ACDC_STATUS, HEADERS} = require('../constants');
 const ScanResult = require('../model/ScanResult');
 const {constants} = require('../../epi-utils/lib/utils');
 
+const DEFAULT_ENDPOINT = 'http://localhost:8080'
 /**
  * Reads the request body and parses it to JSON format
  * @param req
@@ -46,14 +47,16 @@ function startACDCMiddleware(server){
             if (err)
                 return sendResponse(new ScanResult({acdcStatus: undefined, err: `Error parsing input ${req.body}: ${err}`}));
 
-            if (event.batchDsuStatus || event.productDsuStatus){
+            const errCb = () => sendResponse(new ScanResult({acdcStatus: undefined, err: `Could not find reference to the reporting URL: ${err}`}));
+
+            const getEndpoint = function(callback){
+                if (!event.batchDsuStatus && !event.productDsuStatus)
+                    return callback(undefined, DEFAULT_ENDPOINT);
+
                 const resolver = opendsu.loadApi('resolver');
                 const keyssi = opendsu.loadApi('keyssi');
 
                 const productSSI = keyssi.createArraySSI('epi', [event.productCode]);
-
-                const errCb = () => sendResponse(new ScanResult({acdcStatus: undefined, err: `Could not find reference to the reporting URL: ${err}`}));
-
 
                 resolver.loadDSU(productSSI, (err, dsu) => {
                     if (err)
@@ -71,16 +74,22 @@ function startACDCMiddleware(server){
                         const endpoint = product.reportURL;
                         if (!endpoint)
                             return errCb();
-
-                        http.doPost(endpoint, JSON.stringify(event), HEADERS, (err, result) => {
-                            if (err)
-                                return sendResponse(new ScanResult({acdcStatus: ACDC_STATUS.DOWN, err: err}));
-                            result = typeof result === 'string' ? JSON.parse(result) : result;
-                            return sendResponse(new ScanResult({...result, acdcStatus: ACDC_STATUS.UP}));
-                        });
+                        callback(undefined, endpoint);
                     });
                 });
             }
+
+            getEndpoint((err, endpoint) => {
+                if (err)
+                    return errCb();
+
+                http.doPost(endpoint, JSON.stringify(event), HEADERS, (err, result) => {
+                    if (err)
+                        return sendResponse(new ScanResult({acdcStatus: ACDC_STATUS.DOWN, err: err}));
+                    result = typeof result === 'string' ? JSON.parse(result) : result;
+                    return sendResponse(new ScanResult({...result, acdcStatus: ACDC_STATUS.UP}));
+                });
+            });
         });
     });
 }
