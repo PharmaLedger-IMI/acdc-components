@@ -1,9 +1,3 @@
-/**
- * Backend Endpoint
- * @type {string}
- * @module Reporting
- */
-const ENDPOINT = 'http://127.0.0.1:3000/borest/scan';
 
 /**
  * API Hub middleware endpoint
