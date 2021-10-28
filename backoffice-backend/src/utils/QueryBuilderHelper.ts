@@ -2,25 +2,25 @@ export class QueryBuilderHelper {
 
     sqlOperators = {
         // Equal
-        EQL(value: string): string {
+        EQL(value: any): string {
             return `= '${escapeQuote(value)}'`
         },
         // More Than or Equal
-        MTE(value: string): string {
+        MTE(value: any): string {
             return `>= '${escapeQuote(value)}'`
         },
         // Less Than or Equal
-        LTE(value: string): string {
+        LTE(value: any): string {
             return `<= '${escapeQuote(value)}'`
         },
         // In
-        IN(values: string[]): string {
+        IN(values: any): string {
             values = Array.isArray(values) ? values : [values]
             const commaList = values.map((value) => `'${escapeQuote(value)}'`).join(',')
             return `IN (${commaList})`
         },
         // ILike
-        ILIKE(value: string): string {
+        ILIKE(value: any): string {
             const escapeValue = escapeQuote(value);
             return `ILIKE '%${escapeValue}%'`
         }
