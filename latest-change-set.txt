@@ -26,3 +26,7 @@
     fixing the build
     Update EthAdapter.yaml
     Change view results button label and fix update product
+    Update COMPATIBILITY.md
+    TM auth feature: worked around closeCameraStream causing crashes on second load.
+    Not using closeCameraStream, now only unregistering handlers and disabling flash to achieve similar effect
+    compatibility matrix

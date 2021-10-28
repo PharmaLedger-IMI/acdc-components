@@ -40,7 +40,6 @@ const ACDC_STATUS = {
 }
 
 module.exports = {
-    ENDPOINT,
     API_HUB_ENDPOINT,
     HEADERS,
     SETTINGS,
