@@ -48,7 +48,7 @@ function startACDCMiddleware(server){
 
             if (event.batchDsuStatus || event.productDsuStatus){
                 const resolver = opendsu.loadApi('resolver');
-                const keyssi = onepdsu.loadApi('keyssi');
+                const keyssi = opendsu.loadApi('keyssi');
 
                 const productSSI = keyssi.createArraySSI('epi', [event.productCode]);
 
@@ -59,7 +59,7 @@ function startACDCMiddleware(server){
                     if (err)
                         return errCb();
 
-                    dsu.readFile(constants['PRODUCT_STORAGE_FILE'], (err, product) => {
+                    dsu.readFile('/product' + constants['PRODUCT_STORAGE_FILE'], (err, product) => {
                         if (err)
                             return errCb();
                         try {
