@@ -32,7 +32,9 @@
     "build-use-case": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case\"",
     "build-use-case-mobile": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case-mobile\"",
     "build-ios-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-ios-app\"",
-    "build-android-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-android-app\""
+    "build-android-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-android-app\"",
+    "onboard-domain": "node ./bin/onboard-domain.js",
+    "onboard-auth-template-domain": "npm run onboard-domain -- --domainName=epi-auth-template --anchoring=http://172.17.0.1:8081 --bricking=http://172.17.0.1:8081 --notifications=http://172.17.0.1:8081"
   },
   "repository": {
     "type": "git",
