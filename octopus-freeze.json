@@ -495,6 +495,21 @@
                     "cmd": "cd authentication-feature-59k3 && npm install"
                 }
             ]
+        },
+        {
+            "name": "authentication-feature-uniqode",
+            "src": "https://github.com/PharmaLedger-IMI/pharma-incmlab.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-uniqode && npm install"
+                }
+            ]
         }
 
     ],
@@ -852,6 +867,16 @@
                 {
                     "type": "execute",
                     "cmd": "cd authentication-feature-59k3 && npm run build"
+                }
+            ]
+        },
+        {
+            "name": "Build acdc Authentication Feature UniQode",
+            "src": "",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd authentication-feature-uniqode && npm run build"
                 }
             ]
         },
