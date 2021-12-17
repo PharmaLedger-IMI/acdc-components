@@ -1,6 +1,6 @@
 const {ACDC_STATUS, HEADERS} = require('../constants');
 const ScanResult = require('../model/ScanResult');
-const {constants} = require('../../epi-utils/lib/utils');
+const {constants} = require('../epi-utils-patch/lib/utils');
 
 const DEFAULT_ENDPOINT = 'http://localhost:8080'
 /**
