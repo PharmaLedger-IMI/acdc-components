@@ -355,6 +355,14 @@ In the event that the app runs slow:
 
 
 
+# Compatibility Matrix
+
+Alpvision: https://github.com/delayv/acdc-authentication-feature-59k3/blob/master/COMPATIBILITY.md
+
+INCM: https://github.com/PharmaLedger-IMI/pharma-incmlab/blob/master/COMPATIBILITY.md
+
+TrueMed: https://github.com/TrueMedHemmo/acdc-authentication-feature-template/blob/master/compatibility.md
+
 # Misc
 
 ## How to pull latest ePi changes
