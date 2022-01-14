@@ -356,6 +356,8 @@ In the event that the app runs slow:
 
 
 # Compatibility Matrix
+    
+Eeach authentication feature provider has done tests with different phone models, and shared the results.
 
 Alpvision: https://github.com/delayv/acdc-authentication-feature-59k3/blob/master/COMPATIBILITY.md
 
