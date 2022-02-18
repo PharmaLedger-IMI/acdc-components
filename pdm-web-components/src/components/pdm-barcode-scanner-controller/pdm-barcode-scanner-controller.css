@@ -1,9 +1,0 @@
-:host {
-  display: block;
-  --ion-background-color: var(--ion-background-color);
-}
-
-ion-modal.barcode-scanner {
-  --background: var(--ion-background-color);
-  --border-radius: 5px;
-}

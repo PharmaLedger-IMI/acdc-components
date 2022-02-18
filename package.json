@@ -2,53 +2,16 @@
   "name": "acdc-workspace",
   "version": "0.6.4",
   "description": "",
-  "scripts": {
-    "dev-install": "node ./bin/mkDevEnv.js && npm install",
-    "do-install": "node ./node_modules/octopus/scripts/ensureFreezeState.js && node ./node_modules/octopus/scripts/run",
-    "postinstall": "node bin/version.js && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run\"",
-    "install-mobile": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run install-mobile\"",
-    "add": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/add\"",
-    "remove": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/remove\"",
-    "add-loader": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/add\"",
-    "build": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/build\"",
-    "build-all": "node ./bin/seedsBackupTool.js restore && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build\" && node ./bin/seedsBackupTool.js && node ./bin/AuthenticatorFeatureExport.js",
-    "build-mobile": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-mobile\"",
-    "build-android-apk": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-android-apk\"",
-    "update": "node ./node_modules/octopus/scripts/update",
-    "bind-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/bind --type=app\"",
-    "bind-wallet": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/bind --type=wallet\"",
-    "server": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd privatesky && npm run start\"",
-    "apihub": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd privatesky && npm run start\"",
-    "switch-to-release": "npm run remove privatesky && npm run add privatesky http://github.com/privatesky/psk-release.git 0",
-    "switch-to-dev": "npm run remove privatesky && npm run add privatesky http://github.com/privatesky/privatesky.git 0",
-    "watch": "node ./bin/watcher/watcher.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "node ./bin/clean.js ./",
-    "clean-build": "npm run clean && npm run build privatesky && npm run build-all",
-    "freeze": "node ./node_modules/octopus/scripts/freeze dependencies install-mobile",
-    "incversion": "npm --no-git-tag-version version patch",
-    "start-backoffice-backend": "cd backoffice-backend && npm run start",
-    "start-backoffice-frontend": "cd backoffice-frontend && npm run start",
-    "build-use-case": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case\"",
-    "build-use-case-mobile": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-use-case-mobile\"",
-    "build-ios-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-ios-app\"",
-    "build-android-app": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./node_modules/octopus/scripts/run build-android-app\"",
-    "onboard-domain": "node ./bin/onboard-domain.js",
-    "onboard-auth-template-domain": "npm run onboard-domain -- --domainName=epi-auth-template --anchoring=http://172.17.0.1:8081 --bricking=http://172.17.0.1:8081 --notifications=http://172.17.0.1:8081"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PharmaLedger-IMI/acdc-workspace.git"
+    "url": "git+https://github.com/PharmaLedger-IMI/acdc-components.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PharmaLedger-IMI/acdc-workspace/issues"
+    "url": "https://github.com/PharmaLedger-IMI/acdc-components/issues"
   },
-  "homepage": "https://github.com/PharmaLedger-IMI/acdc-workspace#readme",
-  "dependencies": {
-    "octopus": "git+http://github.com/privatesky/octopus.git"
-  },
+  "homepage": "https://github.com/PharmaLedger-IMI/acdc-components#readme",
   "devDependencies": {
     "fs-extra": "^9.0.9",
     "git-describe": "^4.0.4",
