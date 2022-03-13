@@ -47,3 +47,4 @@ dsu-fabric-ssapp
 node_modules
 package-lock.json
 env.json.devel
+.DS_Store
