@@ -204,7 +204,7 @@ class CameraApi extends CameraInterface{
     async takePicture(mode = MODE.GL){
         switch(mode){
             case MODE.GL:
-                this.nativeBridge.takePictureBase64NativeCamera(this._onPictureTaken.name);
+                this.nativeBridge.takePictureBase64NativeCamera(this._onPictureTaken);
                 break;
             case MODE.MJPEG:
                 await this.nativeBridge.getSnapshot(this.cameraProps).then(b => this._onPictureTaken(URL.createObjectURL(b)))

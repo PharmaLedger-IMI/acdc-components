@@ -17,6 +17,65 @@ var _y = undefined;
 var _w = undefined;
 var _h = undefined;
 
+var _nativeBridge = undefined;
+function buildNativeBridge(callback) {
+    try {
+      const nativeBridgeSupport = window.opendsu_native_apis;
+      if (typeof nativeBridgeSupport === "object") {
+        return nativeBridgeSupport.createNativeBridge(callback);
+      }
+      callback(undefined, undefined);
+    } catch (err) {
+      console.log("Caught an error during initialization of the native API bridge", err);
+    }
+}
+
+function getNativeBridge(callback) {
+    if (typeof _nativeBridge !== 'undefined') {
+        callback(_nativeBridge);
+    } else {
+        buildNativeBridge( (bridge) => {
+            _nativeBridge = bridge;
+            callback(bridge);
+        });
+    }
+}
+
+var _plCameraAPI = undefined;
+function buildPLCameraAPI(callback) {
+    getNativeBridge((bridge) => {
+        const result = bridge.importNativeStreamAPI("pharmaLedgerCameraAPI");
+        callback(result);
+    })
+}
+
+function getPLCameraAPI(callback) {
+    if (typeof _plCameraAPI !== 'undefined') {
+        callback(_plCameraAPI);
+    } else {
+       buildPLCameraAPI((api) => {
+           api.openStream().then(() => {
+            _plCameraAPI = api;
+            callback(api);
+           }, (error) => {
+               console.log("ERROR WHILE OPENING PLCAMERAAPI " + error);
+           });
+       });
+    }
+}
+
+function plCameraAPICall(name, args, successCallback, errorCallback) {
+    const encodedMessage = JSON.stringify({ "name": name, "args": args });
+    getPLCameraAPI((api) => {
+        api.retrieveNextValue(encodedMessage).then((successResultsArray) => {
+            successCallback(successResultsArray);
+        }, (error) => {
+            errorCallback(error);
+        });
+    });
+}
+
+
 function callNative(api, args, callback) {
     // @ts-ignore
     let handle = window.webkit.messageHandlers[api]
@@ -63,7 +122,12 @@ function startNativeCamera(sessionPresetName, flashMode, onFramePreviewCallback 
         "previewWidth": _previewWidth,
         "auto_orientation_enabled": auto_orientation_enabled
     }
-    callNative("StartCamera", params);
+    //callNative("StartCamera", params);
+    plCameraAPICall("StartCamera", params, (resultsArray) => {
+        print("StartCamera success, results " + resultsArray[0]);
+        const serverURL = resultsArray[0];
+        onNativeCameraInitialized(serverURL);
+    });
 }
 
 /**
@@ -94,7 +158,14 @@ function startNativeCameraWithConfig(config, onFramePreviewCallback = undefined,
         "previewWidth": _previewWidth,
         "config": config
     }
-    callNative("StartCameraWithConfig", params);
+    //callNative("StartCameraWithConfig", params);
+    plCameraAPICall("StartCameraWithConfig", params, (resultsArray) => {
+        console.log("StartCamera success, results " + resultsArray[0]);
+        const serverURL = resultsArray[0];
+        window.Native.Camera._onNativeCameraInitialized(serverURL);
+    }, (error) => {
+        console.log("Start camera config error: " + error);
+    })
 }
 
 /**
@@ -119,7 +190,8 @@ function stopNativeCamera() {
     _previewHandle = undefined
     clearInterval(_grabHandle)
     _grabHandle = undefined
-    callNative("StopCamera")
+    //callNative("StopCamera")
+    plCameraAPICall("StopCamera");
 }
 
 /**
@@ -127,8 +199,14 @@ function stopNativeCamera() {
  * @param  {function} onCaptureCallback callback reached when the picture is taken. The callback receives the picture as base64 string
  */
 function takePictureBase64NativeCamera(onCaptureCallback) {
-
-    callNative("TakePicture", {"onCaptureJsCallback": onCaptureCallback.name});
+    //callNative("TakePicture", {"onCaptureJsCallback": onCaptureCallback.name});
+    plCameraAPICall("TakePicture", {}, (resultsArray) => {
+        console.log("TakePicture success: " + resultsArray[0]);
+        const image = resultsArray[0];
+        onCaptureCallback(image);
+    }, (error) => {
+        console.log("TakePicture error " + error);
+    })
 }
 
 /**
@@ -150,7 +228,12 @@ function takePictureBase64NativeCamera(onCaptureCallback) {
  * @param  {string} mode can be `torch`, `flash`, or `off`, all other values will be treated as `auto`
  */
 function setFlashModeNativeCamera(mode) {
-    callNative("SetFlashMode", { "mode": mode })
+    //callNative("SetFlashMode", { "mode": mode })
+    plCameraAPICall("SetFlashMode", { "mode": mode }, () => {
+        console.log("SetFlashMode success");
+    }, (error) => {
+        console.log("SetFlashMode error");
+    });
 }
 
 /**
@@ -158,7 +241,12 @@ function setFlashModeNativeCamera(mode) {
  * @param  {number} level torch level between (0.0, 1.0]
  */
 function setTorchLevelNativeCamera(level) {
-    callNative("SetTorchLevel", { "level": level})
+    //callNative("SetTorchLevel", { "level": level})
+    plCameraAPICall("SetTorchLevel", { "level": level}, () => {
+        console.log("SetTorchLevel success");
+    }, (error) => {
+        console.log("SetTorchMode error");
+    });
 }
 
 /**
@@ -167,11 +255,16 @@ function setTorchLevelNativeCamera(level) {
  * @param  {string} colorspace 'sRGB', 'HLG_BT2020', 'P3_D65'
  */
 function setPreferredColorSpaceNativeCamera(colorspace) {
-    callNative("SetPreferredColorSpace", { "colorspace": colorspace })
+    //callNative("SetPreferredColorSpace", { "colorspace": colorspace })
+    plCameraAPICall("SetPreferredColorSpace", { "colorspace": colorspace }, () => {
+        console.log("SetPreferredColorSpace success");
+    }, (error) => {
+        console.log("SetPreferredColorSpace error: " + error);
+    });
 }
 
-function onNativeCameraInitialized(wsPort) {
-    _serverUrl = `http://localhost:${wsPort}`
+function onNativeCameraInitialized(serverURL) {
+    _serverUrl = serverURL;
     window.Native.Camera.cameraProps._serverUrl = _serverUrl;
     if (_onFramePreviewCallback !== undefined) {
         _previewHandle = setInterval(() => {
