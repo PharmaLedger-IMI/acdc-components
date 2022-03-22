@@ -4,7 +4,7 @@
   "description": "native apis integration into loaders",
   "main": "index.js",
   "scripts": {
-    "prebuild": "node --trace-uncaught ./node_modules/octopus/scripts/run prebuild devmode",
+    "build": "node --trace-uncaught ./node_modules/octopus/scripts/run prebuild devmode",
     "test": "test"
   },
   "author": "",
