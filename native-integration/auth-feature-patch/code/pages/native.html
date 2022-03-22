@@ -1,0 +1,156 @@
+<psk-example class="mobile-example">
+    <style>
+        #snapshotImage,
+        #rawCropCanvas,
+        #streamPreview,
+        #cameraCanvas {
+            max-width: 100vw !important;
+            max-height: 300px;
+            min-height: 150px;
+            min-width: 150px;
+        }
+
+        button {
+            margin: 10px;
+        }
+
+        .custom-control-input,
+        .custom-control-label {
+            margin: 10px;
+        }
+
+
+        .cameraImg {
+            width: 100vw !important;
+            height: 30vh;
+        }
+
+        .fullwidth {
+            width: 100vw !important;
+            min-height: 40px;
+        }
+
+        .divItem {
+            min-height: 50px;
+
+            min-width: 50px;
+        }
+    </style>
+    <psk-mobile disable-sidebar enable-back class="noPadding">
+        <webc-container controller="NativeController">
+            <psk-label class="fullwidth" label="SM 18-08-2021- 005 - Only for iOS devices."></psk-label>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-">
+                        <select class="form-control form-control-sm" id="select_preset" onchange="ChangePresetList()">
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-danger btn-sm" id='stopCameraButton'>Stop</button><br />
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <label for="select_cameras">Desired Cameras</label>
+                    <select data-tag="cycleCameras" class="form-control form-control-sm" id="select_cameras" multiple></select>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="flashButton">F off</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="continuousAFButton">AF ON</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="selectCameraButton">Back Cam</button>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="colorspaceButton">Change
+                            colorspace</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="getConfigButton">GetConfig</button>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col">
+                        <span id="configInfo">Tap Start Before Getting Config</span>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <label for="torchLevelRange" id="torchLevelRangeLabel"></label>
+                    <input type="range" class="custom-range" min="0" max="1" step="0.1" id="torchLevelRange">
+                </div>
+                <div class="row top-buffer">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id='startCameraButtonGL'>Start(GL)</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm"
+                                id='startCameraButtonMJPEG'>Start(MJPEG)</button>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="takePictureButton1">Picture
+                            (base64)</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary btn-sm" id="takePictureButton2">Picture
+                            (bytes)</button>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <input class="col form-control" type="text" id="rawCropRoiInput"
+                           placeholder="enter roi as x,y,w,h" />
+                </div>
+                <div class="row">
+                    <div class="col custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="cropRawFrameCheck" />
+                        <label class="custom-control-label" for="cropRawFrameCheck">Crop</label>
+                    </div>
+                    <div class="col custom-control custom-switch">
+                        <input class="custom-control-input" type="checkbox" id="invertRawFrameCheck" />
+                        <label class="custom-control-label" for="invertRawFrameCheck">Invert</label>
+                    </div>
+                    <div class="col custom-control custom-switch">
+                        <input class="custom-control-input" type="checkbox" id="ycbcrCheck" />
+                        <label class="custom-control-label" for="ycbcrCheck">YCbCr</label>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col">
+                        <canvas id='cameraCanvas'></canvas>
+                    </div>
+                    <div class="col">
+                        <img id='streamPreview'/>
+                    </div>
+                    <div class="col">
+                        <canvas id='rawCropCanvas'></canvas>
+                    </div>
+                    <div class="col">
+                        <canvas id='rawCropCbCanvas'></canvas>
+                    </div>
+                    <div class="col">
+                        <canvas id='rawCropCrCanvas'></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <p id='status_test'></p>
+                </div>
+                <div class="row">
+                    <p id='status_fps_preview'></p>
+                </div>
+                <div class="row">
+                    <p id='status_fps_raw'></p>
+                </div>
+            </div>
+            <div>
+                <img id='snapshotImage' />
+            </div>
+        </webc-container>
+    </psk-mobile>
+    </div>
+</psk-example>

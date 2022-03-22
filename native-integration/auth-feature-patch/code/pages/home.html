@@ -1,0 +1,66 @@
+<webc-container controller="HomeController" translations="true">
+    <ion-app>
+        <ion-header class="ion-no-border ion-padding">
+            <ion-grid>
+                <ion-row>
+                    <ion-col>
+                        <ion-row class="ion-justify-content-between">
+                            <div class="flex flex-col ion-padding-start top-bar-text">
+                                {{ $title }}
+                            </div>
+                        </ion-row>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-header>
+        <ion-grid>
+            <ion-row class="full-height">
+                <ion-col>
+                    <ion-tabs id="main-content">
+                        <ion-tab tab="tab-dashboard">
+                            <ion-content class="tab-content ion-padding" overflow-scroll="true">
+                                <ion-card color="primary">
+                                    <ion-card-header class="ion-padding ion-margin-horizontal">
+                                        <ion-card-subtitle>
+                                            {{ @product.manufName }}
+                                        </ion-card-subtitle>
+                                        <ion-card-title>
+                                            {{ @product.name }}
+                                        </ion-card-title>
+                                    </ion-card-header>
+                                    <ion-card-content>
+                                        <ion-item lines="none">
+                                            <ion-label position="stacked">{{ $details.productCode }}</ion-label>
+                                            <ion-input type="text" disabled="true" value="@gs1Data.gtin"></ion-input>
+                                        </ion-item>
+                                        <ion-item lines="none">
+                                            <ion-label position="stacked">{{ $details.batchNumber }}</ion-label>
+                                            <ion-input type="text" disabled="true" value="@gs1Data.batchNumber"></ion-input>
+                                        </ion-item>
+                                        <ion-item lines="none">
+                                            <ion-label position="stacked">{{ $details.serialNumber }}</ion-label>
+                                            <ion-input type="text" disabled="true" value="@gs1Data.serialNumber"></ion-input>
+                                        </ion-item>
+                                        <ion-item lines="none">
+                                            <ion-label position="stacked">{{ $details.expiry }}</ion-label>
+                                            <ion-input type="text" disabled="true" value="@batch.expiry"></ion-input>
+                                        </ion-item>
+                                    </ion-card-content>
+                                </ion-card>
+                                <ion-buttons class="ion-margin-top">
+                                    <ion-button slot="primary" size="large" expand="block" fill="solid" color="secondary" data-tag="scan">
+                                        {{ $buttons.scan }}
+                                    </ion-button>
+                                    <ion-button slot="secondary" size="large" expand="block" fill="solid" color="tertiary" data-tag="native">
+                                        {{ $buttons.scan }}
+                                    </ion-button>
+                                </ion-buttons>
+                            </ion-content>
+                        </ion-tab>
+                    </ion-tabs>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <pdm-barcode-scanner-controller barcode-title="$scan-title"></pdm-barcode-scanner-controller>
+    </ion-app>
+</webc-container>

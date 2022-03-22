@@ -1,0 +1,18 @@
+{
+  "name": "native-integration",
+  "version": "0.1.0",
+  "description": "native apis integration into loaders",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "node --trace-uncaught ./node_modules/octopus/scripts/run prebuild devmode",
+    "test": "test"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "octopus": "git+http://github.com/privatesky/octopus.git"
+  },
+  "dependencies": {
+    "three": "^0.132.2"
+  }
+}
