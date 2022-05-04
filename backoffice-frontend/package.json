@@ -1,6 +1,6 @@
 {
   "name": "acdc-backoffice-frontend",
-  "version": "0.5.12",
+  "version": "0.8.0",
   "description": "Backoffice for Anti-Counterfeiting Data Collaboration",
   "author": {
     "name": "PharmaLedger Team at PDM",
@@ -11,6 +11,7 @@
     "postinstall": "node bin/version.js",
     "ng": "ng",
     "start": "ng serve",
+    "startdev": "ng serve --host acdc-dev-pl --public-host acdc-dev.pharmaledger.pdmfc.com",
     "incversion": "npm --no-git-tag-version version patch",
     "build": "ng build",
     "test": "ng test",
