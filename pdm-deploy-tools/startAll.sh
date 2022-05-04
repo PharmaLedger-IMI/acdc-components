@@ -3,8 +3,13 @@
 PRG_NAME=`basename $0`
 PRG_DIR=`dirname $0`
 PRG_DIR=`cd "$PRG_DIR" >/dev/null ; pwd`
+# Using nvm for now
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 (
     cd "$PRG_DIR/../.."
+    nvm use 
     npm run server &
     sleep 2
     cd acdc/backoffice-backend
