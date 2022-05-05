@@ -11,7 +11,7 @@
     "postinstall": "node bin/version.js",
     "ng": "ng",
     "start": "ng serve",
-    "startdev": "ng serve --host acdc-dev-pl --public-host acdc-dev.pharmaledger.pdmfc.com",
+    "startdev": "ng serve --configuration=production --host acdc-dev-pl --public-host acdc-dev.pharmaledger.pdmfc.com",
     "incversion": "npm --no-git-tag-version version patch",
     "build": "ng build",
     "test": "ng test",
