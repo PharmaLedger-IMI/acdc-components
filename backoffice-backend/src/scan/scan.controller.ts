@@ -17,7 +17,7 @@ export class ScanController {
         description: "Data are processed, and the authentication status of the scan is returned. \n\n*For demo purpose, the currently returned data is dummy.",
         type: EventOuputDataDto
     })
-    async create(@Body(ScanValidator) eventInputData: EventInputDataDto): Promise<EventOuputDataDto> {
+    async create(@Body() eventInputData: EventInputDataDto): Promise<EventOuputDataDto> {
         console.log("scan.controller.create scan=", eventInputData);
         return await this.scanService.create(eventInputData)
     }
