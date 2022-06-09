@@ -116,14 +116,21 @@ class AcdcEventDataGenerator {
     buildDummyScan(shipment) {
         const snCheckDateTime = this.buildRandomDate(150)
         const snCheckLocation = this.buildDummyGeolocation()
-        return {
+        const scanObject = {
             ...shipment,
             snCheckDateTime,
             snCheckLocation,
             did: 'AcdcEventDataGenerator',
             batchDsuStatus: true,
-            productDsuStatus: false,
+            productDsuStatus: false
+        };
+        if (false) { // only send on secondary reports (for an existing previous report)
+            scanObject['previousScan'] = "c5c281e6-3abf-4a8a-8154-a161cd08a705";
+            scanObject['authResponse'] = {
+                status: true
+            };
         }
+        return scanObject;
     }
 
     // Send dummy scan data to Acdc
