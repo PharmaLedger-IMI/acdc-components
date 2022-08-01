@@ -1,6 +1,6 @@
 {
   "camera": {
-    "deps": "../../../native-integration/src/ios-rework:camera",
+    "deps": "../../../native-integration/src/ios-rework-vSocket:camera",
     "autoLoad":  true,
     "bundleExternal": false,
     "exclude": "fs"

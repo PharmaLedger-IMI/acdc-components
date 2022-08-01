@@ -73,13 +73,75 @@ class PushStreamToPullStreamAdapter {
         });
     }
 
-    retrieveServerData(url, httpResponseHandler, callName, params, dataPacketHandler) {
+    retrieveServerData(url, httpResponseHandler, callName, params, dataPacketHandler, reject) {
+        if (this.isRawFrameChannelCall(callName)) {
+            this.handleRawFrameChannelCall(callName, params, dataPacketHandler, reject);
+            return;
+        }
         const jsonString = JSON.stringify({"callName": callName, "params": params});
         const self = this;
         self.secondaryChannel.send(jsonString);
         self.secondaryChannel.setNewEventHandler((data) => {
             dataPacketHandler(data);
         });
+    }
+
+    async handleRawFrameChannelCall(callName, params, dataPacketHandler, reject) {
+        try {
+            await this.setupRawChannelIfNotAvailable(callName, params);
+            dataPacketHandler(this.getAppropriateBufferFor(callName));
+        } catch (e) {
+            reject(e);
+        }
+    }
+
+    setupRawChannelIfNotAvailable(callName, params) {
+        const inputParams = params || {};
+        inputParams.fps = _targetGrabFps;
+        const paramsStringified = JSON.stringify(inputParams);
+        const self = this;
+        return new Promise((resolve, reject) => {
+            if ( ((callName == "rawFrame") && (!self.rawFrameChannel)) ) {
+                self.api.openChannel(callName, [paramsStringified]).then((channel) => {
+                    self.rawFrameChannel = channel;
+                    self.rawFrameChannel.setNewEventHandler((arrayBuffer1) => {
+                        self.rawFrameArrayBuffer = arrayBuffer1;
+                        self.rawFrameChannel.setNewEventHandler((arrayBuffer2) => {
+                            self.rawFrameArrayBuffer = arrayBuffer2;
+                        });
+                        resolve();
+                    });
+                }, reject);
+                return;
+            }
+    
+            if ( ((callName == "rawFrameYCBCR") && (!self.rawFrameYCBCRChannel)) ) {
+                self.api.openChannel(callName, [paramsStringified]).then((channel) => {
+                    self.rawFrameYCBCRChannel = channel;
+                    self.rawFrameYCBCRChannel.setNewEventHandler((arrayBuffer1) => {
+                        self.rawFrameYCBCRArrayBuffer = arrayBuffer1;
+                        self.rawFrameYCBCRChannel.setNewEventHandler((arrayBuffer2) => {
+                            self.rawFrameYCBCRArrayBuffer = arrayBuffer2;
+                        });
+                        resolve();
+                    });
+                }, reject);
+                return;
+            }
+            resolve();
+        });
+    }
+
+    getAppropriateBufferFor(callName) {
+        if (callName == "rawFrame") {
+            return this.rawFrameArrayBuffer;
+        } else {
+            return this.rawFrameYCBCRArrayBuffer;
+        }
+    }
+
+    isRawFrameChannelCall(callName) {
+        return ((callName == "rawFrame") || (callName == "rawFrameYCBCR"));
     }
 }
 
@@ -90,8 +152,15 @@ function buildPLCameraAPI(callback) {
         if (usePushStreamWrapper) {
             callback(new PushStreamToPullStreamAdapter(bridge));
         } else {
-            const result = bridge.importNativeStreamAPI("pharmaLedgerCameraAPI");
-            callback(result);
+            const api = bridge.importNativeStreamAPI("pharmaLedgerCameraAPI");
+            api.retrieveServerData = function(url, httpResponseHandler, 
+                                              callName, params, dataPacketHandler,
+                                              reject) {
+                fetch(url).then((response) => {
+                    httpResponseHandler(response);
+                }, reject);
+            };
+            callback(api);
         }
     })
 }
@@ -103,13 +172,6 @@ function getPLCameraAPI(callback) {
        buildPLCameraAPI((api) => {
            api.openStream().then(() => {
             _plCameraAPI = api;
-            api.retrieveServerData = function(url, httpResponseHandler, 
-                                              callName, params, dataPacketHandler,
-                                              reject) {
-                fetch(url).then((response) => {
-                    httpResponseHandler(response);
-                }, reject);
-            };
             callback(api);
            }, (error) => {
                console.log("ERROR WHILE OPENING PLCAMERAAPI " + error);
@@ -250,6 +312,7 @@ function stopNativeCamera() {
     _grabHandle = undefined
     //callNative("StopCamera")
     plCameraAPICall("StopCamera");
+    _plCameraAPI = undefined;
 }
 
 /**
