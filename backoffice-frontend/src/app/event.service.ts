@@ -61,12 +61,13 @@ export class EventService {
 
   /**
    * Perform API Request and get an event by id
-   * @param eventId empty if not found
+   * @param eventId 
+   * @param askFgt if true, ask the backend o query FGT about traceability.
    */
-  getEvent(eventId: string): Observable<Event> {
+  getEvent(eventId: string, askFgt?: boolean): Observable<Event> {
     const url = `${this.eventUrl}/${eventId}`;
     this.messageService.add(`EventService: fetching event id=${eventId} from ${url}`);
-    return this.http.get<Event>(url).pipe(
+    return this.http.get<Event>(url+(askFgt ? "?fgt=1" : "")).pipe(
       tap(_ => this.log(`fetched Event id=${eventId}`)),
       catchError(this.handleError<Event>(`getEvent id=${eventId}`))
     );

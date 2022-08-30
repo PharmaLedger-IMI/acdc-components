@@ -7,12 +7,13 @@ import {EventRepository} from "./event.repository";
 import {EventInputRepository} from "./eventinput.repository";
 import {EventOutputRepository} from "./eventoutput.repository";
 import {AcdcUserService} from "./acdcuser.service";
+import { EventService } from './event.service';
 
 
 @Module({
     imports: [TypeOrmModule.forRoot()],
     controllers: [AppResourceController, LocaleController, EventController],
-    providers: [EventRepository, EventInputRepository, EventOutputRepository, AcdcUserService],
+    providers: [EventRepository, EventInputRepository, EventOutputRepository, EventService, AcdcUserService],
     exports: [EventRepository, EventInputRepository, EventOutputRepository, AcdcUserService],
 })
 export class AcdcModule {

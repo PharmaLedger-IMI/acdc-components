@@ -454,7 +454,9 @@ COPY public.acdcuser (userid, email, passhash) FROM stdin;
 --
 
 COPY public.appresource (id, key, locale, value, help) FROM stdin;
-1	acdc.version	\N	0.5.9	Schema version
+1	acdc.version	\N	0.9.0	Schema version
+2	fgt.url	\N	https://api-mah-msd-fgt-dev.pharmaledger.pdmfc.com/traceability	URL for the REST services for the same MAH on the Finish Goods Traceability. This URL path will be appended with /traceability/create for traceability requests.
+3	fgt.authorization	\N	Basic TUFIMTM2MzY2MzU1OlRoaXMxc1N1Y2hBUzNjdXJlUGFzc3cwcmQ=	Value of the Authorization header for the REST services. This is a BASIC http authentication, which is string that ends with username:password encoded in base64.
 \.
 
 
@@ -535,7 +537,7 @@ adc6e4b3-df5e-4426-8b97-45b6fcad5eb4	0c1aec99-a17f-495d-adfc-008888baef6c	744b02
 -- Name: appresource_id_seq; Type: SEQUENCE SET; Schema: public; Owner: acdc
 --
 
-SELECT pg_catalog.setval('public.appresource_id_seq', 1, true);
+SELECT pg_catalog.setval('public.appresource_id_seq', 3, true);
 
 
 --

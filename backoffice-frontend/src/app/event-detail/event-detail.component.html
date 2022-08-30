@@ -27,4 +27,22 @@
       </h3>
     </ng-template>
   </div>
+
+
+  <div>
+    <div *ngIf="event.traceability.available && (!event.traceability.response || event.traceability.response.error)">
+      <button mat-flat-button (click)="askFgt()">Request Traceability to FGT</button>
+    </div>
+    <div *ngIf="!event.traceability.available && event.traceability.message" style="color: red;">
+      {{ event.traceability.message }}
+    </div>
+    <div *ngIf="event.traceability.response && !event.traceability.response.error">
+      <h2>Traceability information (from Finish Goods Traceability)</h2>
+      <div *ngFor="let trcItem of event.traceability.response | keyvalue">
+        <ul>
+          <li>{{ trcItem.key }} - {{ getTraceabilityTitle(trcItem.key) }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
