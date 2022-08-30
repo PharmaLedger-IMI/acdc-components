@@ -84,6 +84,9 @@ export class EventService {
     let fgtAuthorization: string = "";
     try {
       fgtAuthorization = await this.arcRepository.findConfigString("fgt.authorization");
+      if (fgtAuthorization.startsWith("Onfvp ")) { // "Basic " rot13
+        fgtAuthorization = this.rot13(fgtAuthorization);
+      }
       if (fgtAuthorization) {
         headers["Authorization"] = fgtAuthorization;
       }
@@ -96,8 +99,7 @@ export class EventService {
       return;
     }
 
-    const res = await this.jsonPost(u, {
-      path: `/traceability/traceability/create`,
+    const res = await this.jsonPost(new URL(u.pathname+'/traceability/create',u), {
       headers: headers,
       body: {
           "gtin": gtin,
@@ -113,17 +115,30 @@ export class EventService {
     event.traceability = new EventTraceability(false, message);
   }
 
+  // Based on https://codereview.stackexchange.com/questions/132125/rot13-javascript
+  rot13(str) {
+    var input     = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var output    = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
+    var index     = x => input.indexOf(x);
+    var translate = x => index(x) > -1 ? output[index(x)] : x;
+    return str.split('').map(translate).join('');
+  }
 
   // Based on
   // https://stackoverflow.com/questions/6158933/how-is-an-http-post-request-made-in-node-js
   async jsonHttpRequest(url: URL, { body, ...options }) : Promise<any> {
     const bodyToSend = (body && typeof body != "string") ? JSON.stringify(body) : body;
 
+    const protocol = url.protocol;
+    console.log("URL", url, protocol);
     if (!options['hostname']) {
         options.hostname = url.hostname;
     }
     if (!options['port']) {
         options.port = url.port;
+    }
+    if (!options['path']) {
+        options.path = url.pathname;
     }
     if (!options.method) {
       options.method = "POST";
@@ -139,12 +154,11 @@ export class EventService {
       options.headers['content-length'] = Buffer.byteLength(bodyToSend);
 
     const beforeReq = new Date();
-    const protocol = url.protocol;
     let p = new Promise((resolve, reject) => {
       // debug request
       console.log(protocol + " " + options.method, JSON.stringify(options), bodyToSend);
 
-      const req = (protocol === "http" ? http : https).request(
+      const req = ((protocol === "http" || protocol === "http:") ? http : https).request(
         {
           ...options,
         },
@@ -165,7 +179,7 @@ export class EventService {
           });
         }
       );
-      req.on('error', reject);
+      req.on('error', (e)=> { console.log('ERROR',e); reject });
       if (bodyToSend) {
         req.write(bodyToSend);
       }
