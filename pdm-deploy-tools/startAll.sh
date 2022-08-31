@@ -1,5 +1,9 @@
 #!/bin/bash -x
 # Start all services
+#
+# Note: This script does not perform any "npm run build...". You have
+# to do that manually before attempting to use any feature from eLeaflet.
+#
 PRG_NAME=`basename $0`
 PRG_DIR=`dirname $0`
 PRG_DIR=`cd "$PRG_DIR" >/dev/null ; pwd`
