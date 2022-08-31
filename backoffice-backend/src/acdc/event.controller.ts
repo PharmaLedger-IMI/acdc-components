@@ -6,6 +6,7 @@ import {EventRepository} from "./event.repository";
 import {AuthGuard} from "@nestjs/passport";
 import {EventQuery, EventQueryValidator} from "./eventquery.validator";
 import {PaginatedDto} from "../paginated.dto";
+import { EventService } from "./event.service";
 
 @ApiExtraModels(Event, PaginatedDto)
 @ApiTags("Event")
@@ -15,7 +16,7 @@ import {PaginatedDto} from "../paginated.dto";
 export class EventController {
     private eventRepository: EventRepository;
 
-    constructor(private connection: Connection) {
+    constructor(private connection: Connection, private eventService: EventService) {
         this.eventRepository = connection.getCustomRepository(EventRepository)
     }
 
@@ -63,9 +64,9 @@ export class EventController {
     @ApiOkResponse({
         type: Event
     })
-    async findOne(@Param("id") id: string): Promise<Event> {
-        console.log("event.findOne... id=", id);
-        const event = await this.eventRepository.findById(id);
+    async findOne(@Param("id") id: string, @Query("fgt") fgt?: string): Promise<Event> {
+        console.log("event.findOne... id=", id, "fgt=", fgt);
+        const event = await this.eventService.getOne(id, !!fgt);
         console.log("event.findOne event =", event);
         return event;
     }

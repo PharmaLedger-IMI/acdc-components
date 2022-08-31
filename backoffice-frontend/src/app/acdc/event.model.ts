@@ -1,5 +1,6 @@
 import {EventInput} from './eventinput.model';
 import {EventOutput} from './eventoutput.model';
+import { EventTraceability } from './eventtraceability.model';
 
 export interface Event {
   eventId: string;
@@ -8,4 +9,5 @@ export interface Event {
   eventData: object;
   eventInputs: EventInput[];
   eventOutputs: EventOutput[];
+  traceability: EventTraceability;
 }

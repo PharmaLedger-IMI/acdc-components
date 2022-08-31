@@ -2,6 +2,7 @@ import {BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColum
 import {ApiProperty} from "@nestjs/swagger";
 import {EventInput} from "./eventinput.entity";
 import {EventOutput} from "./eventoutput.entity";
+import { EventTraceability } from "./eventtraceability.dto";
 
 @Entity("event")
 export class Event extends BaseEntity {
@@ -29,4 +30,7 @@ export class Event extends BaseEntity {
     @ApiProperty({ type: () => EventOutput })
     @OneToMany(() => EventOutput, eventOutput => eventOutput.event)
     eventOutputs: EventOutput[];
+
+    @ApiProperty({ description: "Optional traceability information obtained from FGT."})
+    traceability: EventTraceability;
 }

@@ -35,13 +35,13 @@ export class EventDetailComponent implements OnInit {
     this.getEvent();
   }
 
-  getEvent(): void {
+  getEvent(askFgt?: boolean): void {
     const eventId = this.route.snapshot.paramMap.get('id');
     if (!eventId) {
       throw new Error('request id is null');
     }
     console.log(`eventDetail.component.getEvent id=${eventId}`);
-    this.eventService.getEvent(eventId).subscribe((resp) => {
+    this.eventService.getEvent(eventId, askFgt).subscribe((resp) => {
       const {eventInputs, eventOutputs, ...event} = resp;
       this.eventInputs = eventInputs;
       this.eventOutputs = eventOutputs;
@@ -53,5 +53,13 @@ export class EventDetailComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  askFgt(): void {
+    this.getEvent(true);
+  }
+
+  getTraceabilityTitle(responseKey: any): void {
+    return this.event?.traceability?.response[responseKey]?.title;
   }
 }
