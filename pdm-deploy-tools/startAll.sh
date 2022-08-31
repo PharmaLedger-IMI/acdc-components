@@ -9,7 +9,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 (
     cd "$PRG_DIR/../.."
-    nvm use 
+    nvm use 16
     npm run server &
     sleep 2
     cd acdc/backoffice-backend

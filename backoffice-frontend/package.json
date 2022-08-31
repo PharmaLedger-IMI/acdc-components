@@ -12,6 +12,7 @@
     "ng": "ng",
     "start": "ng serve",
     "startdev": "ng serve --configuration=production --host acdc-dev-pl --public-host acdc-dev.pharmaledger.pdmfc.com",
+    "starttst": "ng serve --configuration=production --host acdc-tst-pl --public-host acdc.pharmaledger.pdmfc.com",
     "incversion": "npm --no-git-tag-version version patch",
     "build": "ng build",
     "test": "ng test",
