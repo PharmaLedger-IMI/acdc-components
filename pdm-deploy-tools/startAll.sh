@@ -16,7 +16,12 @@ export NVM_DIR="$HOME/.nvm"
     npm run start &
     sleep 5
     cd ../backoffice-frontend
-    npm run startdev &
+    if [ "$HOSTNAME" = "acdc-tst-pl" ]
+    then
+        npm run starttst &
+    else
+        npm run startdev &
+    fi
 ) >> "$PRG_DIR/../../../acdc.log" 2>&1
 # This should be a replaced by a system-unit (one for every service),
 # and every service should have its log, and log rotation.
