@@ -1,6 +1,6 @@
 #!/bin/bash -x
 # Stop all node services
-pkill "^node "
+pkill "^node"
 pkill "^ng "
 pkill "^npm "
 # This should be a replaced by a system-unit (one for every service),
